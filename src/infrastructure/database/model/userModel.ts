@@ -2,25 +2,25 @@
 import mongoose, { Schema, Document } from "mongoose";
 
 export interface Iuser extends Document{
-    name: String;
-    email: String;
+    name: string;
+    email: string;
     DOB?: Date;
-    govtId: String;
-    googleId: String;
+    govtId: string;
+    googleId: string;
     address?: {
-        city: String;
-        State: String;
-        pincode:String
+        city: string;
+        State: string;
+        pincode:string
     }
     location?: {
         coordinates: number[]
     };
-    profile_pic: String;
-    bio: String;
+    profile_pic: string;
+    bio: string;
     rating: Number;
-    password: String;
+    password: string;
     isVerified?: Boolean;
-    phone: String;
+    phone: string;
     createdAt?: Date;
     updatedAt?:Date
     

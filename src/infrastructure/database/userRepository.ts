@@ -4,19 +4,10 @@ import { User } from "../../domain/entities/User";
 
 export class MongoUserRepository implements UserRepository {
   async findByEmail(email: string): Promise<User | null> {
+    
     const userDoc = await userModel.findOne({ email });
-
     if (!userDoc) return null;
-
-    return {
-      id: userDoc.id,
-      name: userDoc.name,
-      email: userDoc.email,
-      phone: userDoc.phone,
-      password: userDoc.password,
-      createdAt: userDoc.createdAt,
-      updatedAt: userDoc.updatedAt,
-    };
+    return userDoc
   }
 
   async save(user: User): Promise<User> {
@@ -29,14 +20,6 @@ export class MongoUserRepository implements UserRepository {
 
     const savedUser = await newUser.save();
 
-    return {
-      id: savedUser.id,
-      name: savedUser.name,
-      email: savedUser.email,
-      phone: savedUser.phone,
-      password: savedUser.password,
-      createdAt: savedUser.createdAt,
-      updatedAt: savedUser.updatedAt,
-    };
+    return savedUser
   }
 }
