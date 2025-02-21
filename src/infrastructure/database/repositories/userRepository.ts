@@ -1,6 +1,6 @@
-import { UserRepository } from "../../interface/repositories/userRepository";
-import userModel from "./model/userModel";
-import { User } from "../../domain/entities/User";
+import { UserRepository } from "../../../interface/repositories/userRepository";
+import userModel from "../model/userModel";
+import { User } from "../../../domain/entities/User";
 
 export class MongoUserRepository implements UserRepository {
   async findByEmail(email: string): Promise<User | null> {

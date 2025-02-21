@@ -1,9 +1,11 @@
 import { NextFunction, Request, Response } from "express";
-import { MongoUserRepository } from "../../infrastructure/database/userRepository";
-import { signUp } from "../../application/usecases/user/signUp";
-import {login} from "../../application/usecases/user/login"
+import { MongoUserRepository } from "../../infrastructure/database/repositories/userRepository";
+import { signUp } from "../../application/usecases/auth/signUp";
+import { login } from "../../application/usecases/auth/login"
+import {sendOTPtoUser} from '../../application/usecases/auth/sendOTPtoUser'
 import { successResponse } from "../../shared/utils/responseHandler";
-import { setRefreshTokenCookie,clearRefreshCookie } from "../utils/cookieHelper";
+import { setRefreshTokenCookie, clearRefreshCookie } from "../utils/cookieHelper";
+import {verifyotp} from "../../application/usecases/auth/verifyotp"
 const userRepository = new MongoUserRepository()
 // User Signup
 export const userSignUp = async(req:Request, res:Response,next:NextFunction): Promise<void> => {
@@ -31,12 +33,37 @@ export const Userlogin = async (req: Request, res: Response,next:NextFunction):P
         next(error)
     }
 }
-
+//Logout
 export const UserLogout = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         clearRefreshCookie(res)
-        successResponse(res,200,"Logout Sucess",null)
+        successResponse(res,200,"Logout Sucess")
     } catch (error) {
+        next(error)
+    }
+}
+
+//Send Mail
+
+export const sendOTP = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const { email } = req.body
+        await sendOTPtoUser(email)
+        successResponse(res,200,"Otp send to user email")
+    } catch (error) {
+        next(error)
+    }
+}
+
+//Verify otp
+export const verifyOTP = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const { email, otp } = req.body
+        console.log(req.body)
+        await verifyotp(email,otp)
+        successResponse(res,200,"email verified")
+    } catch (error) {
+        console.log(error)
         next(error)
     }
 }
