@@ -25,9 +25,10 @@ export const userSignUp = async(req:Request, res:Response,next:NextFunction): Pr
 
 export const Userlogin = async (req: Request, res: Response,next:NextFunction):Promise<void> => {
     try {
+        console.log("login",req.body)
         const { email, password } = req.body
         const { accessToken, refreshToken, user } = await login(email, password, userRepository)
-        setRefreshTokenCookie(res,refreshToken)
+        // setRefreshTokenCookie(res,refreshToken)
         successResponse(res,200,"Login Success",{accessToken,user})
     } catch (error) {
         next(error)
@@ -47,6 +48,7 @@ export const UserLogout = async (req: Request, res: Response, next: NextFunction
 
 export const sendOTP = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
+
         const { email } = req.body
         await sendOTPtoUser(email)
         successResponse(res,200,"Otp send to user email")

@@ -4,6 +4,7 @@ import { generateOTP } from "../../../shared/utils/generateOTP"
 
 export const sendOTPtoUser = async (email: string): Promise<void> => {
     const otp = generateOTP()
+    console.log(`otp :${otp}`)
     await storeOTP(email, otp)
     
     const subject = "Your otp code"
