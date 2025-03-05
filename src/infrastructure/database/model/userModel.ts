@@ -7,8 +7,8 @@ export interface Iuser extends Document{
     DOB?: Date;
     googleId: string;
     address?: {
+        street: string;
         city: string;
-        district: string;
         State: string;
         pincode:string
     }
@@ -49,8 +49,8 @@ const userSchema = new Schema<Iuser>({
    
     googleId: String,
     address: {
+      street: { type: String, trim: true },
       city: { type: String, trim: true },
-      district: { type: String, trim: true },
 
       state: { type: String, trim: true },
       pincode: { type: String, trim: true },

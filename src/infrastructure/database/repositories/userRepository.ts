@@ -53,18 +53,16 @@ export class MongoUserRepository implements UserRepository {
     try {
       
   
-      const updatedUser = await userModel.findByIdAndUpdate(
-        id, {
-          address
-        },
+      const updateAdd = await userModel.findByIdAndUpdate(
+        id, {address},
         { new: true } // Returns the updated document
       );
   
-      if (!updatedUser) {
+      if (!updateAdd) {
         throw new Error("User not found");
       }
   
-      return updatedUser; // Return the updated user
+      return updateAdd; // Return the updated user
     } catch (error) {
       throw new Error(`Error updating user: ${error}`); // Propagate the error
     }
