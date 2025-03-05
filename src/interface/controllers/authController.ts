@@ -5,7 +5,8 @@ import { login } from "../../application/usecases/auth/login"
 import {sendOTPtoUser} from '../../application/usecases/auth/sendOTPtoUser'
 import { successResponse } from "../../shared/utils/responseHandler";
 import { setRefreshTokenCookie, clearRefreshCookie } from "../utils/cookieHelper";
-import {verifyotp} from "../../application/usecases/auth/verifyotp"
+import { verifyotp } from "../../application/usecases/auth/verifyotp"
+// import { googleLogin } from "../../application/usecases/auth/login";
 const userRepository = new MongoUserRepository()
 // User Signup
 export const userSignUp = async(req:Request, res:Response,next:NextFunction): Promise<void> => {
@@ -25,15 +26,29 @@ export const userSignUp = async(req:Request, res:Response,next:NextFunction): Pr
 
 export const Userlogin = async (req: Request, res: Response,next:NextFunction):Promise<void> => {
     try {
-        console.log("login",req.body)
         const { email, password } = req.body
         const { accessToken, refreshToken, user } = await login(email, password, userRepository)
-        // setRefreshTokenCookie(res,refreshToken)
+        setRefreshTokenCookie(res,refreshToken)
         successResponse(res,200,"Login Success",{accessToken,user})
     } catch (error) {
         next(error)
     }
 }
+
+//Login With Google
+
+// export const loginWithGoogle = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+//     try {
+//         console.log("login with google", req.body)
+//         const { googleId } = req.body
+//         const { accessToken, refreshToken, user } = await googleLogin(googleId)
+//         successResponse(res,200,"Login Success",{accessToken,user})
+//     } catch (error) {
+//         next(error)
+//     }
+// }
+
+
 //Logout
 export const UserLogout = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
@@ -69,3 +84,5 @@ export const verifyOTP = async (req: Request, res: Response, next: NextFunction)
         next(error)
     }
 }
+
+

@@ -5,10 +5,10 @@ export interface Iuser extends Document{
     name: string;
     email: string;
     DOB?: Date;
-    govtId: string;
     googleId: string;
     address?: {
         city: string;
+        district: string;
         State: string;
         pincode:string
     }
@@ -46,12 +46,12 @@ const userSchema = new Schema<Iuser>({
     DOB: {
         type:Date
     },
-    govtId: {
-        type:String
-    },
+   
     googleId: String,
     address: {
       city: { type: String, trim: true },
+      district: { type: String, trim: true },
+
       state: { type: String, trim: true },
       pincode: { type: String, trim: true },
     },

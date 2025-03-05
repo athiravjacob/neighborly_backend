@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 dotenv.config()
 import connectDB from "./infrastructure/database/connection";
 import authRoute from './interface/routers/authRoute'
+import userRoute from './interface/routers/userRoute'
 import { errorHandler } from "./shared/utils/errorHandler";
 import cors from 'cors'
 
@@ -16,6 +17,7 @@ app.use(cors({
     allowedHeaders: ['Content-Type', 'Authorization'] // Allowed headers
   }));
 app.use("/", authRoute)
+app.use("/user",userRoute)
 app.use(errorHandler)
 
 app.listen(PORT, () => {
