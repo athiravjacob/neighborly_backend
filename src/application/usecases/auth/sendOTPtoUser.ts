@@ -1,5 +1,5 @@
-import { storeOTP } from "../../../infrastructure/database/repositories/otpRepository"
-import { sendEmail } from "../../../infrastructure/services/emailService"
+import { storeOTP } from "../../../infrastructure/repositories/otpRepository"
+import { sendEmail } from "../../../infrastructure/services/emailService-impl"
 import { generateOTP } from "../../../shared/utils/generateOTP"
 
 export const sendOTPtoUser = async (email: string): Promise<void> => {

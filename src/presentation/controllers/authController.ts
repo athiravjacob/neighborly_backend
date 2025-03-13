@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { MongoUserRepository } from "../../infrastructure/database/repositories/userRepository";
+import { MongoUserRepository } from "../../infrastructure/repositories/userRepository";
 import { signUp } from "../../application/usecases/auth/signUp";
 import { login } from "../../application/usecases/auth/login"
 import {sendOTPtoUser} from '../../application/usecases/auth/sendOTPtoUser'

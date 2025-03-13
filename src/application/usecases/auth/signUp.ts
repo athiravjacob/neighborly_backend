@@ -1,5 +1,5 @@
 import { User } from "../../../domain/entities/User"
-import { UserRepository } from '../../../interface/repositories/userRepository'
+import { IUserRepository } from "../../../domain/interface/repositories/userRepository"
 import bcrypt from 'bcrypt'
 import { errorResponse } from "../../../shared/utils/responseHandler"
 
@@ -8,7 +8,7 @@ export const signUp = async (
     email: string,
     phone: string,
     password: string,
-    userRepository:UserRepository
+    userRepository:IUserRepository
 ):Promise<User> => {
     
     const existingUser = await userRepository.findByEmail(email)

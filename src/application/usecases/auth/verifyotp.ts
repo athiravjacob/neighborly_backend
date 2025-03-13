@@ -1,4 +1,4 @@
-import otpModel from "../../../infrastructure/database/model/otpModel"
+import otpModel from "../../../infrastructure/model/otpModel"
 
 export const verifyotp = async (email: string,otp:string): Promise<void> => {
     let Userotp = await otpModel.findOne({ email })

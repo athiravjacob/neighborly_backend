@@ -1,4 +1,5 @@
 import nodemailer, { Transporter } from 'nodemailer'
+import { IEmailService } from '../../domain/interface/services/emailServices'
 
 const transporter: Transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -8,7 +9,7 @@ const transporter: Transporter = nodemailer.createTransport({
     }
 })
 
-export const sendEmail = async (to: string, subject: string, text: string): Promise<void> => {
+export const sendEmail  = async (to: string, subject: string, text: string): Promise<void> => {
     const mailOption = {
         from: process.env.EMAIL_ID,
         to,

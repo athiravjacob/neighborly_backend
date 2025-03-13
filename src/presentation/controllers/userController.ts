@@ -1,7 +1,7 @@
 import {Request,Response, NextFunction, RequestHandler } from "express";
 import { successResponse } from "../../shared/utils/responseHandler";
 import { getUserDetails } from "../../application/usecases/user/getUserDetails";
-import { MongoUserRepository } from "../../infrastructure/database/repositories/userRepository";
+import { MongoUserRepository } from "../../infrastructure/repositories/userRepository";
 import { updateBasicInfo } from "../../application/usecases/user/updateBasicInfo";
 import { updateuserAddress } from "../../application/usecases/user/updateAddress";
 const userRepository = new MongoUserRepository()

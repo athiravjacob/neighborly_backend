@@ -1,15 +1,15 @@
-import { UserRepository } from "../../../interface/repositories/userRepository"
+import { IUserRepository } from "../../../domain/interface/repositories/userRepository"
 import { User } from "../../../domain/entities/User"
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
-import { UserDTO } from "../../../domain/dtos/UserDTO"
+import {UserDTO}  from "../../../presentation/dtos/UserDTO"
 const access_token_secret = process.env.JWT_SECRET||"secret_key"
 const refresh_token_secret = process.env.REFRESH_SECRET || "secret_key"
 
 export const login = async (
     email: string,
     password: string,
-    userRepository: UserRepository) :Promise<{accessToken:string,refreshToken:string,user:UserDTO}>=>
+    userRepository: IUserRepository) :Promise<{accessToken:string,refreshToken:string,user:UserDTO}>=>
 {
     const existingUser = await userRepository.findByEmail(email)
    
@@ -33,7 +33,7 @@ export const login = async (
     }
     const accessToken = jwt.sign({ id: existingUser.id, name:existingUser.name}, access_token_secret, { expiresIn: "1h" })
     const refreshToken = jwt.sign({id:existingUser.id},refresh_token_secret,{expiresIn:"7d"})
-
+    console.log(accessToken)
     return {accessToken,refreshToken,user:user}
     
     

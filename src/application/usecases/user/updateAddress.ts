@@ -1,5 +1,5 @@
 import { User } from "../../../domain/entities/User"
-import { UserRepository } from "../../../interface/repositories/userRepository"
+import { UserRepository } from "../../../domain/interface/repositories/userRepository"
 
 export const updateuserAddress = async (id:string,address: any, userRepository: UserRepository): Promise<User | null> => {
     console.log(address)
