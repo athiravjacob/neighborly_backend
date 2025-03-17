@@ -19,7 +19,6 @@ const authMiddleware = (req: AuthRequest, res: Response, next: NextFunction): vo
     res.status(401).json({ message: "No token provided" });
     return;
     }
-    console.log(authHeader)
 
   const token = authHeader.split(" ")[1]; // Assuming "Bearer <token>"
     if (!token) {
@@ -28,9 +27,8 @@ const authMiddleware = (req: AuthRequest, res: Response, next: NextFunction): vo
   }
 
   try {
-    // Verify token and decode payload
     const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as JwtPayload;
-    req.user = decoded; // Attach decoded payload to req
+    req.user = decoded; 
     next(); // Proceed to the next handler
   } catch (error) {
     res.status(403).json({ message: "Invalid or expired token" });

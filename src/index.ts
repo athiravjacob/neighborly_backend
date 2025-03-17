@@ -2,10 +2,10 @@ import express from "express";
 import dotenv from "dotenv";
 dotenv.config()
 import connectDB from "./infrastructure/database/connection";
-import authRoute from './presentation/routers/authRoute'
-import userRoute from './presentation/routers/userRoute'
 import { errorHandler } from "./shared/utils/errorHandler";
 import cors from 'cors'
+import setupAuthRoutes from "./presentation/routers/authRoute";
+import { Container } from "./di/container";
 
 const app = express()
 app.use(express.json())
@@ -16,9 +16,10 @@ app.use(cors({
     methods: ['GET', 'POST','PUT','PATCH'], 
   allowedHeaders: ['Content-Type', 'Authorization'],
     credentials:true
-  }));
-app.use("/", authRoute)
-app.use("/user",userRoute)
+}));
+  
+app.use('/auth', setupAuthRoutes(Container.authController));
+
 app.use(errorHandler)
 
 app.listen(PORT, () => {

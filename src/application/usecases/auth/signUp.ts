@@ -1,29 +1,31 @@
-import { User } from "../../../domain/entities/User"
-import { IUserRepository } from "../../../domain/interface/repositories/userRepository"
-import bcrypt from 'bcrypt'
-import { errorResponse } from "../../../shared/utils/responseHandler"
+import { Neighbor } from "../../../domain/entities/Neighbor";
+import { User } from "../../../domain/entities/User";
+import { IUserRepository } from "../../../domain/interface/repositories/IUserRepository";
+import { IAuthService } from "../../../domain/interface/services/IAuthService";
+import { SignupDTO } from "../../../shared/types/SignupDTO";
+import { AppError } from "../../../shared/utils/errors";
 
-export const signUp = async (
-    name: string,
-    email: string,
-    phone: string,
-    password: string,
-    userRepository:IUserRepository
-):Promise<User> => {
-    
-    const existingUser = await userRepository.findByEmail(email)
-    if (existingUser) {
-        const error = new Error("User already exists") as Error & { statusCode?: number };
-        error.statusCode = 400;
-        throw error;
-       
-    }
-    const hashedPassword = await bcrypt.hash(password, 10)
 
-    const newUser: User = {
-        name,email,phone,password:hashedPassword
-    }
+export class SignupUseCase {
+  constructor(
+    private userRepository: IUserRepository,
+    private authService: IAuthService
+  ) {}
 
-    return await userRepository.save(newUser)
+  async executeUser(dto: SignupDTO): Promise<User> {
+    const existingUser = await this.userRepository.findUserByEmail(dto.email);
+    if (existingUser) throw new AppError(409, "Email already exists"); // 409 Conflict is appropriate for duplicate resources
+
+    const hashedPassword = await this.authService.hashPassword(dto.password);
+    const user = new User(
+      '',
+      dto.name,
+      dto.email,
+      dto.phone,
+      hashedPassword,
+      
+    );
+    return this.userRepository.createUser(user);
+  }
 
 }
