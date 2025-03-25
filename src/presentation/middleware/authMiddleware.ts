@@ -12,7 +12,6 @@ interface AuthRequest extends Request {
 }
 
 const authMiddleware = (req: AuthRequest, res: Response, next: NextFunction): void => {
-    // Extract token from Authorization header
     
     const authHeader = req.headers["authorization"] 
     if (!authHeader) {
@@ -20,7 +19,7 @@ const authMiddleware = (req: AuthRequest, res: Response, next: NextFunction): vo
     return;
     }
 
-  const token = authHeader.split(" ")[1]; // Assuming "Bearer <token>"
+  const token = authHeader.split(" ")[1]; 
     if (!token) {
     res.status(401).json({ message: "Invalid token format" });
     return;

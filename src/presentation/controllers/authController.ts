@@ -1,26 +1,183 @@
 import {Request,Response, NextFunction } from "express";
 import { SignupUseCase } from "../../application/usecases/auth/Signup";
 import {  successResponse } from "../../shared/utils/responseHandler";
+import { AppError } from "../../shared/utils/errors";
+import { SendOtpUsecase } from "../../application/usecases/auth/SendOTP-email";
+import { verifyOtpUseCase } from "../../application/usecases/auth/VerifyOTP";
+import { forgotPasswordUsecase } from "../../application/usecases/auth/ForgotPassword";
+import { ResetPasswordUseCase } from "../../application/usecases/auth/ResetPassword";
+import { LoginUsecase } from "../../application/usecases/auth/Login";
+import { LoginDTO } from "../../shared/types/LoginDTO";
+import { LogoutUsecase } from "../../application/usecases/auth/Logout";
+import { Neighbor } from "../../domain/entities/Neighbor";
 
-export class AuthController{
-  constructor(private SignupUsecase: SignupUseCase) { }
-  
-  async signup(req: Request, res: Response, next: NextFunction): Promise<void>{
+export class AuthController {
+  constructor(
+    private SignupUsecase: SignupUseCase,
+    private SendOTPUsecase: SendOtpUsecase,
+    private verifyOtpUseCase: verifyOtpUseCase,
+    private forgotpassword: forgotPasswordUsecase,
+    private resetPasswordUseCase: ResetPasswordUseCase,
+    private loginUsecase: LoginUsecase,
+    private logoutUsecase:LogoutUsecase
+  ) {}
+
+  signup = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const { user } = req.body
+      const { user } = req.body;
       if (!user) {
-        throw new Error('Missing required fields');
+        throw new AppError(400, 'Missing required fields');
       }
       const newUser = await this.SignupUsecase.executeUser(user);
       successResponse(res, 201, 'User signup successful', newUser);
     } catch (error) {
-       next(error)
+      next(error);
+    }
+  };
+
+  sendOTP = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const { email } = req.body;
+      if (!email) throw new AppError(400, 'email required');
+      await this.SendOTPUsecase.execute(email);
+      successResponse(res, 200, 'OTP sent to given email');
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  verifyOTP = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const { otp, email } = req.body
+      if (!otp || !email) {
+        throw new AppError(400,"email and otp required")
+      }
+      await this.verifyOtpUseCase.execute(email, otp);
+      successResponse(res, 200, 'OTP verified successfully');
+
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  forgotPassword =async(req:Request,res:Response,next:NextFunction):Promise<void>=> {
+    try {
+      const { email } = req.body
+      if (!email) throw new AppError(400, "email required")
+      
+      await this.forgotpassword.execute(email)
+      successResponse(res,200,'password reset link send to the mail')
+    } catch (error) {
+      next(error)
     }
   }
+
+
+  resetPassword=async (req:Request,res:Response,next:NextFunction):Promise<void>=> {
+    try {
+      const { email, token, newPassword } = req.body
+      if (!email || !token || !newPassword) throw new AppError(400, "email,token and new password are required")
+      await this.resetPasswordUseCase.execute(email, token, newPassword)
+      successResponse(res,200,'password reset successful.Please Login')
+
+    } catch (error) {
+      next(error)
+    }
+  }
+
+
+  userlogin = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const dto:LoginDTO = req.body
+      const authResponse=await this.loginUsecase.executeUser(dto)
+
+      res.cookie('access_token', authResponse.accessToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 15 * 60 * 1000, 
+      });
+
+      res.cookie('refresh_token', authResponse.refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: 7 * 24 * 60 * 60 * 1000, 
+      });
+      
+      const user ={ id: authResponse.id,
+        name: authResponse.name,
+        email: authResponse.email,
+        type:authResponse.type}
+
+      successResponse(res,200,"Login Successful",user)
+    } catch (error) {
+       next(error)
+    }
+    
+  }
+
+  logout = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      res.clearCookie('access_token');
+      res.clearCookie('refresh_token');
+      const refreshToken = req.cookies['refresh_token'];
+      if (refreshToken) {
+        await this.logoutUsecase.execute(refreshToken)
+      }
+      
+      successResponse(res, 200, 'logged out');
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  //****************************************  Neighbor ************************/
+
+
+  sigupNeighbor = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const { neighbor } = req.body
+      const newNeighbor = await this.SignupUsecase.executeNeighbor(neighbor);
+      successResponse(res, 201, 'User signup successful', newNeighbor);
+    } catch (error) {
+      next(error)
+    }
+    
+  }
+
+  loginNeighbor = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const dto:LoginDTO = req.body
+      const authResponse=await this.loginUsecase.executeNeighbor(dto)
+
+      res.cookie('access_token', authResponse.accessToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 15 * 60 * 1000, 
+      });
+
+      res.cookie('refresh_token', authResponse.refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: 7 * 24 * 60 * 60 * 1000, 
+      });
+      
+      const neighbor ={ id: authResponse.id,
+        name: authResponse.name,
+        email: authResponse.email,
+        type:authResponse.type}
+
+      successResponse(res,200,"Login Successful",neighbor)
+      
+    } catch (error) {
+      next(error)
+    }
+  }
+
 }
-
-
-
 
 
 

@@ -1,10 +1,15 @@
 export class User {
+    private _id(_id: any, arg1: string) {
+      throw new Error("Method not implemented.");
+    }
     constructor(
       public id: string |undefined,
       public name: string,
       public email: string,
       public phone: string,
       public password: string,
+      otp?: string,
+      otpExpiresAt?: number,
       // public address?: {
       //   street: string;
       //   city: string;

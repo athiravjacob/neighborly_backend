@@ -6,20 +6,24 @@ import { errorHandler } from "./shared/utils/errorHandler";
 import cors from 'cors'
 import setupAuthRoutes from "./presentation/routers/authRoute";
 import { Container } from "./di/container";
+import { AppError } from "./shared/utils/errors";
+import setupNeighborRoutes from "./presentation/routers/neighborRoute";
 
 const app = express()
 app.use(express.json())
 connectDB()
-const PORT = process.env.PORT || 3000
+const PORT = process.env.PORT 
+if (!PORT) throw new AppError(500, "port not available")
+
 app.use(cors({
-    origin: 'http://localhost:5173', 
+    origin: process.env.ORGIN_URI, 
     methods: ['GET', 'POST','PUT','PATCH'], 
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  // allowedHeaders: ['Content-Type', 'Authorization'],
     credentials:true
 }));
   
 app.use('/auth', setupAuthRoutes(Container.authController));
-
+app.use('/neighbor', setupNeighborRoutes(Container.neighborController));
 app.use(errorHandler)
 
 app.listen(PORT, () => {

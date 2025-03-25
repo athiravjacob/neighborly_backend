@@ -1,16 +1,20 @@
 import mongoose, { Schema, Document } from "mongoose";
 
-export interface Iotp extends Document{
+export interface IOtp extends Document {
     email: string;
     otp: string;
-    expiresAt:Date
+    expiresAt: Date;
 }
 
-const otpSchema = new Schema<Iotp>({
-    email: String,
-    otp: String,
-    expiresAt:Date
-})
-otpSchema.index({expiresAt:1},{expireAfterSeconds:0})
-const otpModel = mongoose.model<Iotp>('Otp', otpSchema)
-export default otpModel
+const otpSchema = new Schema<IOtp>({
+    email: { type: String, required: true, unique: true },
+    otp: { type: String, required: true },
+    expiresAt: { type: Date, required: true },
+}, {
+    timestamps: true 
+});
+
+otpSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
+
+const otpModel = mongoose.model<IOtp>('Otp', otpSchema);
+export default otpModel;
