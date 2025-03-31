@@ -21,7 +21,7 @@ export class Neighbor {
       public skills: {
         category: string;
         subcategories: string[];
-        pricePerHour: number;
+        hourlyRate: number;
         description: string;
       }[] = [],
       public availability: {

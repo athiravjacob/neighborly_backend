@@ -6,6 +6,10 @@ import { TimeslotDTO } from "../../shared/types/TimeslotDTO";
 import { neighborModel } from "../model/neigborModel";
 
 export class neighborRepository implements INeighborRepository{
+  async getSkills(id: string): Promise<SkillsDTO[] | null> {
+    const skills = await neighborModel.findById(id, { skills: 1 })
+    return skills ?  JSON.parse(JSON.stringify(skills.skills)) : null
+  }
    
 
   async getavailableTimeslot(id: string): Promise<TimeslotDTO[] | null> {
@@ -25,29 +29,40 @@ export class neighborRepository implements INeighborRepository{
         { 'availableLocation': location, updatedAt: new Date() },
         { upsert: true, new: true }
       );
+  }
+  
+  // ********** Add Skills for neighbor
+  async saveSkills(id: string, skill: SkillsDTO): Promise<SkillsDTO[]> {
+    console.log('Repository: Saving skill for ID:', id);
+    console.log('Repository: Skill data:', JSON.stringify(skill, null, 2));
+  
+    const skillData = {
+      category: skill.category,
+      subcategories: skill.subcategories, 
+      hourlyRate: skill.hourlyRate, 
+      description: skill.description
+    };
+  
+    const neighbor = await neighborModel.findByIdAndUpdate(
+      id,
+      { $push: { skills: skillData } }, // Append correctly structured skill
+      { new: true, runValidators: true }
+    ).exec();
+  
+    if (!neighbor) {
+      console.log('Repository: Neighbor not found for ID:', id);
+      throw new Error('Neighbor not found');
     }
-    async saveSkills(
-        id: string,
-        skill: SkillsDTO
-      ): Promise<Neighbor> {
-        console.log('Repository: Saving skill for ID:', id);
-        console.log('Repository: Skill data:', JSON.stringify(skill, null, 2));
-    
-        const neighbor = await neighborModel.findByIdAndUpdate(
-          id,
-          { $push: { skills: skill } }, // Append the single skill to the skills array
-          { new: true, runValidators: true }
-        ).exec();
-    
-        if (!neighbor) {
-          console.log('Repository: Neighbor not found for ID:', id);
-          throw new Error('Neighbor not found');
-        }
-    
-        console.log('Repository: Updated skills:', JSON.stringify(neighbor.skills, null, 2));
-        return neighbor as unknown as Neighbor;
-    }
-    
+  
+    console.log('Repository: Updated skills:', JSON.stringify(neighbor.skills, null, 2));
+    return neighbor.skills.map((s) => ({
+      id:s._id.toString(),
+      category: s.category,
+      subcategories: s.subcategories,
+      hourlyRate: s.hourlyRate,
+      description: s.description
+    }));  }
+  
 
     async saveAvailabilty(
         id: string,

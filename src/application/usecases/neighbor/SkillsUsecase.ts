@@ -7,7 +7,11 @@ export class SkillsUsecase{
         private neighborRepository :INeighborRepository
     ) { }
     
-    async saveSkills(id:string,skill: SkillsDTO): Promise<Neighbor>{
+    async saveSkills(id:string,skill: SkillsDTO): Promise<SkillsDTO[]>{
         return await this.neighborRepository.saveSkills(id,skill)
+    }
+
+    async getSkills(id: string): Promise<SkillsDTO[] | null>{
+        return await this.neighborRepository.getSkills(id)
     }
 }

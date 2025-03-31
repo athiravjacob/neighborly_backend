@@ -25,7 +25,7 @@ const neighborSchema = new Schema({
     skills: [{
     category: { type: String, required: true },
     subcategories: [{ type: String, required: true }],
-    pricePerHour: { type: Number, required: true },
+    hourlyRate: { type: Number, required: true },
     description: { type: String, required: true }
   }],
   availability: [{

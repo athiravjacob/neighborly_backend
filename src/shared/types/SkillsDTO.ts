@@ -1,6 +1,7 @@
 export interface SkillsDTO{
+    _id?: string;
     category: string,
-    subCategory: string[],
-    pricePerHour: number,
+    subcategories: string[],
+    hourlyRate: number,
     description:string
 }

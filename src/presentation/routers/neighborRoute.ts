@@ -8,7 +8,8 @@ export default function setupNeighborRoutes(neighborController: NeighborControll
     router.post('/skills', neighborController.addSkills)
     router.post('/location', neighborController.availableLocation)
     
-    router.get('/availability/:id',neighborController.getTimeslots)
+    router.get('/availability/:id', neighborController.getTimeslots)
+    router.get('/skills/:id',neighborController.getSkills)
     
     return router
 }

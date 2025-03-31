@@ -5,6 +5,7 @@ import { SkillsUsecase } from "../../application/usecases/neighbor/SkillsUsecase
 import { LocationUsecase } from "../../application/usecases/neighbor/LocaionUsecase";
 import { TimeslotDTO } from "../../shared/types/TimeslotDTO";
 import { TimeslotUsecase } from "../../application/usecases/neighbor/TimeslotUsecase";
+import { SkillsDTO } from "../../shared/types/SkillsDTO";
 
 export class NeighborController {
     constructor(
@@ -14,9 +15,10 @@ export class NeighborController {
         private getTimeslotUsecase:TimeslotUsecase
     ) { }
 
+    //*****************Post available data and time****************/
+
     availableTimeslots = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            console.log("hello")
             const { neighborId, availability } = req.body
             console.groupCollapsed(req.body)
             const updatedNeighbor = await this.availabilityUseCase.execute(neighborId,availability)
@@ -26,17 +28,20 @@ export class NeighborController {
         }
     }
 
+    //**********************Add New Skill**************** */
     addSkills = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const { id,skill } = req.body
-            await this.skillsUseCase.saveSkills(id, skill )
-            successResponse(res,200,"skills Updated")
+            const { neighborId,skill } = req.body
+            const skills = await this.skillsUseCase.saveSkills(neighborId, skill)
+            console.log(skills)
+            successResponse(res,200,"skills Updated",skills)
         } catch (error) {
             next(error)
         }
 
     }
 
+    //*************************Add Service Location***************************** */
     availableLocation = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { id, location } = req.body
@@ -47,11 +52,24 @@ export class NeighborController {
         }
     }
 
+    //*************************Fetch AVAILABLE date and time************************************** */
     getTimeslots = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const id = req.params.id
             const data = await this.getTimeslotUsecase.getTimeslots(id)
             successResponse(res,200,"fetched neighbors available timeslots",data)
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    //**************************** Fetch Skills ************************** */
+    getSkills = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const id = req.params.id
+            const data = await this.skillsUseCase.getSkills(id)
+            console.log(data)
+            successResponse(res,200,"fetched neighbors skills",data)
         } catch (error) {
             next(error)
         }
