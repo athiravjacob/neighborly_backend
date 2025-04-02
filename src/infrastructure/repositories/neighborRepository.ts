@@ -1,11 +1,17 @@
 import { Neighbor } from "../../domain/entities/Neighbor";
 import { INeighborRepository } from "../../domain/interface/repositories/INeighborRepository";
-import { LocationDetailsDTO } from "../../shared/types/LocationDetailsDTO";
+import { LocationDetailsDTO, locationDTO } from "../../shared/types/LocationDetailsDTO";
 import { SkillsDTO } from "../../shared/types/SkillsDTO";
 import { TimeslotDTO } from "../../shared/types/TimeslotDTO";
 import { neighborModel } from "../model/neigborModel";
 
 export class neighborRepository implements INeighborRepository{
+  //****************** fetch service location*********************** */
+  async getServiceLocation(id: string): Promise<locationDTO> {
+    const location = await neighborModel.findById(id, { availableLocation: 1 })
+    return location ?  JSON.parse(JSON.stringify(location.availableLocation)) : null  }
+
+
   async getSkills(id: string): Promise<SkillsDTO[] | null> {
     const skills = await neighborModel.findById(id, { skills: 1 })
     return skills ?  JSON.parse(JSON.stringify(skills.skills)) : null
@@ -22,14 +28,31 @@ export class neighborRepository implements INeighborRepository{
   }
   
   
+  //************ add service location
 
-    async updateLocation(id: string, updatedLocation: LocationDetailsDTO): Promise<void> {
-      await neighborModel.findByIdAndUpdate(
+  async updateLocation(id: string, updatedLocation: LocationDetailsDTO): Promise<locationDTO> {
+    console.log(id)
+    const neighbor = await neighborModel.findByIdAndUpdate(
         id,
-        { 'availableLocation': location, updatedAt: new Date() },
-        { upsert: true, new: true }
-      );
-  }
+        { availableLocation: updatedLocation, updatedAt: new Date() },
+        { upsert: true ,new:true}
+    ).exec();
+
+    if (!neighbor || !neighbor.availableLocation) {
+        throw new Error("Location update failed or not found");
+    }
+
+    const { city, radius, coordinates } = neighbor.availableLocation;
+
+    return {
+        city: city ?? "", // Ensure city is always a string
+        radius: radius ?? 0, // Ensure radius is always a number
+        coordinates: (coordinates?.coordinates?.length === 2 
+            ? (coordinates.coordinates as [number, number]) 
+            : [0, 0]) // Ensure coordinates are a tuple
+    };
+}
+
   
   // ********** Add Skills for neighbor
   async saveSkills(id: string, skill: SkillsDTO): Promise<SkillsDTO[]> {
@@ -45,7 +68,7 @@ export class neighborRepository implements INeighborRepository{
   
     const neighbor = await neighborModel.findByIdAndUpdate(
       id,
-      { $push: { skills: skillData } }, // Append correctly structured skill
+      { $push: { skills: skillData } }, 
       { new: true, runValidators: true }
     ).exec();
   
@@ -64,6 +87,7 @@ export class neighborRepository implements INeighborRepository{
     }));  }
   
 
+  //***************** schedule date and time************************** */
     async saveAvailabilty(
         id: string,
         availability: { date: Date; timeSlots: { startTime: number; endTime: number; }[]; }[]

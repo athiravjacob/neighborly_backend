@@ -6,6 +6,7 @@ import { LocationUsecase } from "../../application/usecases/neighbor/LocaionUsec
 import { TimeslotDTO } from "../../shared/types/TimeslotDTO";
 import { TimeslotUsecase } from "../../application/usecases/neighbor/TimeslotUsecase";
 import { SkillsDTO } from "../../shared/types/SkillsDTO";
+import { locationDTO } from "../../shared/types/LocationDetailsDTO";
 
 export class NeighborController {
     constructor(
@@ -44,9 +45,9 @@ export class NeighborController {
     //*************************Add Service Location***************************** */
     availableLocation = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const { id, location } = req.body
-            await this.serviceLocationUseCase.saveLocation( id, location )
-            successResponse(res,200,"service location details saved")
+            const { neighborId, location } = req.body
+            const serviceLocation = await this.serviceLocationUseCase.saveLocation( neighborId, location )
+            successResponse(res,200,"service location details saved",serviceLocation)
         } catch (error) {
             next(error)
         }
@@ -68,6 +69,18 @@ export class NeighborController {
         try {
             const id = req.params.id
             const data = await this.skillsUseCase.getSkills(id)
+            console.log(data)
+            successResponse(res,200,"fetched neighbors skills",data)
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    //**************************** Fetch sevice location ************************** */
+    fetchLocation = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const id = req.params.id
+            const data = await this.serviceLocationUseCase.getServiceLocation(id)
             console.log(data)
             successResponse(res,200,"fetched neighbors skills",data)
         } catch (error) {

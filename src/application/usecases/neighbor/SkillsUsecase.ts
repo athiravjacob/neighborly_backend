@@ -3,6 +3,7 @@ import { INeighborRepository } from "../../../domain/interface/repositories/INei
 import { SkillsDTO } from "../../../shared/types/SkillsDTO";
 
 export class SkillsUsecase{
+   
     constructor(
         private neighborRepository :INeighborRepository
     ) { }
