@@ -14,7 +14,7 @@ const neighborSchema = new Schema({
   // },
   // aboutMe: { type: String, default: '' },
   availableLocation: {
-    city: { type: String },
+    city: { type: String ,index:true},
     radius: { type: Number },
     coordinates: { 
       type: { type: String, enum: ['Point'], default: 'Point' }, 
@@ -37,6 +37,7 @@ const neighborSchema = new Schema({
   // verificationStatus: { type: String, enum: ['pending', 'approved', 'rejected'], default: 'pending' }
 }, { timestamps: true });
 
-neighborSchema.index({'availableLocation.coordinates':'2dsphere'})
-
+neighborSchema.index(
+  { "availableLocation.city": 1, "skills.subcategories": 1 }
+);
 export const neighborModel = model('Neighbor', neighborSchema);

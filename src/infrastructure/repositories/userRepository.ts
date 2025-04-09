@@ -4,6 +4,18 @@ import { User } from "../../domain/entities/User";
 import { AppError } from "../../shared/utils/errors";
 
 export class UserRepository implements IUserRepository {
+  async findUserByGoogleId(uid: string): Promise<User | null> {
+    const userDoc = await UserModel.findOne({ googleId: uid })
+    if (!userDoc) return null;
+    return new User(
+      userDoc._id.toString(),
+      userDoc.name,
+      userDoc.email,
+      userDoc.password || " ",
+      userDoc.phone || " ",
+
+    );
+  }
   
 
   async resetPassword(email: string, token: string, newPassword: string): Promise<void> {
@@ -49,8 +61,9 @@ export class UserRepository implements IUserRepository {
       userDoc._id.toString(),
       userDoc.name,
       userDoc.email,
-      userDoc.phone,
-      userDoc.password
+      userDoc.password || "",
+      userDoc.phone || "",
+
     );
   }
 
@@ -58,15 +71,16 @@ export class UserRepository implements IUserRepository {
     const userDoc = await UserModel.create({
       name: user.name,
       email: user.email,
+      password: user.password ||null,
       phone: user.phone,
-      password: user.password,
+      googleId:user.googleId || null
     });
     return new User(
       userDoc._id.toString(),
       userDoc.name,
       userDoc.email,
-      userDoc.phone,
-      userDoc.password
+      userDoc.password||"",
+      userDoc.phone || "",
     )
   }
 

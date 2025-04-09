@@ -10,6 +10,8 @@ import { LoginUsecase } from "../../application/usecases/auth/Login";
 import { LoginDTO } from "../../shared/types/LoginDTO";
 import { LogoutUsecase } from "../../application/usecases/auth/Logout";
 import { Neighbor } from "../../domain/entities/Neighbor";
+import { setAuthCookies } from "../utils/cookieHelper";
+import admin from "../../infrastructure/firebase/firebaseAdmin";
 
 export class AuthController {
   constructor(
@@ -88,34 +90,30 @@ export class AuthController {
 
   userlogin = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const dto:LoginDTO = req.body
-      const authResponse=await this.loginUsecase.executeUser(dto)
-
-      res.cookie('access_token', authResponse.accessToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        maxAge: 15 * 60 * 1000, 
-      });
-
-      res.cookie('refresh_token', authResponse.refreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        maxAge: 7 * 24 * 60 * 60 * 1000, 
-      });
-      
-      const user ={ id: authResponse.id,
-        name: authResponse.name,
-        email: authResponse.email,
-        type:authResponse.type}
-
-      successResponse(res,200,"Login Successful",user)
+      const dto: LoginDTO = req.body;
+      console.log(dto)
+      const authResponse = await this.loginUsecase.executeUser(dto);
+      setAuthCookies(res, authResponse.accessToken, authResponse.refreshToken);
+      const user = { id: authResponse.id, name: authResponse.name, email: authResponse.email, type: authResponse.type };
+      successResponse(res, 200, "Login Successful", user);
     } catch (error) {
-       next(error)
+      next(error);
     }
-    
-  }
+  };
+
+  googleLogin = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const { idToken } = req.body;
+      if (!idToken) throw new Error('Google idToken is required');
+      const decodedToken = await admin.auth().verifyIdToken(idToken);
+      const authResponse = await this.loginUsecase.loginWithGoogle(decodedToken.uid,decodedToken.email||"",decodedToken.name,decodedToken.phone_number||"");
+      setAuthCookies(res, authResponse.accessToken, authResponse.refreshToken);
+      const user = { id: authResponse.id, name: authResponse.name, email: authResponse.email, type: authResponse.type };
+      successResponse(res, 200, "Google Login Successful", user);
+    } catch (error) {
+      next(error);
+    }
+  };
 
   logout = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {

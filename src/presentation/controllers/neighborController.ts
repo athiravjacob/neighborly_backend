@@ -1,19 +1,26 @@
 import {Request,Response, NextFunction } from "express";
-import { successResponse } from "../../shared/utils/responseHandler";
+import { errorResponse, successResponse } from "../../shared/utils/responseHandler";
 import { SaveAvailability } from "../../application/usecases/neighbor/SaveAvailbility";
 import { SkillsUsecase } from "../../application/usecases/neighbor/SkillsUsecase";
-import { LocationUsecase } from "../../application/usecases/neighbor/LocaionUsecase";
+import { LocationUsecase } from "../../application/usecases/neighbor/LocationUsecase";
 import { TimeslotDTO } from "../../shared/types/TimeslotDTO";
 import { TimeslotUsecase } from "../../application/usecases/neighbor/TimeslotUsecase";
 import { SkillsDTO } from "../../shared/types/SkillsDTO";
 import { locationDTO } from "../../shared/types/LocationDetailsDTO";
+import { NeighborsListUsecase } from "../../application/usecases/neighbor/NeighborsListUsecase";
+
+interface NeighborQuery {
+    city?: string;
+    subCategory?: string;
+  }
 
 export class NeighborController {
     constructor(
         private availabilityUseCase: SaveAvailability,
         private skillsUseCase: SkillsUsecase,
         private serviceLocationUseCase: LocationUsecase,
-        private getTimeslotUsecase:TimeslotUsecase
+        private getTimeslotUsecase: TimeslotUsecase,
+        private neighborsList:NeighborsListUsecase
     ) { }
 
     //*****************Post available data and time****************/
@@ -83,6 +90,41 @@ export class NeighborController {
             const data = await this.serviceLocationUseCase.getServiceLocation(id)
             console.log(data)
             successResponse(res,200,"fetched neighbors skills",data)
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    //********************************* List of available neighbors ***************************/
+
+    availableNeighbors = async (req: Request<{},{},{},NeighborQuery>, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const { city, subCategory } = req.query
+            if (!city || !subCategory) {
+                res.status(400).json({ success: false, message: "City and sub category is required" });
+                return;
+              }
+            const data = await this.neighborsList.getNeighborsList(city, subCategory)
+            successResponse(res,200,"fetched available neighbors ",data)
+
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    checkServiceAvailability = async (req: Request<{},{},{},NeighborQuery>, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const {city} = req.query
+            if (!city) {
+                res.status(400).json({ success: false, message: "City is required" });
+                return
+            }
+            const data = await this.neighborsList.checkServiceLocation(city)
+            if (data === true) {
+                successResponse(res,200,"Service available",data)
+            } else
+                errorResponse(res, 400, "No Service available in this area ")
+
         } catch (error) {
             next(error)
         }

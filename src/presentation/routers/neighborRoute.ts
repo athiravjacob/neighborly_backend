@@ -10,7 +10,11 @@ export default function setupNeighborRoutes(neighborController: NeighborControll
     
     router.get('/availability/:id', neighborController.getTimeslots)
     router.get('/skills/:id', neighborController.getSkills)
-    router.get('/location/:id',neighborController.fetchLocation)
+    router.get('/location/:id', neighborController.fetchLocation)
+    
+
+    router.get('/available-neighbors', neighborController.availableNeighbors)
+    router.get('/check-service-availability',neighborController.checkServiceAvailability)
     
     return router
 }

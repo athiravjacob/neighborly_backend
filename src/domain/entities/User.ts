@@ -1,22 +1,14 @@
 export class User {
-    private _id(_id: any, arg1: string) {
-      throw new Error("Method not implemented.");
-    }
+   
     constructor(
       public id: string |undefined,
       public name: string,
       public email: string,
+      public password: string|null,
       public phone: string,
-      public password: string,
-      otp?: string,
-      otpExpiresAt?: number,
-      // public address?: {
-      //   street: string;
-      //   city: string;
-      //   state: string;
-      //   pincode: string;
-      //   coordinates: { type: 'Point'; coordinates: [number, number] };
-      // }
+      public googleId?:string,
+      public otp?: string,
+      public otpExpiresAt?: number,
     ) {}
   }
 

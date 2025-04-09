@@ -17,8 +17,10 @@ export class LoginUsecase{
     
 
     async executeUser(dto: LoginDTO): Promise<AuthResponseDTO> {
-        const user = await this.userRepository.findUserByEmail(dto.email);
-        if (!user || !(await this.authService.comparePassword(dto.password, user.password))) {
+      const user = await this.userRepository.findUserByEmail(dto.email);
+      console.log(user,"login")
+      if (!user || !user.password || !(await this.authService.comparePassword(dto.password, user.password))) {
+          console.log("some prob")
           throw new AppError(401, 'Invalid credentials');
           
       }
@@ -38,6 +40,47 @@ export class LoginUsecase{
       };
         
   }
+
+  async loginWithGoogle(uid: string, email: string,name: string,phone:string): Promise<AuthResponseDTO> {
+    let user = await this.userRepository.findUserByGoogleId(uid);
+    let id = user?.id
+    if (!user) {
+      user = new User(
+        undefined,  
+        name,
+        email,
+        "",  
+        phone, 
+        uid,
+        undefined,
+        undefined,
+      );
+      
+      const newUser = await this.userRepository.createUser(user);
+      
+       id = newUser.id;
+    } 
+    
+  
+    
+    const accessToken = this.authService.generateAccessToken(id!, 'user');
+    const refreshToken = this.authService.generateRefreshToken(id!, 'user');
+  
+    // Store the refresh token in the token repository
+    await this.tokenRepository.storeRefreshToken(id!, refreshToken, 'user');
+  
+    // Return the response object
+    return {
+      id: id!,
+      name: user.name,
+      email: user.email,
+      accessToken,
+      refreshToken,
+      type: 'user',
+    };
+  }
+  
+  
 
   async executeNeighbor(dto: LoginDTO): Promise<AuthResponseDTO> {
     const neighbor = await this.neighborRepository.findNeighborByEmail(dto.email);

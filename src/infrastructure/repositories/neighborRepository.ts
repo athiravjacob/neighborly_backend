@@ -1,11 +1,69 @@
 import { Neighbor } from "../../domain/entities/Neighbor";
 import { INeighborRepository } from "../../domain/interface/repositories/INeighborRepository";
 import { LocationDetailsDTO, locationDTO } from "../../shared/types/LocationDetailsDTO";
+import { NeighborInfo } from "../../shared/types/NeighborsDTO";
 import { SkillsDTO } from "../../shared/types/SkillsDTO";
 import { TimeslotDTO } from "../../shared/types/TimeslotDTO";
+import { errorHandler } from "../../shared/utils/errorHandler";
 import { neighborModel } from "../model/neigborModel";
 
 export class neighborRepository implements INeighborRepository{
+
+  async checkServiceAvailability(city: string): Promise<Boolean> {
+    try {
+      console.log(city)
+      const exists = await neighborModel.exists({ "availableLocation.city": city })
+      return !!exists
+            
+    } catch (error) {
+      if (error instanceof Error) {
+        throw { statusCode: 500, message: error.message || "Error checking service availablity" };
+    } else {
+        throw { statusCode: 500, message: "An unknown error occurred while checking service availablity" };
+    }
+    }
+  }
+
+  //****************** Get Available Neighbors List ************** */
+  async getAvailableNeighborsList(city: string, subCategory: string): Promise<NeighborInfo[]> {
+    try {
+      console.log(city,subCategory,"neighb Repo")
+      const neighbors = await neighborModel.aggregate([
+        {
+          $match: {
+            "availableLocation.city": city,
+            "skills.subcategories": subCategory
+          }
+        },
+        {
+          $addFields: {
+            skills: {
+              $filter: {
+                input: "$skills",
+                as: "skill",
+                cond: { $in: [subCategory, "$$skill.subcategories"] }
+              }
+            }
+          }
+        },
+        {
+          $project: {
+            password: 0
+          }
+        }
+      ]);
+      if(neighbors.length === 0) return []
+      
+        return neighbors;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw { statusCode: 500, message: error.message || "Error fetching available neighbors" };
+    } else {
+        throw { statusCode: 500, message: "An unknown error occurred while fetching available neighbors" };
+    }
+    }
+}
+
   //****************** fetch service location*********************** */
   async getServiceLocation(id: string): Promise<locationDTO> {
     const location = await neighborModel.findById(id, { availableLocation: 1 })

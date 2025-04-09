@@ -1,3 +1,26 @@
+import { Router } from "express";
+import { userController } from "../controllers/userController";
+
+export default function setupUserRoutes(userController: userController): Router{
+    const router = Router()
+    router.post('/showTasks/:id', userController.showTasks)
+    return router
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // import { Router } from "express";
 // import  {getUser, updateBasics,updateAddress, verifyGovtIdController}  from "../controllers/userController";
 // import authMiddleware from "../middleware/authMiddleware";

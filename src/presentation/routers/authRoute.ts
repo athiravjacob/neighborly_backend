@@ -13,6 +13,7 @@ export default function setupAuthRoutes(authController: AuthController): Router 
     router.post('/reset-password',authController.resetPassword)
     
     router.post('/login',validateRequest(loginValidSchema),authController.userlogin)
+    router.post('/google-login',authController.googleLogin)
     router.post('/logout',authController.logout)
     
   

@@ -17,10 +17,11 @@ export class LocationUsecase{
             coordinates: [lng, lat] as [number, number], 
         };
         const Location = { city, radius, coordinates: geoCoordinates };
-        return await this.neighborRepository.updateLocation(id,Location);
+        return await this.neighborRepository.updateLocation(id, Location);
     }
 
     async getServiceLocation(id: string): Promise<locationDTO>{
         return await this.neighborRepository.getServiceLocation(id)
+
     }
 }

@@ -15,8 +15,12 @@ import { neighborRepository } from "../infrastructure/repositories/neighborRepos
 import { SaveAvailability } from "../application/usecases/neighbor/SaveAvailbility";
 import { NeighborController } from "../presentation/controllers/neighborController";
 import { SkillsUsecase } from "../application/usecases/neighbor/SkillsUsecase";
-import { LocationUsecase } from "../application/usecases/neighbor/LocaionUsecase";
+import { LocationUsecase } from "../application/usecases/neighbor/LocationUsecase";
 import { TimeslotUsecase } from "../application/usecases/neighbor/TimeslotUsecase";
+import { NeighborsListUsecase } from "../application/usecases/neighbor/NeighborsListUsecase";
+import { taskRepository } from "../infrastructure/repositories/taskRepository";
+import { TaskUsecase } from "../application/usecases/task/TaskUsecase";
+import { TaskController } from "../presentation/controllers/taskController";
 
 export class Container {
   
@@ -48,10 +52,19 @@ export class Container {
   public static skillsUsecase = new SkillsUsecase(Container.neighborRepository)
   public static timeslotUsecase = new TimeslotUsecase(Container.neighborRepository)
   public static locationUsecase = new LocationUsecase(Container.neighborRepository)
+  public static neighborListUsecae = new NeighborsListUsecase(Container.neighborRepository)
   public static neighborController = new NeighborController(
     Container.saveAvailbleTimeSlot,
     Container.skillsUsecase,
     Container.locationUsecase,
-    Container.timeslotUsecase
+    Container.timeslotUsecase,
+    this.neighborListUsecae
   )
+
+
+
+  public static taskRepository = new taskRepository()
+  public static taskUsecase = new TaskUsecase(Container.taskRepository)
+  public static taskController = new TaskController(Container.taskUsecase)
+
   }

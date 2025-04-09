@@ -18,6 +18,8 @@ export class AuthService implements IAuthService {
   }
 
   async comparePassword(password: string, hashedPassword: string): Promise<boolean> {
-    return bcrypt.compare(password, hashedPassword);
+    const passcompare =await bcrypt.compare(password, hashedPassword);
+    console.log(passcompare, "pass compare")
+    return passcompare
   }
 }

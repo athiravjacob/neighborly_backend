@@ -8,6 +8,7 @@ import setupAuthRoutes from "./presentation/routers/authRoute";
 import { Container } from "./di/container";
 import { AppError } from "./shared/utils/errors";
 import setupNeighborRoutes from "./presentation/routers/neighborRoute";
+import setupTaskToutes from "./presentation/routers/taskRoute";
 
 const app = express()
 app.use(express.json())
@@ -24,6 +25,7 @@ app.use(cors({
   
 app.use('/auth', setupAuthRoutes(Container.authController));
 app.use('/neighbor', setupNeighborRoutes(Container.neighborController));
+app.use('/task',setupTaskToutes(Container.taskController))
 app.use(errorHandler)
 
 app.listen(PORT, () => {
