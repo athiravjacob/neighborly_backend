@@ -9,13 +9,16 @@ import { Container } from "./di/container";
 import { AppError } from "./shared/utils/errors";
 import setupNeighborRoutes from "./presentation/routers/neighborRoute";
 import setupTaskToutes from "./presentation/routers/taskRoute";
+import setupUserRoutes from "./presentation/routers/userRoute";
+import cookieParser from 'cookie-parser';
+import verifyToken from "./presentation/middleware/authMiddleware";
 
 const app = express()
 app.use(express.json())
 connectDB()
 const PORT = process.env.PORT 
 if (!PORT) throw new AppError(500, "port not available")
-
+app.use(cookieParser());
 app.use(cors({
     origin: process.env.ORGIN_URI, 
     methods: ['GET', 'POST','PUT','PATCH'], 
@@ -23,9 +26,12 @@ app.use(cors({
     credentials:true
 }));
   
+app.use(cookieParser());
+
 app.use('/auth', setupAuthRoutes(Container.authController));
-app.use('/neighbor', setupNeighborRoutes(Container.neighborController));
-app.use('/task',setupTaskToutes(Container.taskController))
+app.use('/neighbor', verifyToken(['neighbor']), setupNeighborRoutes(Container.neighborController));
+app.use('/task', verifyToken(['user', 'neighbor']), setupTaskToutes(Container.taskController));
+app.use('/user', verifyToken(['user']), setupUserRoutes(Container.userController));
 app.use(errorHandler)
 
 app.listen(PORT, () => {

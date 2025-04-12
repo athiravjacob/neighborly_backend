@@ -3,7 +3,8 @@ import { userController } from "../controllers/userController";
 
 export default function setupUserRoutes(userController: userController): Router{
     const router = Router()
-    router.post('/showTasks/:id', userController.showTasks)
+    router.get('/showTasks/:id', userController.showTasks)
+
     return router
 }
 

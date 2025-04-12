@@ -12,6 +12,8 @@ import { LogoutUsecase } from "../../application/usecases/auth/Logout";
 import { Neighbor } from "../../domain/entities/Neighbor";
 import { setAuthCookies } from "../utils/cookieHelper";
 import admin from "../../infrastructure/firebase/firebaseAdmin";
+import { ref } from "joi";
+import { refreshTokenUsecase } from "../../application/usecases/auth/RefreshToken";
 
 export class AuthController {
   constructor(
@@ -21,7 +23,8 @@ export class AuthController {
     private forgotpassword: forgotPasswordUsecase,
     private resetPasswordUseCase: ResetPasswordUseCase,
     private loginUsecase: LoginUsecase,
-    private logoutUsecase:LogoutUsecase
+    private logoutUsecase: LogoutUsecase,
+    private refreshTokenUsecase:refreshTokenUsecase
   ) {}
 
   signup = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -74,6 +77,17 @@ export class AuthController {
     }
   }
 
+  checkCurrentpassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const { currentpassword, newPassword } = req.body
+      await this.resetPasswordUseCase.checkPassword(currentpassword, newPassword)
+      successResponse(res,200,'password reset successful.Please Login')
+
+    } catch (error) {
+      
+    }
+   }
+
 
   resetPassword=async (req:Request,res:Response,next:NextFunction):Promise<void>=> {
     try {
@@ -125,6 +139,22 @@ export class AuthController {
       }
       
       successResponse(res, 200, 'logged out');
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  refreshToken = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const refreshToken = req.cookies?.refresh_token
+      if (!refreshToken) {
+        res.status(400).json({ error: 'Refresh token is required' })
+        return
+      }
+      const { new_accessToken, new_refreshToken } = await this.refreshTokenUsecase.execute(refreshToken)
+      setAuthCookies(res, new_accessToken, new_refreshToken);
+
+      successResponse(res,200,"refesh token ")
     } catch (error) {
       next(error)
     }

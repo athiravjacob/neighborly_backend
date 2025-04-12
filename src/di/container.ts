@@ -21,6 +21,8 @@ import { NeighborsListUsecase } from "../application/usecases/neighbor/Neighbors
 import { taskRepository } from "../infrastructure/repositories/taskRepository";
 import { TaskUsecase } from "../application/usecases/task/TaskUsecase";
 import { TaskController } from "../presentation/controllers/taskController";
+import { userController } from "../presentation/controllers/userController";
+import { refreshTokenUsecase } from "../application/usecases/auth/RefreshToken";
 
 export class Container {
   
@@ -37,6 +39,7 @@ export class Container {
     public static resetPasswordUseCase = new ResetPasswordUseCase(Container.userRepository,Container.authService)
     public static forgotPassword = new forgotPasswordUsecase(Container.userRepository,Container.emailService)
     public static sendotpUsecase = new SendOtpUsecase(Container.OTPRepository,Container.emailService)
+    public static refreshTokenUsecase  = new refreshTokenUsecase(Container.tokenRepository,Container.authService)
     public static authController = new AuthController(
       Container.signupUseCase,
       Container.sendotpUsecase,
@@ -44,7 +47,8 @@ export class Container {
       Container.forgotPassword,
       Container.resetPasswordUseCase,
       Container.loginUseCase,
-      Container.logoutUsecase
+      Container.logoutUsecase,
+      Container.refreshTokenUsecase
   );
   
 
@@ -66,5 +70,10 @@ export class Container {
   public static taskRepository = new taskRepository()
   public static taskUsecase = new TaskUsecase(Container.taskRepository)
   public static taskController = new TaskController(Container.taskUsecase)
+
+
+
+
+  public static userController = new userController(Container.taskUsecase)
 
   }

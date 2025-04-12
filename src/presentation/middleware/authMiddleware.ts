@@ -1,38 +1,62 @@
-import { Request, Response, NextFunction } from "express";
-import jwt from "jsonwebtoken";
+import { Request, Response, NextFunction } from 'express';
+import jwt from 'jsonwebtoken';
 
-// Define the expected shape of the JWT payload
+// Define the expected JWT payload structure
 interface JwtPayload {
-  id: string;
-  exp?: number |string; 
+  id: string; // Adjust to number if your ID is numeric
+  type: 'user' | 'neighbor';
+  iat?: number;
+  exp?: number;
 }
 
+// Extend Express Request to include custom properties
 interface AuthRequest extends Request {
-  user?: JwtPayload;
+  userId?: string;
+  userType?: 'user' | 'neighbor';
 }
 
-const authMiddleware = (req: AuthRequest, res: Response, next: NextFunction): void => {
-    
-    const authHeader = req.headers["authorization"] 
-    if (!authHeader) {
-    res.status(401).json({ message: "No token provided" });
-    return;
+// Middleware to verify access token and authorize based on role
+const verifyToken = (allowedTypes: Array<'user' | 'neighbor'> = []) => {
+  return async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const accessToken = req.cookies?.access_token;
+      if (!accessToken) {
+        res.status(401).json({ error: 'No access token provided' });
+        return;
+      }
+
+      // 2. Verify the access token using native Promise support
+      const decoded = await jwt.verify(accessToken, process.env.JWT_SECRET as string) as JwtPayload;
+      if (!decoded.id || !decoded.type) {
+        res.status(401).json({ error: 'Invalid token payload' });
+        return;
+      }
+
+      // 3. Check if the role (type) is allowed for this route
+      // if (allowedTypes.length > 0 && !allowedTypes.includes(decoded.type)) {
+      //   console.log(allowedTypes,"allowed types")
+      //   console.log(decoded.type,"decoded")
+      //   res.status(403).json({ error: 'Access forbidden: insufficient role' });
+      //   return;
+      // }
+
+      req.userId = decoded.id;
+      req.userType = decoded.type;
+      console.log("req.userId : " ,req.userId)
+      next();
+    } catch (error) {
+      if (error instanceof jwt.TokenExpiredError) {
+        res.status(401).json({ error: 'Access token expired' });
+        return;
+      }
+      if (error instanceof jwt.JsonWebTokenError) {
+        res.status(401).json({ error: 'Invalid access token' });
+        return;
+      }
+      res.status(500).json({ error: 'Authentication error' });
+      return;
     }
-
-  const token = authHeader.split(" ")[1]; 
-    if (!token) {
-    res.status(401).json({ message: "Invalid token format" });
-    return;
-  }
-
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as JwtPayload;
-    req.user = decoded; 
-    next(); // Proceed to the next handler
-  } catch (error) {
-    res.status(403).json({ message: "Invalid or expired token" });
-    return;
-  }
+  };
 };
 
-export default authMiddleware;
+export default verifyToken;

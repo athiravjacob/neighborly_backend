@@ -3,6 +3,7 @@ import {  AuthController} from '../controllers/authController'
 import { signUpValidSchema } from "../../shared/validations/signUpValidSchema";
 import { validateRequest } from "../../shared/utils/validateRequest";
 import { loginValidSchema } from "../../shared/validations/loginValidSchema";
+import { auth } from "firebase-admin";
 
 export default function setupAuthRoutes(authController: AuthController): Router {
     const router = Router();
@@ -11,10 +12,12 @@ export default function setupAuthRoutes(authController: AuthController): Router 
     router.post('/verify-otp', authController.verifyOTP);
     router.post('/forgot-password',authController.forgotPassword)
     router.post('/reset-password',authController.resetPassword)
+    router.post('/check-password',authController.checkCurrentpassword)
     
     router.post('/login',validateRequest(loginValidSchema),authController.userlogin)
     router.post('/google-login',authController.googleLogin)
     router.post('/logout',authController.logout)
+    router.post('/refresh',authController.refreshToken)
     
   
   // ****************************Neighbor**************************

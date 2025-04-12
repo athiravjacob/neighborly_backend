@@ -20,7 +20,6 @@ export class LoginUsecase{
       const user = await this.userRepository.findUserByEmail(dto.email);
       console.log(user,"login")
       if (!user || !user.password || !(await this.authService.comparePassword(dto.password, user.password))) {
-          console.log("some prob")
           throw new AppError(401, 'Invalid credentials');
           
       }
