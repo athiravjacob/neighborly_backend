@@ -14,19 +14,25 @@ import cookieParser from 'cookie-parser';
 import verifyToken from "./presentation/middleware/authMiddleware";
 
 const app = express()
-app.use(express.json())
+app.use(cors({
+  origin: process.env.ORGIN_URI,
+  credentials: true,
+
+  methods: ['GET', 'POST', 'PUT', 'PATCH','OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+
+}));
+
+
 connectDB()
 const PORT = process.env.PORT 
 if (!PORT) throw new AppError(500, "port not available")
 app.use(cookieParser());
-app.use(cors({
-    origin: process.env.ORGIN_URI, 
-    methods: ['GET', 'POST','PUT','PATCH'], 
-  // allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials:true
-}));
-  
-app.use(cookieParser());
+
+
+
+app.use(express.json())
+
 
 app.use('/auth', setupAuthRoutes(Container.authController));
 app.use('/neighbor', verifyToken(['neighbor']), setupNeighborRoutes(Container.neighborController));

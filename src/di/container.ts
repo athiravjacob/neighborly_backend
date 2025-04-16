@@ -23,6 +23,7 @@ import { TaskUsecase } from "../application/usecases/task/TaskUsecase";
 import { TaskController } from "../presentation/controllers/taskController";
 import { userController } from "../presentation/controllers/userController";
 import { refreshTokenUsecase } from "../application/usecases/auth/RefreshToken";
+import { ProfileUsecase } from "../application/usecases/user/ProfileUsecase";
 
 export class Container {
   
@@ -73,7 +74,7 @@ export class Container {
 
 
 
-
-  public static userController = new userController(Container.taskUsecase)
+  public static userProfileusecase = new ProfileUsecase(Container.userRepository)
+  public static userController = new userController(Container.userProfileusecase)
 
   }

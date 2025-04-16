@@ -2,8 +2,44 @@ import { IUserRepository } from "../../domain/interface/repositories/IUserReposi
 import { UserModel } from "../model/userModel";
 import { User } from "../../domain/entities/User";
 import { AppError } from "../../shared/utils/errors";
+import { userGeneralInfo } from "../../shared/types/UserDTO";
 
 export class UserRepository implements IUserRepository {
+  async fetchProfile(id: string): Promise<userGeneralInfo> {
+    try {
+      const user = await UserModel.findById(id)
+      if (!user) throw new AppError(400, "No user exist")
+      const profile: userGeneralInfo = {
+        id: user._id.toString(),
+        name: user.name,
+        email: user.email,
+        phone: user.phone || "",
+        dob: user.dob ? new Date(user.dob) : undefined,
+        profilePicture: user.profilePicture ||undefined,
+      };
+      return profile 
+    } catch (error) {
+      throw new AppError(400,`Failed to fetch profile data: ${(error as Error).message}`);
+
+    }
+  }
+
+  //**************************** Update user profile **************************
+  async updateProfile(id: string, profileDetails: userGeneralInfo): Promise<userGeneralInfo> {
+    try {
+      const updatedDetails:any = {}
+      if (profileDetails.phone) updatedDetails.phone = profileDetails.phone;
+      if (profileDetails.dob) updatedDetails.dob = profileDetails.dob;
+      if (profileDetails.profilePicture) updatedDetails.profilePicture = profileDetails.profilePicture;
+      const updatedProfile = await UserModel.findByIdAndUpdate({ _id: id }, { $set: updatedDetails }, { new: true }) 
+      return JSON.parse(JSON.stringify(updatedProfile))
+    } catch (error) {
+      throw new AppError(400,`Failed to update profile: ${(error as Error).message}`);
+
+    }
+  }
+
+//**************** Find User By Google ID ************************** */
   async findUserByGoogleId(uid: string): Promise<User | null> {
     const userDoc = await UserModel.findOne({ googleId: uid })
     if (!userDoc) return null;
@@ -17,12 +53,13 @@ export class UserRepository implements IUserRepository {
     );
   }
   
+  //******************** Reset Password ********************** */
+
 
   async resetPassword(email: string, token: string, newPassword: string): Promise<void> {
     try {
       const userDoc = await UserModel.findOne({ email }).exec();
       if (!userDoc || !userDoc.resetToken || !userDoc.resetTokenExpiresAt) {
-        console.log("err")
         throw new AppError(400,'Invalid or expired reset token');
       }
 
@@ -42,6 +79,7 @@ export class UserRepository implements IUserRepository {
     }
   }
 
+  //**************************Store Reset Token ********************* */
   async storeResetToken(email: string, token: string, expiresAt: number): Promise<void> {
     try {
       await UserModel.updateOne({ email },
@@ -51,7 +89,7 @@ export class UserRepository implements IUserRepository {
     }
   }
 
-  
+  //****************************Find User by email ********************** */
 
   async findUserByEmail(email: string): Promise<User | null> {
     const userDoc = await UserModel.findOne({ email }).exec();
@@ -67,6 +105,7 @@ export class UserRepository implements IUserRepository {
     );
   }
 
+  // ************************ Create New User********************************
   async createUser(user: User): Promise<User> {
     const userDoc = await UserModel.create({
       name: user.name,

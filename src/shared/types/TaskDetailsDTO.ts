@@ -17,6 +17,7 @@ export enum PaymentStatus {
 
 // Interface for TaskDetails (data from frontend)
 export interface TaskDetails {
+  id:string
   createdBy: string; 
   assignedNeighbor: string ; 
   location: string;

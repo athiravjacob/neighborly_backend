@@ -21,13 +21,16 @@ const verifyToken = (allowedTypes: Array<'user' | 'neighbor'> = []) => {
     try {
       const accessToken = req.cookies?.access_token;
       if (!accessToken) {
-        res.status(401).json({ error: 'No access token provided' });
+        console.log("No access token")
+        res.status(401).json({ error: 'Access token expired' });
         return;
       }
 
       // 2. Verify the access token using native Promise support
       const decoded = await jwt.verify(accessToken, process.env.JWT_SECRET as string) as JwtPayload;
       if (!decoded.id || !decoded.type) {
+        console.log("invalid s token")
+
         res.status(401).json({ error: 'Invalid token payload' });
         return;
       }
@@ -45,7 +48,9 @@ const verifyToken = (allowedTypes: Array<'user' | 'neighbor'> = []) => {
       console.log("req.userId : " ,req.userId)
       next();
     } catch (error) {
+      console.log(error,"error in token")
       if (error instanceof jwt.TokenExpiredError) {
+        console.log(error,"Acces token exxpired")
         res.status(401).json({ error: 'Access token expired' });
         return;
       }

@@ -8,6 +8,7 @@ export class refreshTokenUsecase{
     ) { }
     
     async execute(token: string): Promise<{ new_accessToken: string, new_refreshToken: string }>{
+        console.log("refresh token")
         const decoded = await this.authService.verifyRefreshToken(token)
         const storedToken = await this.tokenRepository.findRefreshToken(token);
         if (!storedToken) {

@@ -27,7 +27,6 @@ export class neighborRepository implements INeighborRepository{
   //****************** Get Available Neighbors List ************** */
   async getAvailableNeighborsList(city: string, subCategory: string): Promise<NeighborInfo[]> {
     try {
-      console.log(city,subCategory,"neighb Repo")
       const neighbors = await neighborModel.aggregate([
         {
           $match: {

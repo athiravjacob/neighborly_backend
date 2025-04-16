@@ -27,6 +27,7 @@ export class AuthController {
     private refreshTokenUsecase:refreshTokenUsecase
   ) {}
 
+  //******************************* Sign up ********************************* */
   signup = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { user } = req.body;
@@ -40,6 +41,7 @@ export class AuthController {
     }
   };
 
+  // ************************** Send OTP ***********************
   sendOTP = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { email } = req.body;
@@ -50,7 +52,7 @@ export class AuthController {
       next(error);
     }
   };
-
+//************************************Verify OTP**************************************** */
   verifyOTP = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { otp, email } = req.body
@@ -65,6 +67,7 @@ export class AuthController {
     }
   };
 
+  //*******************Forgot pasword send link to email ************* */
   forgotPassword =async(req:Request,res:Response,next:NextFunction):Promise<void>=> {
     try {
       const { email } = req.body
@@ -76,20 +79,9 @@ export class AuthController {
       next(error)
     }
   }
+//**********************************  Resetting Password based on link******************/
 
-  checkCurrentpassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    try {
-      const { currentpassword, newPassword } = req.body
-      await this.resetPasswordUseCase.checkPassword(currentpassword, newPassword)
-      successResponse(res,200,'password reset successful.Please Login')
-
-    } catch (error) {
-      
-    }
-   }
-
-
-  resetPassword=async (req:Request,res:Response,next:NextFunction):Promise<void>=> {
+    resetPassword=async (req:Request,res:Response,next:NextFunction):Promise<void>=> {
     try {
       const { email, token, newPassword } = req.body
       if (!email || !token || !newPassword) throw new AppError(400, "email,token and new password are required")
@@ -101,9 +93,24 @@ export class AuthController {
     }
   }
 
+  //****************************** Change Password of logged in user/neighbor ********************** */
+
+  changePassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const { currentPassword, newPassword } = req.body
+      const id = req.userId
+      const type = req.userType
+      if (type === 'user') {
+        await this.
+      }
+    } catch (error) {
+      
+    }
+  }
 
   userlogin = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
+
       const dto: LoginDTO = req.body;
       console.log(dto)
       const authResponse = await this.loginUsecase.executeUser(dto);
@@ -145,6 +152,7 @@ export class AuthController {
   }
 
   refreshToken = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    console.log("refresh controller")
     try {
       const refreshToken = req.cookies?.refresh_token
       if (!refreshToken) {
@@ -152,6 +160,7 @@ export class AuthController {
         return
       }
       const { new_accessToken, new_refreshToken } = await this.refreshTokenUsecase.execute(refreshToken)
+      console.log(new_accessToken,"refreshtoken controller")
       setAuthCookies(res, new_accessToken, new_refreshToken);
 
       successResponse(res,200,"refesh token ")
@@ -178,20 +187,9 @@ export class AuthController {
     try {
       const dto:LoginDTO = req.body
       const authResponse=await this.loginUsecase.executeNeighbor(dto)
+      console.log("Hello neighbor")
+      setAuthCookies(res, authResponse.accessToken, authResponse.refreshToken);
 
-      res.cookie('access_token', authResponse.accessToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        maxAge: 15 * 60 * 1000, 
-      });
-
-      res.cookie('refresh_token', authResponse.refreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        maxAge: 7 * 24 * 60 * 60 * 1000, 
-      });
       
       const neighbor ={ id: authResponse.id,
         name: authResponse.name,

@@ -11,7 +11,9 @@ const userSchema = new Schema({
     },
     
   },
-  phone: { type: String},
+  phone: { type: String },
+  dob:{type:String},
+  profilePicture:{type:String},
   googleId: { type: String, required: false }, 
   resetToken: { type: String },
   resetTokenExpiresAt: { type: Number },

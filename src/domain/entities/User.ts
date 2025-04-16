@@ -6,6 +6,8 @@ export class User {
       public email: string,
       public password: string|null,
       public phone: string,
+      public dob?:Date,
+      public profilePicture?:string,
       public googleId?:string,
       public otp?: string,
       public otpExpiresAt?: number,
