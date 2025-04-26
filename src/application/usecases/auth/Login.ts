@@ -103,5 +103,28 @@ export class LoginUsecase{
     type:"neighbor"
   };
     
+  }
+  
+
+  async executeAdmin(dto: LoginDTO): Promise<AuthResponseDTO> {
+    if (!dto.email ||(dto.email !== "admin@neighborly.com") || (dto.password !== "Admin123")) {
+      throw new AppError(401, 'Invalid credentials');
+      
+  }
+  let id = "Admin01"
+  const accessToken = this.authService.generateAccessToken(id ,'neighbor');
+  const refreshToken = this.authService.generateRefreshToken(id ,'neighbor');
+
+  await this.tokenRepository.storeRefreshToken(id, refreshToken,'neighbor');
+
+  return {
+    id:id,
+    name: "Admin",
+    email: "admin@neighborly.com",
+    accessToken,
+    refreshToken,
+    type:"admin"
+  };
+    
 }
 }

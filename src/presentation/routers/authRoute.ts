@@ -4,6 +4,7 @@ import { signUpValidSchema } from "../../shared/validations/signUpValidSchema";
 import { validateRequest } from "../../shared/utils/validateRequest";
 import { loginValidSchema } from "../../shared/validations/loginValidSchema";
 import { auth } from "firebase-admin";
+import verifyToken from "../middleware/authMiddleware";
 
 export default function setupAuthRoutes(authController: AuthController): Router {
   const router = Router();
@@ -12,7 +13,7 @@ export default function setupAuthRoutes(authController: AuthController): Router 
     router.post('/verify-otp', authController.verifyOTP);
     router.post('/forgot-password',authController.forgotPassword)
     router.post('/reset-password',authController.resetPassword)
-    router.post('/change-password',authController.changePassword)
+    router.patch('/change-password',verifyToken(['user', 'neighbor','admin']),authController.changePassword)
     
     router.post('/login',validateRequest(loginValidSchema),authController.userlogin)
     router.post('/google-login',authController.googleLogin)
@@ -24,7 +25,11 @@ export default function setupAuthRoutes(authController: AuthController): Router 
   // ****************************Neighbor**************************
     router.post('/neighbor/signup',authController.sigupNeighbor)
     router.post('/neighbor/login',authController.loginNeighbor)
+    
+  
+  //***************************** Admin ***************** */
 
+  router.post('/admin/login',authController.adminLogin)
 
     return router;
   }

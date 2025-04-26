@@ -26,8 +26,11 @@ export class userController{
         try {
             const id = req.userId
             const data = await this.userProfile.fetchProfileInfo(id!)
+            successResponse(res,200,'user profile fetched',data)
+
         } catch (error) {
-            
+            next(error) 
+
         }
     }
 

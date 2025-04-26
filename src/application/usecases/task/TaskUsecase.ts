@@ -14,8 +14,11 @@ export class TaskUsecase{
 
     async showUserTasks(id: string): Promise<TaskDetails[]>{
         const tasksList = await this.taskRepository.fetchUserTasks(id)
-        console.log(tasksList)
         return tasksList
         
+    }
+    async showNeighborTasks(id: string): Promise<TaskDetails[]>{
+        const tasksList = await this.taskRepository.fetchNeighborTasks(id)
+        return tasksList
     }
 }

@@ -28,6 +28,7 @@ export class SignupUseCase {
       hashedPassword,
       
     );
+    console.log(user,"signup usecase")
     return this.userRepository.createUser(user);
   }
   //********************neighbor signup*********************/

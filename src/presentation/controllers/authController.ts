@@ -24,7 +24,8 @@ export class AuthController {
     private resetPasswordUseCase: ResetPasswordUseCase,
     private loginUsecase: LoginUsecase,
     private logoutUsecase: LogoutUsecase,
-    private refreshTokenUsecase:refreshTokenUsecase
+    private refreshTokenUsecase: refreshTokenUsecase
+    
   ) {}
 
   //******************************* Sign up ********************************* */
@@ -100,11 +101,11 @@ export class AuthController {
       const { currentPassword, newPassword } = req.body
       const id = req.userId
       const type = req.userType
-      if (type === 'user') {
-        await this.
-      }
+      await this.resetPasswordUseCase.changeCurrentPassword(id!,type!,currentPassword,newPassword)
+      successResponse(res,200,'password changed successfully')
+
     } catch (error) {
-      
+      next(error)
     }
   }
 
@@ -112,7 +113,6 @@ export class AuthController {
     try {
 
       const dto: LoginDTO = req.body;
-      console.log(dto)
       const authResponse = await this.loginUsecase.executeUser(dto);
       setAuthCookies(res, authResponse.accessToken, authResponse.refreshToken);
       const user = { id: authResponse.id, name: authResponse.name, email: authResponse.email, type: authResponse.type };
@@ -152,7 +152,6 @@ export class AuthController {
   }
 
   refreshToken = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    console.log("refresh controller")
     try {
       const refreshToken = req.cookies?.refresh_token
       if (!refreshToken) {
@@ -160,7 +159,6 @@ export class AuthController {
         return
       }
       const { new_accessToken, new_refreshToken } = await this.refreshTokenUsecase.execute(refreshToken)
-      console.log(new_accessToken,"refreshtoken controller")
       setAuthCookies(res, new_accessToken, new_refreshToken);
 
       successResponse(res,200,"refesh token ")
@@ -187,7 +185,6 @@ export class AuthController {
     try {
       const dto:LoginDTO = req.body
       const authResponse=await this.loginUsecase.executeNeighbor(dto)
-      console.log("Hello neighbor")
       setAuthCookies(res, authResponse.accessToken, authResponse.refreshToken);
 
       
@@ -203,6 +200,27 @@ export class AuthController {
     }
   }
 
+  //***************************Admin************************* */
+  adminLogin = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const dto:LoginDTO = req.body
+      const authResponse=await this.loginUsecase.executeAdmin(dto)
+      setAuthCookies(res, authResponse.accessToken, authResponse.refreshToken);
+
+      
+      const admin ={ id: authResponse.id,
+        name: authResponse.name,
+        email: authResponse.email,
+        type:authResponse.type}
+
+      req.userId = "Admin01"
+      req.userType="admin"
+      successResponse(res,200,"Login Successful",admin)
+      
+    } catch (error) {
+      next(error)
+    }
+  }
 }
 
 
@@ -237,131 +255,3 @@ export class AuthController {
 
 
 
-//************************************************************************************************************************************ */
-
-
-// import { NextFunction, Request, Response } from "express";
-// import { MongoUserRepository } from "../../infrastructure/repositories/userRepo";
-// import { signUp } from "../../application/usecases/auth/signUp";
-// import { login } from "../../application/usecases/auth/login"
-// import {sendOTPtoUser} from '../../application/usecases/auth/sendOTPtoUser'
-// import { successResponse } from "../../shared/utils/responseHandler";
-// import { setRefreshTokenCookie, clearRefreshCookie } from "../utils/cookieHelper";
-// import { verifyotp } from "../../application/usecases/auth/verifyotp"
-// import { EmailServiceImpl } from "../../infrastructure/services/emailService-impl";
-// import { RequestPasswordReset } from "../../application/usecases/auth/requestPassword-reset";
-// import { ResetPassword } from "../../application/usecases/auth/resetPassword";
-// // import { googleLogin } from "../../application/usecases/auth/login";
-
-// const userRepository = new MongoUserRepository();
-// const emailService = new EmailServiceImpl();
-// const requestPasswordReset = new RequestPasswordReset(userRepository, emailService);
-// const resetPassword = new ResetPassword(userRepository);
-
-
-// export const userSignUp = async(req:Request, res:Response,next:NextFunction): Promise<void> => {
-//     try {
-//         const { name, email,phone, password } = req.body
-//         const newUser = await signUp(name, email, phone, password, userRepository)
-        
-//      successResponse(res,200,"User SignUp successful",newUser)
-
-//     } catch (error) {
-//         next(error)
-
-//     }
-// }
-
-// // User Login
-
-// export const Userlogin = async (req: Request, res: Response,next:NextFunction):Promise<void> => {
-//     try {
-//         const { email, password } = req.body
-//         const { accessToken, refreshToken, user } = await login(email, password, userRepository)
-//         setRefreshTokenCookie(res,refreshToken)
-//         successResponse(res,200,"Login Success",{accessToken,user})
-//     } catch (error) {
-//         next(error)
-//     }
-// }
-
-// //Login With Google
-
-// // export const loginWithGoogle = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-// //     try {
-// //         console.log("login with google", req.body)
-// //         const { googleId } = req.body
-// //         const { accessToken, refreshToken, user } = await googleLogin(googleId)
-// //         successResponse(res,200,"Login Success",{accessToken,user})
-// //     } catch (error) {
-// //         next(error)
-// //     }
-// // }
-
-
-// //Logout
-// export const UserLogout = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-//     try {
-//         clearRefreshCookie(res)
-//         successResponse(res,200,"Logout Sucess")
-//     } catch (error) {
-//         next(error)
-//     }
-// }
-
-// //Send Mail
-
-// export const sendOTP = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-//     try {
-
-//         const { email } = req.body
-//         await sendOTPtoUser(email)
-//         successResponse(res,200,"Otp send to user email")
-//     } catch (error) {
-//         next(error)
-//     }
-// }
-
-// //Verify otp
-// export const verifyOTP = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-//     try {
-//         const { email, otp } = req.body
-//         console.log(req.body)
-//         await verifyotp(email,otp)
-//         successResponse(res,200,"email verified")
-//     } catch (error) {
-//         console.log(error)
-//         next(error)
-//     }
-// }
-
-
-// export const requestPasswordResetController = async (
-//     req: Request,
-//     res: Response,
-//     next: NextFunction
-//   ): Promise<void> => {
-//     try {
-//       const { email } = req.body;
-//       await requestPasswordReset.execute(email);
-//       successResponse(res, 200, "If an account exists, a reset link has been sent");
-//     } catch (error) {
-//       next(error);
-//     }
-//   };
-  
-//   // Reset Password
-//   export const resetPasswordController = async (
-//     req: Request,
-//     res: Response,
-//     next: NextFunction
-//   ): Promise<void> => {
-//     try {
-//       const { token, newPassword } = req.body;
-//       console.log(newPassword)
-//       await resetPassword.execute(token, newPassword);
-//       successResponse(res, 200, "Password reset successfully");
-//     } catch (error) {
-//       next(error);
-//     }
-//   };

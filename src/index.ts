@@ -1,4 +1,5 @@
 import express from "express";
+import http from 'http';
 import dotenv from "dotenv";
 dotenv.config()
 import connectDB from "./infrastructure/database/connection";
@@ -12,8 +13,12 @@ import setupTaskToutes from "./presentation/routers/taskRoute";
 import setupUserRoutes from "./presentation/routers/userRoute";
 import cookieParser from 'cookie-parser';
 import verifyToken from "./presentation/middleware/authMiddleware";
+import setupAdminRoutes from "./presentation/routers/adminRoute";
+import { initSocketServer } from "./infrastructure/socket/socketServer";
+import setupMessageRoutes from "./presentation/routers/messageRoute";
 
 const app = express()
+const server = http.createServer(app);
 app.use(cors({
   origin: process.env.ORGIN_URI,
   credentials: true,
@@ -35,11 +40,15 @@ app.use(express.json())
 
 
 app.use('/auth', setupAuthRoutes(Container.authController));
-app.use('/neighbor', verifyToken(['neighbor']), setupNeighborRoutes(Container.neighborController));
-app.use('/task', verifyToken(['user', 'neighbor']), setupTaskToutes(Container.taskController));
-app.use('/user', verifyToken(['user']), setupUserRoutes(Container.userController));
+app.use('/neighbor', setupNeighborRoutes(Container.neighborController));
+app.use('/task', setupTaskToutes(Container.taskController));
+app.use('/user', setupUserRoutes(Container.userController));
+app.use('/admin', setupAdminRoutes(Container.adminController));
+app.use("/messages", setupMessageRoutes(Container.messageController));
+
 app.use(errorHandler)
 
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`)
-})
+initSocketServer(server);
+server.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});

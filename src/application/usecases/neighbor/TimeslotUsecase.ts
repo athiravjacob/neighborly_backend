@@ -9,7 +9,6 @@ export class TimeslotUsecase{
     
     async getTimeslots(id: string): Promise<TimeslotDTO[]|null>{
         const result = await this.neighborRepository.getavailableTimeslot(id)
-        console.log(result)
         return result
     }
 }

@@ -21,7 +21,6 @@ export class AuthService implements IAuthService {
     return jwt.sign({id,type},JWT_SECRET,{expiresIn:'15m'})
   }
   generateRefreshToken(id: string, type: "user" | "neighbor" | "admin"): string {
-    console.log("generate referesh token")
     const RefreshSecret = process.env.REFRESH_SECRET ||"REFRESHSECRETKEY"
     return jwt.sign({ id, type }, RefreshSecret, { expiresIn: '7d' })
   }
@@ -32,7 +31,6 @@ export class AuthService implements IAuthService {
 
   async comparePassword(password: string, hashedPassword: string): Promise<boolean> {
     const passcompare =await bcrypt.compare(password, hashedPassword);
-    console.log(passcompare, "pass compare")
     return passcompare
   }
 }

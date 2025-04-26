@@ -5,6 +5,7 @@ import { TimeslotDTO } from "../../../shared/types/TimeslotDTO";
 import { Neighbor } from "../../entities/Neighbor";
 
 export interface INeighborRepository{
+    fetchAllNeighbors():Promise<NeighborInfo[]|[]>
     updateLocation(id: string, updatedLocation: LocationDetailsDTO ): Promise<locationDTO>;
     saveAvailabilty(id: string, availability: { date: Date; timeSlots: { startTime: number; endTime: number; }[]; }[]): Promise<Neighbor>;    findNeighborByEmail(email: string): Promise<Neighbor | null>;
     createNeighbor(user: Neighbor): Promise<Neighbor>;
@@ -13,6 +14,9 @@ export interface INeighborRepository{
     getavailableTimeslot(id: string): Promise<TimeslotDTO[] | null>
     getServiceLocation(id: string): Promise<locationDTO>
     
+
     getAvailableNeighborsList(city: string, subCategory: string): Promise<NeighborInfo[] | []>
-    checkServiceAvailability(city:string):Promise<Boolean>
+    checkServiceAvailability(city: string): Promise<Boolean>
+    uploadId(id: string, idCardImage: string): Promise<Boolean>
+    fetchVerifyStatus(id:string):Promise<Boolean>
 }

@@ -4,14 +4,43 @@ import { LocationDetailsDTO, locationDTO } from "../../shared/types/LocationDeta
 import { NeighborInfo } from "../../shared/types/NeighborsDTO";
 import { SkillsDTO } from "../../shared/types/SkillsDTO";
 import { TimeslotDTO } from "../../shared/types/TimeslotDTO";
-import { errorHandler } from "../../shared/utils/errorHandler";
+import { AppError } from "../../shared/utils/errors";
 import { neighborModel } from "../model/neigborModel";
 
 export class neighborRepository implements INeighborRepository{
+  async fetchVerifyStatus(id: string): Promise<Boolean> {
+    try {
+      const neighbor = await neighborModel.findById(id)
+      return neighbor?.isVerified!
+    } catch (error) {
+      if (error instanceof Error) {
+        throw { statusCode: 500, message: error.message || "Error checking service availablity" };
+    } else {
+        throw { statusCode: 500, message: "An unknown error occurred while checking service availablity" };
+    }
+    }
+  }
+  
+  async uploadId(id:string,idCardImage: string): Promise<Boolean> {
+    try {
+      const neighbor = await neighborModel.findByIdAndUpdate(id, { $set: { idCardImage: idCardImage } })
+      return neighbor?.isVerified!
+    } catch (error) {
+      if (error instanceof Error) {
+        throw { statusCode: 500, message: error.message || "Error checking service availablity" };
+    } else {
+        throw { statusCode: 500, message: "An unknown error occurred while checking service availablity" };
+    }
+    }
+  }
+  async fetchAllNeighbors(): Promise<[] | NeighborInfo[]> {
+    const neighborList = await neighborModel.find().select('-password');
+    return neighborList? JSON.parse(JSON.stringify(neighborList)) : []
+  }
 
+  //****************************** Check Service Availability *************************** */
   async checkServiceAvailability(city: string): Promise<Boolean> {
     try {
-      console.log(city)
       const exists = await neighborModel.exists({ "availableLocation.city": city })
       return !!exists
             
@@ -88,7 +117,6 @@ export class neighborRepository implements INeighborRepository{
   //************ add service location
 
   async updateLocation(id: string, updatedLocation: LocationDetailsDTO): Promise<locationDTO> {
-    console.log(id)
     const neighbor = await neighborModel.findByIdAndUpdate(
         id,
         { availableLocation: updatedLocation, updatedAt: new Date() },
@@ -113,9 +141,7 @@ export class neighborRepository implements INeighborRepository{
   
   // ********** Add Skills for neighbor
   async saveSkills(id: string, skill: SkillsDTO): Promise<SkillsDTO[]> {
-    console.log('Repository: Saving skill for ID:', id);
-    console.log('Repository: Skill data:', JSON.stringify(skill, null, 2));
-  
+   
     const skillData = {
       category: skill.category,
       subcategories: skill.subcategories, 
@@ -130,11 +156,9 @@ export class neighborRepository implements INeighborRepository{
     ).exec();
   
     if (!neighbor) {
-      console.log('Repository: Neighbor not found for ID:', id);
       throw new Error('Neighbor not found');
     }
   
-    console.log('Repository: Updated skills:', JSON.stringify(neighbor.skills, null, 2));
     return neighbor.skills.map((s) => ({
       id:s._id.toString(),
       category: s.category,
@@ -149,9 +173,7 @@ export class neighborRepository implements INeighborRepository{
         id: string,
         availability: { date: Date; timeSlots: { startTime: number; endTime: number; }[]; }[]
       ): Promise<Neighbor> {
-        console.log('Repository: Saving availability for ID:', id);
-        console.log('Repository: Availability data:', JSON.stringify(availability, null, 2));
-        
+       
         const neighbor = await neighborModel.findByIdAndUpdate(
           id,
           { $set: { availability } },
@@ -159,13 +181,13 @@ export class neighborRepository implements INeighborRepository{
         ).exec();
     
         if (!neighbor) {
-          console.log('Repository: No neighbor found with ID:', id);
           throw new Error('Neighbor not found');
         }
     
-        // console.log('Repository: Updated availability:', JSON.stringify(neighbor.availability, null, 2));
         return neighbor as unknown as Neighbor; // Cast to Neighbor entity type
-      }
+  }
+  
+  //****************** Find Neighbor By Email ***********************/
     async findNeighborByEmail(email: string): Promise<Neighbor | null> {
         const neighbor = await neighborModel.findOne({ email })
         if (!neighbor) return null

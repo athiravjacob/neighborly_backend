@@ -5,6 +5,21 @@ import { AppError } from "../../shared/utils/errors";
 import { userGeneralInfo } from "../../shared/types/UserDTO";
 
 export class UserRepository implements IUserRepository {
+  async fetchAllUsers(): Promise<[] | User[]> {
+    const userList = await UserModel.find().select('-password');
+    return userList ? JSON.parse(JSON.stringify(userList )) : []
+  }
+  async fetchPassword(id: string): Promise<string> {
+    const user = await UserModel.findOne({ _id: id }, { _id: 0, password: 1 })
+    if (!user?.password) {
+      throw new AppError(400, "No password found for user");
+  }
+    return user.password;
+  }
+  async updatePassword(id: string, newPasswordHashed: string): Promise<void> {
+    await UserModel.findByIdAndUpdate(id, { $set: { password: newPasswordHashed } },{ new: true } )
+    
+  }
   async fetchProfile(id: string): Promise<userGeneralInfo> {
     try {
       const user = await UserModel.findById(id)
@@ -47,8 +62,8 @@ export class UserRepository implements IUserRepository {
       userDoc._id.toString(),
       userDoc.name,
       userDoc.email,
-      userDoc.password || " ",
       userDoc.phone || " ",
+      userDoc.password || " ",
 
     );
   }
@@ -94,13 +109,13 @@ export class UserRepository implements IUserRepository {
   async findUserByEmail(email: string): Promise<User | null> {
     const userDoc = await UserModel.findOne({ email }).exec();
     if (!userDoc) return null;
-    console.log(userDoc)
     return new User(
       userDoc._id.toString(),
       userDoc.name,
       userDoc.email,
-      userDoc.password || "",
       userDoc.phone || "",
+      userDoc.password || "",
+
 
     );
   }
@@ -110,16 +125,16 @@ export class UserRepository implements IUserRepository {
     const userDoc = await UserModel.create({
       name: user.name,
       email: user.email,
-      password: user.password ||null,
       phone: user.phone,
+      password: user.password ||null,
       googleId:user.googleId || null
     });
     return new User(
       userDoc._id.toString(),
       userDoc.name,
       userDoc.email,
-      userDoc.password||"",
       userDoc.phone || "",
+      userDoc.password||"",
     )
   }
 
