@@ -1,5 +1,6 @@
 import { IUserRepository } from "../../../domain/interface/repositories/IUserRepository";
 import { IAuthService } from "../../../domain/interface/services/IAuthService";
+import { AppError } from "../../../shared/utils/errors";
 
 export class ResetPasswordUseCase {
   constructor(
@@ -15,8 +16,24 @@ export class ResetPasswordUseCase {
   }
   
   async changeCurrentPassword(id: string,type:string, currentPassword: string, newPassword:string): Promise<void>{
-    if (type === 'user') {
-      const comparePassword = await this.authService.comparePassword()
+    let existingPasssword
+    console.log("change usecase")
+    console.log(type)
+    try {
+      if (type === 'user') {
+        existingPasssword = await this.userRepository.fetchPassword(id)
+       } 
+      if (!existingPasssword) throw new AppError(400, "This user doesnt have password")
+      let password = currentPassword.trim()
+      let hashedPassword = existingPasssword
+       const comparePassword = await this.authService.comparePassword(password, hashedPassword)
+      if (!comparePassword) {
+         throw new AppError(400,"your current Password doesn't match")
+       }
+       const newPasswordHashed = await this.authService.hashPassword(newPassword);
+       await this.userRepository.updatePassword(id,newPasswordHashed)
+    } catch (error) {
+      throw new AppError(400,`Error updating password:, ${(error as Error).message}`)
     }
   }
   }

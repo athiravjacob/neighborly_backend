@@ -32,9 +32,9 @@ const neighborSchema = new Schema({
     date: { type: Date },
     timeSlots: [{ startTime: { type: Number }, endTime: { type: Number } }]
   }],
-  // isVerified: { type: Boolean, default: false },
-  // idCardImage: { type: String, default: '' },
-  // verificationStatus: { type: String, enum: ['pending', 'approved', 'rejected'], default: 'pending' }
+  isVerified: { type: Boolean, default: false },
+  idCardImage: { type: String, default: '' },
+  verificationStatus: { type: String, enum: ['pending', 'approved', 'rejected'], default: 'pending' }
 }, { timestamps: true });
 
 neighborSchema.index(

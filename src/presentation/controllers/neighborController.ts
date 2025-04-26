@@ -8,6 +8,7 @@ import { TimeslotUsecase } from "../../application/usecases/neighbor/TimeslotUse
 import { SkillsDTO } from "../../shared/types/SkillsDTO";
 import { locationDTO } from "../../shared/types/LocationDetailsDTO";
 import { NeighborsListUsecase } from "../../application/usecases/neighbor/NeighborsListUsecase";
+import { NeighborProfileUsecase } from "../../application/usecases/neighbor/NeighborProfileUsecase";
 
 interface NeighborQuery {
     city?: string;
@@ -20,7 +21,8 @@ export class NeighborController {
         private skillsUseCase: SkillsUsecase,
         private serviceLocationUseCase: LocationUsecase,
         private getTimeslotUsecase: TimeslotUsecase,
-        private neighborsList:NeighborsListUsecase
+        private neighborsList: NeighborsListUsecase,
+        private neighborProfile :NeighborProfileUsecase
     ) { }
 
     //*****************Post available data and time****************/
@@ -41,7 +43,6 @@ export class NeighborController {
         try {
             const { neighborId,skill } = req.body
             const skills = await this.skillsUseCase.saveSkills(neighborId, skill)
-            console.log(skills)
             successResponse(res,200,"skills Updated",skills)
         } catch (error) {
             next(error)
@@ -55,6 +56,19 @@ export class NeighborController {
             const { neighborId, location } = req.body
             const serviceLocation = await this.serviceLocationUseCase.saveLocation( neighborId, location )
             successResponse(res,200,"service location details saved",serviceLocation)
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    //********************* Upload ID For verification ************************************* */
+    uploadId = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const { imageUrl } = req.body
+            const id = req.userId
+        
+            const status =await this.neighborProfile.uploadIdUrl(id!,imageUrl)
+            successResponse(res,200,"Id card uploaded for verification",status)
         } catch (error) {
             next(error)
         }
@@ -76,7 +90,6 @@ export class NeighborController {
         try {
             const id = req.params.id
             const data = await this.skillsUseCase.getSkills(id)
-            console.log(data)
             successResponse(res,200,"fetched neighbors skills",data)
         } catch (error) {
             next(error)
@@ -88,7 +101,6 @@ export class NeighborController {
         try {
             const id = req.params.id
             const data = await this.serviceLocationUseCase.getServiceLocation(id)
-            console.log(data)
             successResponse(res,200,"fetched neighbors skills",data)
         } catch (error) {
             next(error)
@@ -124,6 +136,17 @@ export class NeighborController {
                 successResponse(res,200,"Service available",data)
             } else
                 errorResponse(res, 400, "No Service available in this area ")
+
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    fetchVerificationStatus = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const id = req.userId
+            const status = await this.neighborProfile.fetchStatus(id!)
+            successResponse(res,200,"verifiation status",status)
 
         } catch (error) {
             next(error)

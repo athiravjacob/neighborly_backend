@@ -1,8 +1,14 @@
-// import { Router } from 'express';
-// import { adminLogin } from '../controllers/adminController';
-// import { getUsers } from '../controllers/adminController';
+import { Router } from "express"
+import { AdminController } from "../controllers/adminController"
 
-// const router = Router();
-// router.post('/login', adminLogin);
-// router.get('/user-list',getUsers)
-// export default router;
+export default function setupAdminRoutes(adminController: AdminController): Router{
+    const router = Router()
+
+    router.get('/userList', adminController.fetchUsers)
+    // router.get('/userDetails/:id', adminController.userDetails)
+    router.get('/neighborList', adminController.fetchNeighbors)
+    router.get('/TaskList',adminController.fetchTasks)
+    
+
+    return router
+}

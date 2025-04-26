@@ -20,10 +20,15 @@ export class TaskController{
     showTasks = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const role = req.userType
-            const id = req.userId
+            const id = req.params.id
             if (role === 'user') {
                 const data = await this.taskUsecase.showUserTasks(id!)
                 successResponse(res,200,"Fetched tasks created by user",data)
+            }
+            if (role === 'neighbor') {
+                const data = await this.taskUsecase.showNeighborTasks(id!)
+                successResponse(res,200,"Fetched tasks scheduled to the neighbor",data)
+
             }
         } catch (error) {
             next(error)

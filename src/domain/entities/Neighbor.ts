@@ -28,8 +28,8 @@ export class Neighbor {
         date: Date;
         timeSlots: { startTime: number; endTime: number }[];
       }[] = [],
-      // public isVerified: boolean = false,
-      // public idCardImage: string = '',
-      // public verificationStatus: 'pending' | 'approved' | 'rejected' = 'pending'
+      public isVerified: boolean = false,
+      public idCardImage: string = '',
+      public verificationStatus: 'pending' | 'approved' | 'rejected' = 'pending'
     ) {}
   }

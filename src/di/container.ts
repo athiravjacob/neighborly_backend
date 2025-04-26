@@ -24,6 +24,13 @@ import { TaskController } from "../presentation/controllers/taskController";
 import { userController } from "../presentation/controllers/userController";
 import { refreshTokenUsecase } from "../application/usecases/auth/RefreshToken";
 import { ProfileUsecase } from "../application/usecases/user/ProfileUsecase";
+import { AdminController } from "../presentation/controllers/adminController";
+import { adminFetchUsecase } from "../application/usecases/admin/adminFetchUsecase";
+import { NeighborProfileUsecase } from "../application/usecases/neighbor/NeighborProfileUsecase";
+import { MessageRepository } from "../infrastructure/repositories/messageRepository";
+import { SendMessageUseCase } from "../application/usecases/message/sendMessageUsecase";
+import { GetMessagesUseCase } from "../application/usecases/message/getMessageUsecase";
+import { MessageController } from "../presentation/controllers/messageController";
 
 export class Container {
   
@@ -58,12 +65,15 @@ export class Container {
   public static timeslotUsecase = new TimeslotUsecase(Container.neighborRepository)
   public static locationUsecase = new LocationUsecase(Container.neighborRepository)
   public static neighborListUsecae = new NeighborsListUsecase(Container.neighborRepository)
+  public static neighborProfileUsecase = new NeighborProfileUsecase(Container.neighborRepository)
   public static neighborController = new NeighborController(
     Container.saveAvailbleTimeSlot,
     Container.skillsUsecase,
     Container.locationUsecase,
     Container.timeslotUsecase,
-    this.neighborListUsecae
+    Container.neighborListUsecae,
+    Container.neighborProfileUsecase
+
   )
 
 
@@ -76,5 +86,16 @@ export class Container {
 
   public static userProfileusecase = new ProfileUsecase(Container.userRepository)
   public static userController = new userController(Container.userProfileusecase)
+
+  public static adminFetchusecase = new adminFetchUsecase(Container.userRepository,Container.neighborRepository,Container.taskRepository)
+  public static adminController = new AdminController(Container.adminFetchusecase)
+
+  public static messageRepo = new MessageRepository();
+
+  public static sendMessageUseCase = new SendMessageUseCase(Container.messageRepo);
+  public static getMessagesUseCase = new GetMessagesUseCase(Container.messageRepo);
+
+  public static  messageController = new MessageController(Container.sendMessageUseCase, Container.getMessagesUseCase);
+
 
   }
