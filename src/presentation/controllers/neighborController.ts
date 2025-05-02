@@ -12,6 +12,7 @@ import { NeighborProfileUsecase } from "../../application/usecases/neighbor/Neig
 
 interface NeighborQuery {
     city?: string;
+    category?: string;
     subCategory?: string;
   }
 
@@ -123,15 +124,15 @@ export class NeighborController {
             next(error)
         }
     }
-
+//********************* Check if Service is availble in the selected area   *************** */
     checkServiceAvailability = async (req: Request<{},{},{},NeighborQuery>, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const {city} = req.query
-            if (!city) {
+            const {city,category,subCategory} = req.query
+            if (!city ||!category ||!subCategory) {
                 res.status(400).json({ success: false, message: "City is required" });
                 return
             }
-            const data = await this.neighborsList.checkServiceLocation(city)
+            const data = await this.neighborsList.checkServiceLocation(city,category,subCategory)
             if (data === true) {
                 successResponse(res,200,"Service available",data)
             } else

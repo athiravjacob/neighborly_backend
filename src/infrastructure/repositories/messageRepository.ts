@@ -18,7 +18,7 @@ export class MessageRepository implements IMessageRepository {
       return JSON.parse(JSON.stringify(created));
     } catch (error) {
       console.error(error);
-      return undefined; // ✅ valid now with updated return type
+      return undefined; 
     }
   }
   
