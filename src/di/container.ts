@@ -2,7 +2,6 @@ import { forgotPasswordUsecase } from "../application/usecases/auth/ForgotPasswo
 import { SendOtpUsecase } from "../application/usecases/auth/SendOTP-email";
 import { SignupUseCase } from "../application/usecases/auth/Signup";
 import { verifyOtpUseCase } from "../application/usecases/auth/VerifyOTP";
-import { UserRepository } from "../infrastructure/repositories/UserRepository";
 import { AuthService } from "../infrastructure/services/authService-impl";
 import { EmailServiceImpl } from "../infrastructure/services/emailService-impl";
 import { AuthController } from "../presentation/controllers/authController";
@@ -31,6 +30,7 @@ import { MessageRepository } from "../infrastructure/repositories/messageReposit
 import { SendMessageUseCase } from "../application/usecases/message/sendMessageUsecase";
 import { GetMessagesUseCase } from "../application/usecases/message/getMessageUsecase";
 import { MessageController } from "../presentation/controllers/messageController";
+import { UserRepository } from "../infrastructure/repositories/userRepository";
 
 export class Container {
   
