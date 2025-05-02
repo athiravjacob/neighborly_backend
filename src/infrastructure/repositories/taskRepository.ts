@@ -16,7 +16,7 @@ export class taskRepository implements ITaskRepository{
     }
     
     async fetchUserTasks(id: string): Promise<TaskDetails[]> {
-        const taskList = await TaskModel.find({ createdBy: id }).populate('assignedNeighbor')
+        const taskList = await TaskModel.find({ createdBy: id })
         return taskList? JSON.parse(JSON.stringify(taskList)):[]
     }
 
