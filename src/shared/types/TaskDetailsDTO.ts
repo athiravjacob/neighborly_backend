@@ -1,4 +1,6 @@
 import { Types } from 'mongoose';
+import { Neighbor } from '../../domain/entities/Neighbor';
+import { User } from '../../domain/entities/User';
 
 // Enums for task and payment status (for type safety)
 export enum TaskStatus {
@@ -18,8 +20,8 @@ export enum PaymentStatus {
 // Interface for TaskDetails (data from frontend)
 export interface TaskDetails {
   id:string
-  createdBy: string; 
-  assignedNeighbor: string ; 
+  createdBy: User; 
+  assignedNeighbor: Neighbor ; 
   location: string;
   category: string;
   subCategory: string;
