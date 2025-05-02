@@ -13,7 +13,7 @@ export class NeighborsListUsecase{
         return neighbors
     }
 
-    async checkServiceLocation(city: string): Promise<Boolean>{
-        return await this.neighborRepository.checkServiceAvailability(city)
+    async checkServiceLocation(city: string,category:string,subCategory:string): Promise<Boolean>{
+        return await this.neighborRepository.checkServiceAvailability(city,category,subCategory)
     }
 }
