@@ -30,6 +30,7 @@ export class TaskController{
                 successResponse(res,200,"Fetched tasks scheduled to the neighbor",data)
 
             }
+           
         } catch (error) {
             next(error)
         }

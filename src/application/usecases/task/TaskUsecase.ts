@@ -21,4 +21,9 @@ export class TaskUsecase{
         const tasksList = await this.taskRepository.fetchNeighborTasks(id)
         return tasksList
     }
+    async showAllTasks(): Promise<TaskDetails[]>{
+        const tasksList = await this.taskRepository.fetchAllTasks()
+        console.log(tasksList,"show all task")
+        return tasksList
+    }
 }
