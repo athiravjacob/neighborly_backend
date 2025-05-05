@@ -19,9 +19,9 @@ export class Task {
     private readonly ADMIN_FEE_PERCENTAGE = 0.05; 
 
     constructor(
-        public id: ObjectId,
-        public createdBy: ObjectId,
-        public assignedNeighbor: ObjectId ,
+        public id: string,
+        public createdBy: string,
+        public assignedNeighbor: string ,
         public location: string,
         public category: string,
         public subCategory: string,

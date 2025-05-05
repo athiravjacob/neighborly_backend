@@ -9,10 +9,10 @@ export const chatSocketHandler = (socket: Socket) => {
     socket.join(roomId);
     console.log(`User ${userId} joined room ${roomId}`);
 
-    socket.to(roomId).emit('message', {
-      sender: 'System',
-      text: 'Chat started!',
-    });
+    // socket.to(roomId).emit('message', {
+    //   sender: 'System',
+    //   text: 'Chat started!',
+    // });
   });
 
   socket.on('send-message', (userId: string, neighborId: string, message: string) => {
