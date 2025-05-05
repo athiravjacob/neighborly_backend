@@ -31,6 +31,9 @@ import { SendMessageUseCase } from "../application/usecases/message/sendMessageU
 import { GetMessagesUseCase } from "../application/usecases/message/getMessageUsecase";
 import { MessageController } from "../presentation/controllers/messageController";
 import { UserRepository } from "../infrastructure/repositories/userRepository";
+import { TransactionRepository } from "../infrastructure/repositories/transactionRepository";
+import { saveTransaction } from "../application/usecases/payment/saveTransactionUsecase";
+import { PaymentController } from "../presentation/controllers/paymentController";
 
 export class Container {
   
@@ -97,5 +100,10 @@ export class Container {
 
   public static  messageController = new MessageController(Container.sendMessageUseCase, Container.getMessagesUseCase);
 
+  public static walletRepositor = new walletRepository()
+
+  public static transactionRepository = new TransactionRepository()
+  public static saveTransactionUsecase = new saveTransaction(Container.transactionRepository,)
+  public static paymentController = new PaymentController(Container.saveTransactionUsecase)
 
   }

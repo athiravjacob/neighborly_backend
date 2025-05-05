@@ -16,6 +16,7 @@ import verifyToken from "./presentation/middleware/authMiddleware";
 import setupAdminRoutes from "./presentation/routers/adminRoute";
 import { initSocketServer } from "./infrastructure/socket/socketServer";
 import setupMessageRoutes from "./presentation/routers/messageRoute";
+import setupPaymentRoutes from "./presentation/routers/paymentRoute";
 
 const app = express()
 const server = http.createServer(app);
@@ -45,6 +46,7 @@ app.use('/task', setupTaskToutes(Container.taskController));
 app.use('/user', setupUserRoutes(Container.userController));
 app.use('/admin', setupAdminRoutes(Container.adminController));
 app.use("/messages", setupMessageRoutes(Container.messageController));
+app.use("/payment",setupPaymentRoutes(Container.paymentController))
 
 app.use(errorHandler)
 
