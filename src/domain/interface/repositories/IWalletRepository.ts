@@ -1,3 +1,3 @@
 export interface IWalletRepository{
-    updateWalletBalance(neighborId:string,escrowId:string,balance:number):Promise<void>
+    updateWalletBalance(neighborId:string,balance:number):Promise<void>
 }

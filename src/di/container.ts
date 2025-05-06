@@ -34,6 +34,9 @@ import { UserRepository } from "../infrastructure/repositories/userRepository";
 import { TransactionRepository } from "../infrastructure/repositories/transactionRepository";
 import { saveTransaction } from "../application/usecases/payment/saveTransactionUsecase";
 import { PaymentController } from "../presentation/controllers/paymentController";
+import { WalletRepository } from "../infrastructure/repositories/walletRepository";
+import { EscrowRepository } from "../infrastructure/repositories/escrowRepository";
+import { verificationUsecase } from "../application/usecases/admin/VerificationUsecase";
 
 export class Container {
   
@@ -90,8 +93,9 @@ export class Container {
   public static userProfileusecase = new ProfileUsecase(Container.userRepository)
   public static userController = new userController(Container.userProfileusecase)
 
+  public static verificationUsecase = new verificationUsecase(Container.neighborRepository)
   public static adminFetchusecase = new adminFetchUsecase(Container.userRepository,Container.neighborRepository,Container.taskRepository)
-  public static adminController = new AdminController(Container.adminFetchusecase)
+  public static adminController = new AdminController(Container.adminFetchusecase,Container.verificationUsecase)
 
   public static messageRepo = new MessageRepository();
 
@@ -100,10 +104,11 @@ export class Container {
 
   public static  messageController = new MessageController(Container.sendMessageUseCase, Container.getMessagesUseCase);
 
-  public static walletRepositor = new walletRepository()
+  public static walletRepository = new WalletRepository()
+  public static escrowRepository = new EscrowRepository()
 
   public static transactionRepository = new TransactionRepository()
-  public static saveTransactionUsecase = new saveTransaction(Container.transactionRepository,)
+  public static saveTransactionUsecase = new saveTransaction(Container.transactionRepository,Container.escrowRepository,Container.walletRepository)
   public static paymentController = new PaymentController(Container.saveTransactionUsecase)
 
   }

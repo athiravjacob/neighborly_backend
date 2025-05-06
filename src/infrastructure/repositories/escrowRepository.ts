@@ -1,15 +1,19 @@
 import { IEscrowRepository } from "../../domain/interface/repositories/IEscrowRepository";
-import { escrowModel } from "../model/EscrowModel";
+import { escrowModel } from "../model/escrowModel";
 
-export class EscrowRepository implements IEscrowRepository{
-    async pendingPayment(transactionId: string): Promise<string> {
+export class EscrowRepository implements IEscrowRepository {
+    async pendingPayment(transactionId: string, neighborId: string,amount:number): Promise<string> {
         try {
-            const escrow = await escrowModel.create(transactionId)
-            return JSON.stringify(escrow._id)
-
+            const escrow = await escrowModel.create({ 
+                transactionId, 
+                neighborId,
+                amount
+            });
+            console.log(escrow);
+            return escrow._id.toString();
         } catch (error) {
-            throw new Error("Error updating escrow account")
-        }    }
-    
-
-} 
+            console.log(error)
+            throw new Error("Error creating escrow account");
+        }
+    }
+}

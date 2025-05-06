@@ -13,7 +13,7 @@ export class PaymentController{
             const { userId, neighborId, taskId, amount, stripeTransactionId, transactionDate } = req.body
             const paymentDetails:TransactionDetails ={userId,neighborId,taskId,stripeTransactionId,amount,transactionDate}
             const recordTransactionHistory = await this.recordTransactionUsecase.execute(paymentDetails)
-            successResponse(res,200,'Availability updated successfully',recordTransactionHistory)
+            successResponse(res,200,'Transacton Details updated successfully',recordTransactionHistory)
 
         } catch (error) {
             next(error)

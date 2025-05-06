@@ -7,7 +7,8 @@ export default function setupAdminRoutes(adminController: AdminController): Rout
     router.get('/userList', adminController.fetchUsers)
     // router.get('/userDetails/:id', adminController.userDetails)
     router.get('/neighborList', adminController.fetchNeighbors)
-    router.get('/TaskList',adminController.fetchTasks)
+    router.get('/TaskList', adminController.fetchTasks) 
+    router.patch('/verifyNeighbor',adminController.verifyNeighbor)
     
 
     return router

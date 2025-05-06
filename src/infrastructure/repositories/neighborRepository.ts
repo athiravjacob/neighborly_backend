@@ -8,6 +8,16 @@ import { AppError } from "../../shared/utils/errors";
 import { neighborModel } from "../model/neigborModel";
 
 export class neighborRepository implements INeighborRepository{
+  async verifyNeighbor(id: string): Promise<void> {
+    try {
+      await neighborModel.findByIdAndUpdate(id,{isVerified:true,verificationStatus:'approved'})
+    } catch (error) {
+      if (error instanceof Error) {
+        throw { statusCode: 500, message: error.message || "Error updatin verification status" }
+        throw { statusCode: 500, message: "An unknown error occurred while checking service availablity" };
+    }
+    }
+  }
   async fetchVerifyStatus(id: string): Promise<Boolean> {
     try {
       const neighbor = await neighborModel.findById(id)

@@ -13,8 +13,8 @@ export class saveTransaction{
     
     async execute(paymentDetails:TransactionDetails): Promise<void>{
         const transactionId = await this.TransactionRepository.saveTransaction(paymentDetails)
-        const escrowId = await this.EscrowRepository.pendingPayment(transactionId)
-        const updateWallet = await this.WalletRepository.updateWalletBalance(paymentDetails.neighborId,escrowId,paymentDetails.amount)
+        const escrowId = await this.EscrowRepository.pendingPayment(transactionId,paymentDetails.neighborId,paymentDetails.amount)
+        const updateWallet = await this.WalletRepository.updateWalletBalance(paymentDetails.neighborId,paymentDetails.amount)
         
            
     }

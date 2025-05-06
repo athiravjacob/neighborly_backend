@@ -6,7 +6,7 @@ export class TransactionRepository implements ITransactionRepository {
   async saveTransaction(paymentDetails: TransactionDetails): Promise<string> {
     try {
       const transaction = await transactionModel.create(paymentDetails);
-      return JSON.stringify(transaction._id);
+      return transaction._id.toString();
     } catch (error) {
       throw new Error("error adding details to transaction");
     }

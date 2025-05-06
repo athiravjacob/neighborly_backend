@@ -3,7 +3,7 @@ export class Wallet{
     constructor(
         public id: string,
         public neighborId: string,
-        public escrowId:string,
+        // public escrowId:string,
         public balance: number,
         public withdrawableBalance: number,  
         
