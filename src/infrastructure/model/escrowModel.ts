@@ -6,7 +6,7 @@ const escrowSchema = new Schema({
     amount:{type:Number},
     admin_Approval: { type:String,enum:["pending", "approved", "rejected"], default: "pending" },
     transferStatus: { type: String, enum: ["pending", "transfered", "dispute"],default:"pending" },
-    transferedDate:{type:Date}
+    transferedDate:{type:String}
 }, { timestamps: true })
 
 export const escrowModel = model('Escrow',escrowSchema)

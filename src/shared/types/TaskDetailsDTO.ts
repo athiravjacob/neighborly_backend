@@ -1,21 +1,12 @@
-import { Types } from 'mongoose';
 import { Neighbor } from '../../domain/entities/Neighbor';
 import { User } from '../../domain/entities/User';
 
 // Enums for task and payment status (for type safety)
-export enum TaskStatus {
-  PENDING = 'pending',
-  ASSIGNED = 'assigned',
-  IN_PROGRESS = 'in_progress',
-  COMPLETED = 'completed',
-  CANCELLED = 'cancelled'
-}
+export type TaskStatus = "pending" | "assigned" | "in_progress" | "completed" | "cancelled";
 
-export enum PaymentStatus {
-  PENDING = 'pending',
-  PAID = 'paid',
-  DISPUTED = 'disputed'
-}
+
+export type PaymentStatus ="pending"| "paid"| "dispute"
+
 
 // Interface for TaskDetails (data from frontend)
 export interface TaskDetails {
@@ -33,6 +24,10 @@ export interface TaskDetails {
     endTime?: number; 
   };
   ratePerHour: number;
+  baseAmount: number;
+  platform_fee: number;
+  final_amount: number;
   task_status?: TaskStatus; 
-  payment_status?: PaymentStatus; 
+  payment_status?: PaymentStatus;
+  
 }

@@ -1,29 +1,18 @@
 import { Schema, model, Types } from 'mongoose';
 
-const TaskStatus = {
-  PENDING: 'pending',
-  ASSIGNED: 'assigned',
-  IN_PROGRESS: 'in_progress',
-  COMPLETED: 'completed',
-  CANCELLED: 'cancelled'
-} as const;
+type TaskStatus = "pending" | "assigned" | "in_progress" | "completed" | "cancelled";
 
-const PaymentStatus = {
-  PENDING: 'pending',
-  PAID: 'paid',
-  DISPUTED: 'disputed'
-} as const;
-
+type PaymentStatus ="pending"| "paid"| "dispute"
 const taskSchema = new Schema({
   createdBy: {
     type: Schema.Types.ObjectId,
-    ref: 'User', 
+    ref: 'User',
     required: true,
-    index: true 
+    index: true
   },
   assignedNeighbor: {
     type: Schema.Types.ObjectId,
-    ref: 'Neighbor', 
+    ref: 'Neighbor',
   },
   location: {
     type: String,
@@ -52,26 +41,24 @@ const taskSchema = new Schema({
   },
   timeSlot: {
     startTime: {
-      type: Number, 
+      type: Number,
       required: true
     },
     endTime: {
-      type: Number, 
-      default: null 
+      type: Number,
+      default: null
     }
-    },
-  est_amount:Number,
+  },
+  est_amount: Number, 
   task_status: {
     type: String,
-    enum: Object.values(TaskStatus), 
-    default: TaskStatus.PENDING,
-    required: true
+    enum: ["pending", "assigned", "in_progress", "completed", "cancelled"],
+    default: "pending"
   },
   payment_status: {
     type: String,
-    enum: Object.values(PaymentStatus), 
-    default: PaymentStatus.PENDING,
-    required: true
+    enum: ["pending", "paid", "dispute"],
+    default: "pending"
   },
   ratePerHour: {
     type: Number,
@@ -80,21 +67,38 @@ const taskSchema = new Schema({
   },
   actualHours: {
     type: Number,
-    default: null, 
+    default: null,
     min: [0, 'Actual hours cannot be negative']
   },
   baseAmount: {
     type: Number,
-    default: null, 
+    default: null,
     min: [0, 'Base amount cannot be negative']
+  },
+  platform_fee: {
+    type: Number,
+    default: null,
+    min: [0, 'Platform fee cannot be negative']
   },
   final_amount: {
     type: Number,
-    default: null, 
+    default: null,
     min: [0, 'Final amount cannot be negative']
   }
 }, {
-  timestamps: true 
+  timestamps: true
+});
+
+taskSchema.pre('save', function (next) {
+  if (this.ratePerHour != null && this.est_hours != null) {
+    this.baseAmount = this.ratePerHour * this.est_hours;
+
+    this.platform_fee = this.baseAmount * 0.05;
+
+    this.final_amount = this.baseAmount + this.platform_fee;
+  }
+
+  next();
 });
 
 export const TaskModel = model('Task', taskSchema);

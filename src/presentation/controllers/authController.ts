@@ -1,5 +1,4 @@
 import {Request,Response, NextFunction } from "express";
-import { SignupUseCase } from "../../application/usecases/auth/Signup";
 import {  successResponse } from "../../shared/utils/responseHandler";
 import { AppError } from "../../shared/utils/errors";
 import { SendOtpUsecase } from "../../application/usecases/auth/SendOTP-email";
@@ -14,6 +13,7 @@ import { setAuthCookies } from "../utils/cookieHelper";
 import admin from "../../infrastructure/firebase/firebaseAdmin";
 import { ref } from "joi";
 import { refreshTokenUsecase } from "../../application/usecases/auth/RefreshToken";
+import { SignupUseCase } from "../../application/usecases/auth/signUp";
 
 export class AuthController {
   constructor(

@@ -7,7 +7,7 @@ export default function setupUserRoutes(userController: userController): Router{
     // router.get('/showTasks/:id', userController.showTasks)
     router.patch('/updateProfile',verifyToken(['user']), userController.updateProfile)
     router.get('/fetchProfile',verifyToken(['user']), userController.fetchProfile)
-    
+    // router.get('/wallet',verifyToken(['user']),userController.fetchWallet)
 
     return router
 }

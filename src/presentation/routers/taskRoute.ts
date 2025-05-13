@@ -6,9 +6,8 @@ export default function setupTaskToutes(taskController: TaskController): Router{
     const router = Router()
     router.post('/create-task',verifyToken(['user']), taskController.createTask)
     router.get('/show-task/:id',verifyToken(['neighbor','user']), taskController.showTasks)
-    // router.get('/taskDetails',taskController.taskDetails)
-    
-
+    router.patch('/accept-task',verifyToken(['neighbor']),taskController.acceptTask)    
+    router.get('/fetch-taskStatus/:id',verifyToken(['neighbor','user','admin']),taskController.fetchStatus)
     return router
     
 }

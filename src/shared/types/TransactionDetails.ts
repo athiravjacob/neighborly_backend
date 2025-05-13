@@ -1,8 +1,8 @@
 export interface TransactionDetails{
-    id?: String,
+    id?: string,
     userId: string,
     neighborId: string,
-    taskId: String,
+    taskId: string,
     stripeTransactionId: string,
     amount: number;
     transactionDate:Date

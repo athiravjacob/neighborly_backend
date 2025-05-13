@@ -34,6 +34,18 @@ export class userController{
         }
     }
 
+    fetchWallet = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const id = req.userId
+            const data = await this.userProfile.getWalletDetails(id!)
+            successResponse(res,200,'user profile fetched',data)
+
+        } catch (error) {
+            next(error) 
+
+        }
+    }
+
 
 
    

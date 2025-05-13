@@ -1,6 +1,6 @@
 import { forgotPasswordUsecase } from "../application/usecases/auth/ForgotPassword";
 import { SendOtpUsecase } from "../application/usecases/auth/SendOTP-email";
-import { SignupUseCase } from "../application/usecases/auth/Signup";
+import { SignupUseCase } from "../application/usecases/auth/signUp";
 import { verifyOtpUseCase } from "../application/usecases/auth/VerifyOTP";
 import { AuthService } from "../infrastructure/services/authService-impl";
 import { EmailServiceImpl } from "../infrastructure/services/emailService-impl";
@@ -24,7 +24,7 @@ import { userController } from "../presentation/controllers/userController";
 import { refreshTokenUsecase } from "../application/usecases/auth/RefreshToken";
 import { ProfileUsecase } from "../application/usecases/user/ProfileUsecase";
 import { AdminController } from "../presentation/controllers/adminController";
-import { adminFetchUsecase } from "../application/usecases/admin/adminFetchUsecase";
+import { AdminFetchUsecase } from "../application/usecases/admin/adminFetchUsecase";
 import { NeighborProfileUsecase } from "../application/usecases/neighbor/NeighborProfileUsecase";
 import { MessageRepository } from "../infrastructure/repositories/messageRepository";
 import { SendMessageUseCase } from "../application/usecases/message/sendMessageUsecase";
@@ -36,7 +36,7 @@ import { saveTransaction } from "../application/usecases/payment/saveTransaction
 import { PaymentController } from "../presentation/controllers/paymentController";
 import { WalletRepository } from "../infrastructure/repositories/walletRepository";
 import { EscrowRepository } from "../infrastructure/repositories/escrowRepository";
-import { verificationUsecase } from "../application/usecases/admin/VerificationUsecase";
+import { VerificationUsecase } from "../application/usecases/admin/verificationUsecase";
 
 export class Container {
   
@@ -93,8 +93,8 @@ export class Container {
   public static userProfileusecase = new ProfileUsecase(Container.userRepository)
   public static userController = new userController(Container.userProfileusecase)
 
-  public static verificationUsecase = new verificationUsecase(Container.neighborRepository)
-  public static adminFetchusecase = new adminFetchUsecase(Container.userRepository,Container.neighborRepository,Container.taskRepository)
+  public static verificationUsecase = new VerificationUsecase(Container.neighborRepository)
+  public static adminFetchusecase = new AdminFetchUsecase(Container.userRepository,Container.neighborRepository,Container.taskRepository)
   public static adminController = new AdminController(Container.adminFetchusecase,Container.verificationUsecase)
 
   public static messageRepo = new MessageRepository();
@@ -108,7 +108,10 @@ export class Container {
   public static escrowRepository = new EscrowRepository()
 
   public static transactionRepository = new TransactionRepository()
-  public static saveTransactionUsecase = new saveTransaction(Container.transactionRepository,Container.escrowRepository,Container.walletRepository)
+  public static saveTransactionUsecase = new saveTransaction(Container.transactionRepository,
+    Container.escrowRepository,
+    Container.walletRepository,
+  Container.taskRepository)
   public static paymentController = new PaymentController(Container.saveTransactionUsecase)
 
   }

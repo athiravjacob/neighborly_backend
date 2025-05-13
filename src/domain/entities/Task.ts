@@ -19,7 +19,7 @@ export class Task {
     private readonly ADMIN_FEE_PERCENTAGE = 0.05; 
 
     constructor(
-        public id: string,
+        public id: string|undefined,
         public createdBy: string,
         public assignedNeighbor: string ,
         public location: string,
@@ -38,6 +38,7 @@ export class Task {
         public ratePerHour: number,
         public actualHours?: number,
         public baseAmount?: number, 
+        public platform_fee?: number,
         public final_amount?: number
     ) {}
 

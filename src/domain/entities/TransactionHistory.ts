@@ -6,7 +6,7 @@ export class TransactionHistory{
         public neighborId: string,
         public taskId: string,
         public transactionId: string,
-        public transactionDate: Date,
+        public transactionDate: string,
         public amount: string,
     ){}
 }

@@ -1,6 +1,6 @@
 import { INeighborRepository } from "../../../domain/interface/repositories/INeighborRepository";
 
-export class verificationUsecase{
+export class VerificationUsecase{
     constructor(
         private neighborRepository :INeighborRepository
     ) { }

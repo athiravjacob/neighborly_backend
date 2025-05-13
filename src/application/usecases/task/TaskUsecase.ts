@@ -1,6 +1,6 @@
 import { Task } from "../../../domain/entities/Task";
 import { ITaskRepository } from "../../../domain/interface/repositories/ITaskRepository";
-import { TaskDetails } from "../../../shared/types/TaskDetailsDTO";
+import { TaskDetails, TaskStatus } from "../../../shared/types/TaskDetailsDTO";
 
 export class TaskUsecase{
     constructor(
@@ -25,5 +25,15 @@ export class TaskUsecase{
         const tasksList = await this.taskRepository.fetchAllTasks()
         console.log(tasksList,"show all task")
         return tasksList
+    }
+
+    async acceptTask(taskId:string): Promise<void>{
+        await this.taskRepository.acceptTask(taskId)
+    }
+
+    async fetctTaskStatus(taskId: string): Promise<TaskStatus>{
+        const taskStatus = await this.taskRepository.fetchTaskStatus(taskId)
+        return taskStatus
+        
     }
 }

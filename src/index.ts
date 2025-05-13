@@ -36,7 +36,7 @@ if (!PORT) throw new AppError(500, "port not available")
 app.use(cookieParser());
 
 
-
+app.use('/payment/webhook', express.raw({ type: 'application/json' }));
 app.use(express.json())
 
 
@@ -46,7 +46,7 @@ app.use('/task', setupTaskToutes(Container.taskController));
 app.use('/user', setupUserRoutes(Container.userController));
 app.use('/admin', setupAdminRoutes(Container.adminController));
 app.use("/messages", setupMessageRoutes(Container.messageController));
-app.use("/payment",setupPaymentRoutes(Container.paymentController))
+app.use("/payment", setupPaymentRoutes(Container.paymentController))
 
 app.use(errorHandler)
 

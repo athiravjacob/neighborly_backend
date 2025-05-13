@@ -10,8 +10,10 @@ import { neighborModel } from "../model/neigborModel";
 export class neighborRepository implements INeighborRepository{
   async verifyNeighbor(id: string): Promise<void> {
     try {
-      await neighborModel.findByIdAndUpdate(id,{isVerified:true,verificationStatus:'approved'})
+      const neighbor = await neighborModel.findByIdAndUpdate(id, { isVerified: true, verificationStatus: 'approved' },{new:true})
+      if(!neighbor) throw new AppError(400,"No neighbor found or neighbor Id invalid")
     } catch (error) {
+      console.log(error)
       if (error instanceof Error) {
         throw { statusCode: 500, message: error.message || "Error updatin verification status" }
         throw { statusCode: 500, message: "An unknown error occurred while checking service availablity" };

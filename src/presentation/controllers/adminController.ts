@@ -1,12 +1,12 @@
 import { Request,Response,NextFunction } from "express";
-import { adminFetchUsecase } from "../../application/usecases/admin/adminFetchUsecase";
+import { AdminFetchUsecase } from "../../application/usecases/admin/adminFetchUsecase";
 import { successResponse } from "../../shared/utils/responseHandler";
-import { verificationUsecase } from "../../application/usecases/admin/VerificationUsecase";
+import { VerificationUsecase } from "../../application/usecases/admin/verificationUsecase";
 
 export class AdminController{
     constructor(
-        private adminUsecase: adminFetchUsecase,
-        private verificationUsecase:verificationUsecase
+        private adminUsecase:AdminFetchUsecase ,
+        private verifyUsecase:VerificationUsecase
     ) { }
     fetchUsers = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
@@ -36,11 +36,13 @@ export class AdminController{
 
     verifyNeighbor = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const {neighborId} = req.body
-            await this.verificationUsecase.verifyId(neighborId) 
+            const { neighborId } = req.body
+            console.log("hello verifyneighbor",neighborId)
+            await this.verifyUsecase.verifyId(neighborId) 
             successResponse(res,200,'Neighbor ID verified')
 
         } catch (error) {
+            console.log(error)
             next(error)
         }
     }

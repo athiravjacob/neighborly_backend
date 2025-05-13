@@ -10,7 +10,9 @@ export class TaskController{
     createTask = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { newTask } = req.body
+            console.log(newTask )
             const task = await this.taskUsecase.createNewTask(newTask)
+            console.log(task)
             successResponse(res,200,"New Task Created",task)
         } catch (error) {
             next(error)
@@ -31,6 +33,29 @@ export class TaskController{
 
             }
            
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    acceptTask = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const { taskId } = req.body
+            await this.taskUsecase.acceptTask(taskId)
+            console.log("accpt task ",taskId)
+            successResponse(res,200,"Neighbor accepted the task")
+
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    fetchStatus =  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const { id } = req.params
+            const status = await this.taskUsecase.fetctTaskStatus(id)
+            successResponse(res,200,"fetched task status",status)
+
         } catch (error) {
             next(error)
         }

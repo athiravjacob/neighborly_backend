@@ -5,7 +5,7 @@ import { IUserRepository } from "../../../domain/interface/repositories/IUserRep
 import { NeighborInfo } from "../../../shared/types/NeighborsDTO";
 import { TaskDetails } from "../../../shared/types/TaskDetailsDTO";
 
-export class adminFetchUsecase{
+export class AdminFetchUsecase{
     constructor(
         private userRepository: IUserRepository,
         private neighborRepository:INeighborRepository,

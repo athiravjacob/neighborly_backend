@@ -2,12 +2,12 @@ import { Socket } from 'socket.io';
 import { generateRoomId } from '../../shared/utils/generateRoomId';
 
 export const chatSocketHandler = (socket: Socket) => {
-  console.log('User connected:', socket.id);
+  // console.log('User connected:', socket.id);
 
   socket.on('start-chat', (userId: string, neighborId: string) => {
     const roomId = generateRoomId(userId, neighborId);
     socket.join(roomId);
-    console.log(`User ${userId} joined room ${roomId}`);
+    // console.log(`User ${userId} joined room ${roomId}`);
 
     // socket.to(roomId).emit('message', {
     //   sender: 'System',
@@ -21,10 +21,10 @@ export const chatSocketHandler = (socket: Socket) => {
       sender: userId,
       text: message,
     });
-    console.log(`Message from ${userId} to ${neighborId}: ${message}`);
+    // console.log(`Message from ${userId} to ${neighborId}: ${message}`);
   });
 
   socket.on('disconnect', () => {
-    console.log('User disconnected:', socket.id);
+    // console.log('User disconnected:', socket.id);
   });
 };
