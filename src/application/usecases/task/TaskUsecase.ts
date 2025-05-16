@@ -36,4 +36,26 @@ export class TaskUsecase{
         return taskStatus
         
     }
-}
+
+    async updateTaskCode(taskId: string, code: string): Promise<void>{
+        await this.taskRepository.addTaskCode(taskId,code)
+    }
+
+    async getTaskCode(taskId: string): Promise<string>{
+        return await this.taskRepository.getTaskcode(taskId)
+    }
+    async getTaskById(taskId: string): Promise<TaskDetails>{
+        return await this.taskRepository.getTaskById(taskId)
+    }
+
+    async verifyTaskcode(taskId: string, neighborId: string, taskCode: string): Promise<void>{
+        const isCodeValid = await this.taskRepository.verifyCode(taskId, neighborId, taskCode)
+        if (isCodeValid) {
+            await this.taskRepository.updateTaskStatus(taskId,'in_progress' )
+        }else throw new Error("Invalid code or task and neighbor doesnt match")
+    }
+
+    async taskCompleted(taskId: string): Promise<void>{
+        await this.taskRepository.updateTaskStatus(taskId,'completed' )
+    }
+} 

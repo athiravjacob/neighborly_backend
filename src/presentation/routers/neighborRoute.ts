@@ -17,6 +17,10 @@ export default function setupNeighborRoutes(neighborController: NeighborControll
 
     router.get('/available-neighbors',verifyToken(['user']), neighborController.availableNeighbors)
     router.get('/check-service-availability',verifyToken(['user']), neighborController.checkServiceAvailability)
-    router.get('/fetchStatus',verifyToken(['neighbor']),neighborController.fetchVerificationStatus)
+    router.get('/fetchStatus', verifyToken(['neighbor']), neighborController.fetchVerificationStatus)
+    
+
+    router.get('/wallet/:id',verifyToken(['neighbor']),neighborController.fetchWallet)
+
     return router
 }

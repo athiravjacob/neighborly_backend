@@ -37,6 +37,8 @@ import { PaymentController } from "../presentation/controllers/paymentController
 import { WalletRepository } from "../infrastructure/repositories/walletRepository";
 import { EscrowRepository } from "../infrastructure/repositories/escrowRepository";
 import { VerificationUsecase } from "../application/usecases/admin/verificationUsecase";
+import { WalletUsecase } from "../application/usecases/payment/walletUsecase";
+import { BanUsecase } from "../application/usecases/admin/banUsecase";
 
 export class Container {
   
@@ -64,7 +66,8 @@ export class Container {
       Container.logoutUsecase,
       Container.refreshTokenUsecase
   );
-  
+  public static walletRepository = new WalletRepository()
+
 
   public static saveAvailbleTimeSlot = new SaveAvailability(Container.neighborRepository)
   public static skillsUsecase = new SkillsUsecase(Container.neighborRepository)
@@ -72,13 +75,16 @@ export class Container {
   public static locationUsecase = new LocationUsecase(Container.neighborRepository)
   public static neighborListUsecae = new NeighborsListUsecase(Container.neighborRepository)
   public static neighborProfileUsecase = new NeighborProfileUsecase(Container.neighborRepository)
+  public static walletUsecase = new WalletUsecase(Container.walletRepository)
+
   public static neighborController = new NeighborController(
     Container.saveAvailbleTimeSlot,
     Container.skillsUsecase,
     Container.locationUsecase,
     Container.timeslotUsecase,
     Container.neighborListUsecae,
-    Container.neighborProfileUsecase
+    Container.neighborProfileUsecase,
+    Container.walletUsecase
 
   )
 
@@ -92,10 +98,11 @@ export class Container {
 
   public static userProfileusecase = new ProfileUsecase(Container.userRepository)
   public static userController = new userController(Container.userProfileusecase)
+  public static banUsecase = new BanUsecase(Container.neighborRepository,Container.userRepository)
 
   public static verificationUsecase = new VerificationUsecase(Container.neighborRepository)
   public static adminFetchusecase = new AdminFetchUsecase(Container.userRepository,Container.neighborRepository,Container.taskRepository)
-  public static adminController = new AdminController(Container.adminFetchusecase,Container.verificationUsecase)
+  public static adminController = new AdminController(Container.adminFetchusecase,Container.verificationUsecase,Container.banUsecase)
 
   public static messageRepo = new MessageRepository();
 
@@ -104,7 +111,6 @@ export class Container {
 
   public static  messageController = new MessageController(Container.sendMessageUseCase, Container.getMessagesUseCase);
 
-  public static walletRepository = new WalletRepository()
   public static escrowRepository = new EscrowRepository()
 
   public static transactionRepository = new TransactionRepository()
@@ -112,6 +118,6 @@ export class Container {
     Container.escrowRepository,
     Container.walletRepository,
   Container.taskRepository)
-  public static paymentController = new PaymentController(Container.saveTransactionUsecase)
+  public static paymentController = new PaymentController(Container.saveTransactionUsecase,Container.taskUsecase)
 
   }

@@ -84,7 +84,11 @@ const taskSchema = new Schema({
     type: Number,
     default: null,
     min: [0, 'Final amount cannot be negative']
-  }
+  },
+  task_code: {
+    type: String,
+    default:null
+}
 }, {
   timestamps: true
 });

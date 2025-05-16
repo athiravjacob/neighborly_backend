@@ -29,5 +29,6 @@ export interface TaskDetails {
   final_amount: number;
   task_status?: TaskStatus; 
   payment_status?: PaymentStatus;
+  task_code?:string
   
 }

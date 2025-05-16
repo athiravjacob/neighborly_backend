@@ -6,8 +6,36 @@ import { SkillsDTO } from "../../shared/types/SkillsDTO";
 import { TimeslotDTO } from "../../shared/types/TimeslotDTO";
 import { AppError } from "../../shared/utils/errors";
 import { neighborModel } from "../model/neigborModel";
+import { UserModel } from "../model/userModel";
 
 export class neighborRepository implements INeighborRepository{
+  async ban_or_unban(id: string): Promise<Boolean> {
+    const user = await neighborModel.findById(id);
+  if (!user) {
+    throw new Error("Invalid neighbor ID or neighbor does not exist");
+  }
+
+  // Toggle isBanned
+  const updatedUser = await neighborModel.findByIdAndUpdate(
+    id,
+    { $set: { isBanned: !user.isBanned } },
+    { new: true } // Return the updated document
+  );
+
+  if (!updatedUser) {
+    throw new Error("Failed to update neighbor");
+  }
+
+  return updatedUser.isBanned;
+  }
+
+  async isBanned(id: string): Promise<Boolean> {
+    const neighbor = await neighborModel.findById(id)
+    if(!neighbor || !neighbor.isBanned) throw new Error("invalid neighbor id or neighbor doent exist")
+    return neighbor.isBanned
+  }
+  
+
   async verifyNeighbor(id: string): Promise<void> {
     try {
       const neighbor = await neighborModel.findByIdAndUpdate(id, { isVerified: true, verificationStatus: 'approved' },{new:true})

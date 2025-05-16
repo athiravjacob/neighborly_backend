@@ -9,7 +9,10 @@ export default function setupAdminRoutes(adminController: AdminController): Rout
     router.get('/neighborList', adminController.fetchNeighbors)
     router.get('/TaskList', adminController.fetchTasks) 
     router.patch('/verifyNeighbor', adminController.verifyNeighbor)
+    router.patch('/ban_unban',adminController.banUnban)
     
+
+    // router.get('/transaction_details',adminController.fetch_transactions)
     
     
 

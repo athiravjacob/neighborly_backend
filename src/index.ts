@@ -43,7 +43,7 @@ app.use(express.json())
 app.use('/auth', setupAuthRoutes(Container.authController));
 app.use('/neighbor', setupNeighborRoutes(Container.neighborController));
 app.use('/task', setupTaskToutes(Container.taskController));
-app.use('/user', setupUserRoutes(Container.userController));
+app.use('/user',verifyToken(['user']), setupUserRoutes(Container.userController));
 app.use('/admin', setupAdminRoutes(Container.adminController));
 app.use("/messages", setupMessageRoutes(Container.messageController));
 app.use("/payment", setupPaymentRoutes(Container.paymentController))

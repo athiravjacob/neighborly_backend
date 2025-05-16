@@ -13,5 +13,8 @@ export interface IUserRepository {
   resetPassword(email: string, token: string, newPassword: string): Promise<void>; 
   updateProfile(id:string,profileDetails:userGeneralInfo):Promise<userGeneralInfo>
   fetchPassword(id: string): Promise<string>
-  updatePassword(id:string,newPasswordHashed:string):Promise<void>
+  updatePassword(id: string, newPasswordHashed: string): Promise<void>
+  
+  ban_or_unban(id: string): Promise<Boolean>
+  isBanned(id:string):Promise<Boolean>
 }

@@ -7,7 +7,9 @@ export default function setupPaymentRoutes(paymentController: PaymentController)
         "/webhook",
         paymentController.webhook.bind(paymentController)
       );
-    router.post('/create-checkout-session',paymentController.stripePayment)
+  router.post('/create-checkout-session', paymentController.stripePayment)
+  router.get("/session-details/:sessionId", paymentController.getSessionDetails); 
+  router.get("/transaction_history/:id",paymentController.getTransactionHistory)
     
     return router
 }

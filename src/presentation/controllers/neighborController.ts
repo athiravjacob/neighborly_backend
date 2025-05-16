@@ -9,6 +9,7 @@ import { SkillsDTO } from "../../shared/types/SkillsDTO";
 import { locationDTO } from "../../shared/types/LocationDetailsDTO";
 import { NeighborsListUsecase } from "../../application/usecases/neighbor/NeighborsListUsecase";
 import { NeighborProfileUsecase } from "../../application/usecases/neighbor/NeighborProfileUsecase";
+import { WalletUsecase } from "../../application/usecases/payment/walletUsecase";
 
 interface NeighborQuery {
     city?: string;
@@ -22,7 +23,9 @@ export class NeighborController {
         private serviceLocationUseCase: LocationUsecase,
         private getTimeslotUsecase: TimeslotUsecase,
         private neighborsList: NeighborsListUsecase,
-        private neighborProfile :NeighborProfileUsecase
+        private neighborProfile: NeighborProfileUsecase,
+        private walletUsecase:WalletUsecase
+
     ) { }
 
     //*****************Post available data and time****************/
@@ -150,6 +153,20 @@ export class NeighborController {
 
         } catch (error) {
             next(error)
+        }
+    }
+
+    // *********************Fetch Wallet Details*************
+
+    fetchWallet = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const id = req.params.id
+            if(!id) throw new Error("neigbor Id missing")
+            const data = await this.walletUsecase.fetchNeighborWallet(id)
+            successResponse(res,200,'neighbor fetched',data)
+        } catch (error) {
+            next(error) 
+
         }
     }
 }

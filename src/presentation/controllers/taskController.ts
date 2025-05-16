@@ -60,4 +60,26 @@ export class TaskController{
             next(error)
         }
     }
+
+    verifyTaskcode =  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const { taskId,neighborId,code } = req.body
+            await this.taskUsecase.verifyTaskcode(taskId,neighborId, code )
+            successResponse(res,200,"task code verified and task mark as in progress",)
+
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    markTaskComplete = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const { taskId } = req.body
+            await this.taskUsecase.taskCompleted(taskId )
+            successResponse(res,200,"Task completed succesfully.",)
+
+        } catch (error) {
+            next(error)
+        }
+    }
 }

@@ -30,6 +30,7 @@ export class Neighbor {
       }[] = [],
       public isVerified: boolean = false,
       public idCardImage: string = '',
-      public verificationStatus: 'pending' | 'approved' | 'rejected' = 'pending'
+      public verificationStatus: 'pending' | 'approved' | 'rejected' = 'pending',
+      public isBanned:boolean= false
     ) {}
   }

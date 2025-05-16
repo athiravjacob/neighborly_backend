@@ -39,7 +39,8 @@ export class Task {
         public actualHours?: number,
         public baseAmount?: number, 
         public platform_fee?: number,
-        public final_amount?: number
+        public final_amount?: number,
+        public task_code?:string|null
     ) {}
 
     // Calculate actual hours based on start and end time

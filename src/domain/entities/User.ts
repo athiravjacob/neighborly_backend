@@ -11,6 +11,7 @@ export class User {
       public googleId?:string,
       public otp?: string,
       public otpExpiresAt?: number,
+      public isBanned:boolean=false
     ) {}
   }
 

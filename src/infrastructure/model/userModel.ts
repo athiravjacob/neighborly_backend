@@ -17,6 +17,10 @@ const userSchema = new Schema({
   googleId: { type: String, required: false }, 
   resetToken: { type: String },
   resetTokenExpiresAt: { type: Number },
+  isBanned: {
+    type: Boolean,
+    default:false
+  }
 }, { timestamps: true });
 
 export const UserModel = model('User', userSchema);

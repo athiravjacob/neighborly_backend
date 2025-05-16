@@ -4,13 +4,19 @@ import { saveTransaction } from "../../application/usecases/payment/saveTransact
 import { TransactionDetails } from "../../shared/types/TransactionDetails";
 import Stripe from "stripe";
 import dotenv from "dotenv";
+import { generateOTP } from "../../shared/utils/generateOTP";
+import { TaskUsecase } from "../../application/usecases/task/TaskUsecase";
+import { getIO } from "../../infrastructure/socket/socketServer";
 
 dotenv.config();
 
 export class PaymentController {
   private stripe: Stripe;
 
-  constructor(private recordTransactionUsecase: saveTransaction) {
+  constructor(
+    private recordTransactionUsecase: saveTransaction,
+    private taskUsecase:TaskUsecase
+  ) {
     const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
     console.log(stripeSecretKey, "stripe key");
     if (!stripeSecretKey) {
@@ -70,7 +76,7 @@ export class PaymentController {
           },
         ],
         mode: "payment",
-        success_url: "http://localhost:5173/success?session_id={CHECKOUT_SESSION_ID}",
+        success_url: "http://localhost:5173/payment_success?session_id={CHECKOUT_SESSION_ID}",
         cancel_url: "http://localhost:5173/cancel",
         metadata: metadata || {},
       });
@@ -102,6 +108,7 @@ export class PaymentController {
       // Handle checkout.session.completed event
       if (event.type === "checkout.session.completed") {
         const session = event.data.object as Stripe.Checkout.Session;
+        const taskCode = generateOTP()
 
         // Retrieve session with payment intent
         const fullSession = await this.stripe.checkout.sessions.retrieve(session.id, {
@@ -117,12 +124,16 @@ export class PaymentController {
           amount: fullSession.amount_total ? fullSession.amount_total / 100 : 0,
           transactionDate: new Date(fullSession.created * 1000),
         };
-        console.log(paymentDetails,"paymnt details")
+        console.log(paymentDetails, "paymnt details")
+        await this.taskUsecase.updateTaskCode(fullSession.metadata?.taskId!,taskCode)
         // Record transaction
         const recordTransactionHistory = await this.recordTransactionUsecase.execute(paymentDetails);
         console.log("Transaction recorded:", recordTransactionHistory);
+
+      
       }
 
+      
       res.json({ received: true });
     } catch (error) {
       console.error("Webhook error:", error);
@@ -130,4 +141,53 @@ export class PaymentController {
       return;
     }
   };
+
+  getSessionDetails = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const { sessionId } = req.params;
+      if (!sessionId) {
+        throw new Error("Session ID is required");
+      }
+  
+      // Retrieve Stripe session with payment intent
+      const session = await this.stripe.checkout.sessions.retrieve(sessionId, {
+        expand: ["payment_intent"],
+      });
+  
+      // Fetch taskCode from taskUsecase (assumes taskCode is stored in DB)
+      const taskCode = await this.taskUsecase.getTaskCode(session.metadata?.taskId || "");
+      const taskDetails = await this.taskUsecase.getTaskById(session.metadata?.taskId!)
+      // Construct transaction details
+      const transactionDetails = {
+        stripeTransactionId: (session.payment_intent as Stripe.PaymentIntent)?.id || "",
+        amount: session.amount_total ? session.amount_total / 100 : 0,
+        transactionDate: new Date(session.created * 1000).toISOString(),
+        taskDetails:taskDetails,
+        taskCode: taskCode || "",
+      };
+  
+      successResponse(res, 200, "Session details retrieved", transactionDetails);
+    } catch (error) {
+      console.error("Error retrieving session details:", error);
+      next(error);
+    }
+  };
+
+  getTransactionHistory = async (req: Request, res: Response, next: NextFunction): Promise<void> => { 
+    try {
+      const { id } = req.params
+      const transactions = await this.recordTransactionUsecase.neighborTransactions(id)
+      console.log(transactions)
+      successResponse(res, 200, "Neighbor earnings retrieved", transactions);
+
+      
+    } catch (error) {
+      next(error)
+    }
+  }
+
 }

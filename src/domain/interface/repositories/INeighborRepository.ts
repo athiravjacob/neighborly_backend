@@ -19,5 +19,8 @@ export interface INeighborRepository{
     checkServiceAvailability(city: string): Promise<Boolean>
     uploadId(id: string, idCardImage: string): Promise<Boolean>
     fetchVerifyStatus(id: string): Promise<Boolean>
-    verifyNeighbor(id:string):Promise<void>
+    verifyNeighbor(id: string): Promise<void>
+    
+    ban_or_unban(id: string): Promise<Boolean>
+    isBanned(id:string):Promise<Boolean>
 }

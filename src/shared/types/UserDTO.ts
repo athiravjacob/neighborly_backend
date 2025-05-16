@@ -4,5 +4,6 @@ export interface userGeneralInfo{
     email: string,
     phone?: string,
     dob?:Date,
-    profilePicture?:string
+    profilePicture?: string,
+    isBanned:boolean
 }

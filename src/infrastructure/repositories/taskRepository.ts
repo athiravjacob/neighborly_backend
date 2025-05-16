@@ -5,10 +5,45 @@ import { PaymentStatus, TaskDetails, TaskStatus } from "../../shared/types/TaskD
 import { TaskModel } from "../model/taskModel";
 
 export class taskRepository implements ITaskRepository {
+  async updateTaskStatus(taskId: string, task_status: TaskStatus): Promise<void> {
+    await TaskModel.findByIdAndUpdate(taskId,{task_status:task_status}) 
+  }
+  async verifyCode(taskId: string, neighborId: string, code: string): Promise<Boolean> {
+    const task = await TaskModel.findById(taskId)
+   
+  
+    const neighborIdStr = neighborId.toString();
+    if (!task || !task.task_code ) 
+      throw new Error("Task or task code doesnt exist or task id is invalid")
+    if (task.task_code === code && neighborIdStr === neighborId) return true
+    
+    else return false
+  }
+
+  async getTaskById(taskId: string): Promise<TaskDetails> {
+    const task = await TaskModel.findById(taskId)
+    if (!task ) throw new Error("Task doesnt exist or task id is invalid")
+    return JSON.parse(JSON.stringify(task))
+  }
+  
+  //************************Get task Code****************** */
+  async getTaskcode(taskId: string): Promise<string> {
+    const task = await TaskModel.findById(taskId)
+    if (!task || !task.task_code) throw new Error("Task code doesnt exist for this task or task id is invalid")
+    return task.task_code
+  }
+
+  // *****************Add task Code **************************
+  async addTaskCode(taskID: string, code: string): Promise<void> {
+    console.log(code,"taskcode")
+    await TaskModel.findByIdAndUpdate(taskID,{task_code:code})
+  }
+  //************Update Payment status ************ */
   async updatePaymentStatus(id:string,status: PaymentStatus): Promise<void> {
     await TaskModel.findByIdAndUpdate(id,{payment_status:status}) 
   }
 
+  // ******************** Fetch Task status ****************************
   async fetchTaskStatus(id: string): Promise<TaskStatus> {
     const task = await TaskModel.findById(id);
     if (!task) {

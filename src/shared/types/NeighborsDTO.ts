@@ -24,6 +24,7 @@ export interface NeighborInfo {
       endTime: number;
     }[];
   }[];
+  isBanned:boolean
 }
 
 

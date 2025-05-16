@@ -4,6 +4,7 @@ import { ITransactionRepository } from "../../../domain/interface/repositories/I
 import { IWalletRepository } from "../../../domain/interface/repositories/IWalletRepository";
 import { TransactionDetails } from "../../../shared/types/TransactionDetails";
 import { ITaskRepository } from "../../../domain/interface/repositories/ITaskRepository";
+import { TransactionHistory } from "../../../domain/entities/TransactionHistory";
 
 export class saveTransaction{
     constructor(
@@ -19,5 +20,10 @@ export class saveTransaction{
         const updateWallet = await this.WalletRepository.updateWalletBalance(paymentDetails.neighborId,paymentDetails.amount)
         const updatePaymentStatus = await this.TaskRepository.updatePaymentStatus(paymentDetails.taskId,"paid")
            
+    }
+
+    async neighborTransactions(id: string): Promise<TransactionDetails[]|[]>{
+        const transactions = await this.TransactionRepository.getHistory(id)
+        return transactions
     }
 }

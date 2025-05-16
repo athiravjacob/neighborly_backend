@@ -34,7 +34,11 @@ const neighborSchema = new Schema({
   }],
   isVerified: { type: Boolean, default: false },
   idCardImage: { type: String, default: '' },
-  verificationStatus: { type: String, enum: ['pending', 'approved', 'rejected'], default: 'pending' }
+  verificationStatus: { type: String, enum: ['pending', 'approved', 'rejected'], default: 'pending' },
+  isBanned: {
+    type: Boolean,
+    default:false
+  }
 }, { timestamps: true });
 
 neighborSchema.index(
