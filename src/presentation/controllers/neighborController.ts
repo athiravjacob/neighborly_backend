@@ -32,7 +32,9 @@ export class NeighborController {
 
     availableTimeslots = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const { neighborId, availability } = req.body
+            const { neighborId } = req.params
+
+            const {availability } = req.body
             console.groupCollapsed(req.body)
             const updatedNeighbor = await this.availabilityUseCase.execute(neighborId,availability)
             successResponse(res,200,'Availability updated successfully',updatedNeighbor)

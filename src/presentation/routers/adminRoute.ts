@@ -4,12 +4,13 @@ import { AdminController } from "../controllers/adminController"
 export default function setupAdminRoutes(adminController: AdminController): Router{
     const router = Router()
 
-    router.get('/userList', adminController.fetchUsers)
-    // router.get('/userDetails/:id', adminController.userDetails)
-    router.get('/neighborList', adminController.fetchNeighbors)
-    router.get('/TaskList', adminController.fetchTasks) 
-    router.patch('/verifyNeighbor', adminController.verifyNeighbor)
-    router.patch('/ban_unban',adminController.banUnban)
+    router.get('/users', adminController.fetchUsers)
+    router.get('/neighbors', adminController.fetchNeighbors)
+    router.get('/tasks', adminController.fetchTasks) 
+    router.patch('/neighbors/:id/verify', adminController.verifyNeighbor)
+    router.patch('/users/:id/ban', adminController.banUser)
+    router.patch('/neighbor/:id/ban',adminController.banNeighbor)
+
     
 
     // router.get('/transaction_details',adminController.fetch_transactions)

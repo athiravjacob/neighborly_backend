@@ -2,25 +2,32 @@ import express, { Router } from 'express';
 import { NeighborController } from '../controllers/neighborController';
 import verifyToken from '../middleware/authMiddleware';
 
-export default function setupNeighborRoutes(neighborController: NeighborController): Router{
-    const router = Router()
-
-    router.post('/availability', verifyToken(['neighbor']) ,neighborController.availableTimeslots)
-    router.post('/skills',verifyToken(['neighbor']), neighborController.addSkills)
-    router.post('/location',verifyToken(['neighbor']), neighborController.availableLocation)
-    router.patch('/uploadId',verifyToken(['neighbor']),neighborController.uploadId)
-    
-    router.get('/availability/:id',verifyToken(['neighbor']), neighborController.getTimeslots)
-    router.get('/skills/:id',verifyToken(['neighbor']), neighborController.getSkills)
-    router.get('/location/:id',verifyToken(['neighbor']), neighborController.fetchLocation)
-    
-
-    router.get('/available-neighbors',verifyToken(['user']), neighborController.availableNeighbors)
-    router.get('/check-service-availability',verifyToken(['user']), neighborController.checkServiceAvailability)
-    router.get('/fetchStatus', verifyToken(['neighbor']), neighborController.fetchVerificationStatus)
-    
-
-    router.get('/wallet/:id',verifyToken(['neighbor']),neighborController.fetchWallet)
-
-    return router
-}
+export default function setupNeighborRoutes(neighborController: NeighborController): Router {
+    const router = Router();
+  
+    // Availability
+    router.post('/:neighborId/timeslots', verifyToken(['neighbor']), neighborController.availableTimeslots);
+    router.get('/:neighborId/timeslots', verifyToken(['neighbor']), neighborController.getTimeslots);
+  
+    // Skills
+    router.post('/:neighborId/skills', verifyToken(['neighbor']), neighborController.addSkills);
+    router.get('/:neighborId/skills', verifyToken(['neighbor']), neighborController.getSkills);
+  
+    // Location
+    router.post('/:neighborId/location', verifyToken(['neighbor']), neighborController.availableLocation);
+    router.get('/:neighborId/location', verifyToken(['neighbor']), neighborController.fetchLocation);
+  
+    // Verification
+    router.patch('/:neighborId/verification', verifyToken(['neighbor']), neighborController.uploadId);
+    router.get('/:neighborId/verification/status', verifyToken(['neighbor']), neighborController.fetchVerificationStatus);
+  
+    // For users: finding neighbors & checking service
+    router.get('/available', verifyToken(['user']), neighborController.availableNeighbors);
+    router.get('/service-availability', verifyToken(['user']), neighborController.checkServiceAvailability);
+  
+    // Wallet
+    router.get('/:neighborId/wallet', verifyToken(['neighbor']), neighborController.fetchWallet);
+  
+    return router;
+  }
+  

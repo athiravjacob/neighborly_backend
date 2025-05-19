@@ -8,28 +8,60 @@ import verifyToken from "../middleware/authMiddleware";
 
 export default function setupAuthRoutes(authController: AuthController): Router {
   const router = Router();
-    router.post('/signup', validateRequest(signUpValidSchema), authController.signup);
-    router.post('/send-otp', authController.sendOTP);
-    router.post('/verify-otp', authController.verifyOTP);
-    router.post('/forgot-password',authController.forgotPassword)
-    router.post('/reset-password',authController.resetPassword)
-    router.patch('/change-password',verifyToken(['user', 'neighbor','admin']),authController.changePassword)
+
+  // User Registration & Login
+  router.post('/users', validateRequest(signUpValidSchema), authController.signup); 
+  router.post('/users/login', validateRequest(loginValidSchema), authController.userlogin);
+  router.post('/users/google-login',authController.googleLogin)
+  router.post('/users/logout', authController.logout); 
+
+  // OTP Verification (as a sub-resource of users)
+  router.post('/users/otp/send', authController.sendOTP); 
+  router.post('/users/otp/verify', authController.verifyOTP);
+
+  // Password management (for current authenticated user)
+  router.post('/users/password/forgot', authController.forgotPassword);
+  router.post('/users/password/reset', authController.resetPassword);
+  router.patch('/users/:id/password/change', verifyToken(['user', 'neighbor', 'admin']), authController.changePassword);
+
+  // Token refresh
+  router.post('/tokens/refresh', authController.refreshToken);
+
+  // Neighbor user routes
+  router.post('/neighbors', authController.sigupNeighbor); 
+  router.post('/neighbors/login', authController.loginNeighbor); 
+
+  // Admin routes
+  router.post('/admins/login', authController.adminLogin); // Admin login
+
+  return router;
+}
+
+
+// export default function setupAuthRoutes(authController: AuthController): Router {
+//   const router = Router();
+//     router.post('/users', validateRequest(signUpValidSchema), authController.signup);
+//     router.post('/send-otp', authController.sendOTP);
+//     router.post('/verify-otp', authController.verifyOTP);
+//     router.post('/forgot-password',authController.forgotPassword)
+//     router.post('/reset-password',authController.resetPassword)
+//     router.patch('/change-password',verifyToken(['user', 'neighbor','admin']),authController.changePassword)
     
-    router.post('/login',validateRequest(loginValidSchema),authController.userlogin)
-    router.post('/google-login',authController.googleLogin)
-    router.post('/logout',authController.logout)
-    router.post('/refresh',authController.refreshToken)
+//     router.post('/login',validateRequest(loginValidSchema),authController.userlogin)
+//     router.post('/google-login',authController.googleLogin)
+//     router.post('/logout',authController.logout)
+//     router.post('/refresh',authController.refreshToken)
     
     
   
-  // ****************************Neighbor**************************
-    router.post('/neighbor/signup',authController.sigupNeighbor)
-    router.post('/neighbor/login',authController.loginNeighbor)
+//   // ****************************Neighbor**************************
+//     router.post('/neighbor/signup',authController.sigupNeighbor)
+//     router.post('/neighbor/login',authController.loginNeighbor)
     
   
-  //***************************** Admin ***************** */
+//   //***************************** Admin ***************** */
 
-  router.post('/admin/login',authController.adminLogin)
+//   router.post('/admin/login',authController.adminLogin)
 
-    return router;
-  }
+//     return router;
+//   }

@@ -49,17 +49,22 @@ export class AdminController{
         }
     }
 
-    banUnban = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    banUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const { id, type } = req.body
-            console.log(type,id)
-        let  isBanned
-        if (type === 'user') {
-            isBanned =await this.banUsecase.handleBan_user(id)
+            const { id } = req.params
+        const isBanned =await this.banUsecase.handleBan_user(id)
+
+        successResponse(res,200,'Ban /Unban success' ,isBanned)
+
+        } catch (error) {
+            next(error)
         }
-        if (type === 'neighbor') {
-            isBanned =await this.banUsecase.handleBan_neighbor(id)
-        }
+    }
+    banNeighbor = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const { id } = req.params
+        const isBanned =await this.banUsecase.handleBan_neighbor(id)
+
         successResponse(res,200,'Ban /Unban success' ,isBanned)
 
         } catch (error) {

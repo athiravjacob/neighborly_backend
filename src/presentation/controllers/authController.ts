@@ -99,9 +99,9 @@ export class AuthController {
   changePassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { currentPassword, newPassword } = req.body
-      const id = req.userId
+      const {id }= req.params
       const type = req.userType
-      await this.resetPasswordUseCase.changeCurrentPassword(id!,type!,currentPassword,newPassword)
+      await this.resetPasswordUseCase.changeCurrentPassword(id,type!,currentPassword,newPassword)
       successResponse(res,200,'password changed successfully')
 
     } catch (error) {
