@@ -67,6 +67,9 @@ export class Container {
       Container.refreshTokenUsecase
   );
   public static walletRepository = new WalletRepository()
+  public static taskRepository = new taskRepository()
+  public static taskUsecase = new TaskUsecase(Container.taskRepository)
+  public static taskController = new TaskController(Container.taskUsecase)
 
 
   public static saveAvailbleTimeSlot = new SaveAvailability(Container.neighborRepository)
@@ -84,20 +87,18 @@ export class Container {
     Container.timeslotUsecase,
     Container.neighborListUsecae,
     Container.neighborProfileUsecase,
-    Container.walletUsecase
+    Container.walletUsecase,
+    Container.taskUsecase
 
   )
 
 
 
-  public static taskRepository = new taskRepository()
-  public static taskUsecase = new TaskUsecase(Container.taskRepository)
-  public static taskController = new TaskController(Container.taskUsecase)
-
+  
 
 
   public static userProfileusecase = new ProfileUsecase(Container.userRepository)
-  public static userController = new userController(Container.userProfileusecase)
+  public static userController = new userController(Container.userProfileusecase,Container.taskUsecase)
   public static banUsecase = new BanUsecase(Container.neighborRepository,Container.userRepository)
 
   public static verificationUsecase = new VerificationUsecase(Container.neighborRepository)

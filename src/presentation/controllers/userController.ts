@@ -7,6 +7,8 @@ import { WalletUsecase } from "../../application/usecases/payment/walletUsecase"
 export class userController{
     constructor(
         private userProfile: ProfileUsecase,
+        private taskUsecase:TaskUsecase
+
     ){}
     
 
@@ -14,7 +16,7 @@ export class userController{
     updateProfile = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { profileDetails } = req.body
-            const id = req.userId
+            const id = req.params.userId
             const data = await this.userProfile.updateProfileInfo(id!,profileDetails)
             successResponse(res,200,'user profile updated',data)
         } catch (error) {
@@ -25,7 +27,7 @@ export class userController{
 
     fetchProfile = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const id = req.userId
+            const id = req.params.userId
             const data = await this.userProfile.fetchProfileInfo(id!)
             successResponse(res,200,'user profile fetched',data)
 
@@ -35,7 +37,18 @@ export class userController{
         }
     }
 
-    
+    // ******************Fetch Tasks created by user************
+
+    fetchTasks = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const { userId } = req.params
+            const data = await this.taskUsecase.showUserTasks(userId!)
+            successResponse(res,200,"Fetched tasks created by user",data)
+        } 
+        catch (error) {
+            next(error)
+        }
+    }
 
 
 

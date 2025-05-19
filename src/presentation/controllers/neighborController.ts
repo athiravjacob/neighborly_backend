@@ -10,6 +10,7 @@ import { locationDTO } from "../../shared/types/LocationDetailsDTO";
 import { NeighborsListUsecase } from "../../application/usecases/neighbor/NeighborsListUsecase";
 import { NeighborProfileUsecase } from "../../application/usecases/neighbor/NeighborProfileUsecase";
 import { WalletUsecase } from "../../application/usecases/payment/walletUsecase";
+import { TaskUsecase } from "../../application/usecases/task/TaskUsecase";
 
 interface NeighborQuery {
     city?: string;
@@ -24,7 +25,9 @@ export class NeighborController {
         private getTimeslotUsecase: TimeslotUsecase,
         private neighborsList: NeighborsListUsecase,
         private neighborProfile: NeighborProfileUsecase,
-        private walletUsecase:WalletUsecase
+        private walletUsecase: WalletUsecase,
+        private taskUsecase: TaskUsecase
+
 
     ) { }
 
@@ -34,10 +37,10 @@ export class NeighborController {
         try {
             const { neighborId } = req.params
 
-            const {availability } = req.body
+            const { availability } = req.body
             console.groupCollapsed(req.body)
-            const updatedNeighbor = await this.availabilityUseCase.execute(neighborId,availability)
-            successResponse(res,200,'Availability updated successfully',updatedNeighbor)
+            const updatedNeighbor = await this.availabilityUseCase.execute(neighborId, availability)
+            successResponse(res, 200, 'Availability updated successfully', updatedNeighbor)
         } catch (error) {
             next(error)
         }
@@ -46,9 +49,9 @@ export class NeighborController {
     //**********************Add New Skill**************** */
     addSkills = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const { neighborId,skill } = req.body
+            const { neighborId, skill } = req.body
             const skills = await this.skillsUseCase.saveSkills(neighborId, skill)
-            successResponse(res,200,"skills Updated",skills)
+            successResponse(res, 200, "skills Updated", skills)
         } catch (error) {
             next(error)
         }
@@ -59,8 +62,8 @@ export class NeighborController {
     availableLocation = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { neighborId, location } = req.body
-            const serviceLocation = await this.serviceLocationUseCase.saveLocation( neighborId, location )
-            successResponse(res,200,"service location details saved",serviceLocation)
+            const serviceLocation = await this.serviceLocationUseCase.saveLocation(neighborId, location)
+            successResponse(res, 200, "service location details saved", serviceLocation)
         } catch (error) {
             next(error)
         }
@@ -72,8 +75,8 @@ export class NeighborController {
             const { imageUrl } = req.body
             const id = req.userId
         
-            const status =await this.neighborProfile.uploadIdUrl(id!,imageUrl)
-            successResponse(res,200,"Id card uploaded for verification",status)
+            const status = await this.neighborProfile.uploadIdUrl(id!, imageUrl)
+            successResponse(res, 200, "Id card uploaded for verification", status)
         } catch (error) {
             next(error)
         }
@@ -84,7 +87,7 @@ export class NeighborController {
         try {
             const id = req.params.id
             const data = await this.getTimeslotUsecase.getTimeslots(id)
-            successResponse(res,200,"fetched neighbors available timeslots",data)
+            successResponse(res, 200, "fetched neighbors available timeslots", data)
         } catch (error) {
             next(error)
         }
@@ -95,7 +98,7 @@ export class NeighborController {
         try {
             const id = req.params.id
             const data = await this.skillsUseCase.getSkills(id)
-            successResponse(res,200,"fetched neighbors skills",data)
+            successResponse(res, 200, "fetched neighbors skills", data)
         } catch (error) {
             next(error)
         }
@@ -106,7 +109,7 @@ export class NeighborController {
         try {
             const id = req.params.id
             const data = await this.serviceLocationUseCase.getServiceLocation(id)
-            successResponse(res,200,"fetched neighbors skills",data)
+            successResponse(res, 200, "fetched neighbors skills", data)
         } catch (error) {
             next(error)
         }
@@ -114,31 +117,31 @@ export class NeighborController {
 
     //********************************* List of available neighbors ***************************/
 
-    availableNeighbors = async (req: Request<{},{},{},NeighborQuery>, res: Response, next: NextFunction): Promise<void> => {
+    availableNeighbors = async (req: Request<{}, {}, {}, NeighborQuery>, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { city, subCategory } = req.query
             if (!city || !subCategory) {
                 res.status(400).json({ success: false, message: "City and sub category is required" });
                 return;
-              }
+            }
             const data = await this.neighborsList.getNeighborsList(city, subCategory)
-            successResponse(res,200,"fetched available neighbors ",data)
+            successResponse(res, 200, "fetched available neighbors ", data)
 
         } catch (error) {
             next(error)
         }
     }
 
-    checkServiceAvailability = async (req: Request<{},{},{},NeighborQuery>, res: Response, next: NextFunction): Promise<void> => {
+    checkServiceAvailability = async (req: Request<{}, {}, {}, NeighborQuery>, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const {city} = req.query
+            const { city } = req.query
             if (!city) {
                 res.status(400).json({ success: false, message: "City is required" });
                 return
             }
             const data = await this.neighborsList.checkServiceLocation(city)
             if (data === true) {
-                successResponse(res,200,"Service available",data)
+                successResponse(res, 200, "Service available", data)
             } else
                 errorResponse(res, 400, "No Service available in this area ")
 
@@ -151,7 +154,7 @@ export class NeighborController {
         try {
             const id = req.userId
             const status = await this.neighborProfile.fetchStatus(id!)
-            successResponse(res,200,"verifiation status",status)
+            successResponse(res, 200, "verifiation status", status)
 
         } catch (error) {
             next(error)
@@ -163,12 +166,37 @@ export class NeighborController {
     fetchWallet = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const id = req.params.id
-            if(!id) throw new Error("neigbor Id missing")
+            if (!id) throw new Error("neigbor Id missing")
             const data = await this.walletUsecase.fetchNeighborWallet(id)
-            successResponse(res,200,'neighbor fetched',data)
+            successResponse(res, 200, 'neighbor fetched', data)
         } catch (error) {
-            next(error) 
+            next(error)
 
+        }
+    }
+
+    //******************Fetch Tasks Assigned to neighbor ************** */
+    fetchAssignedTasks = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const { neighborId } = req.params
+            const data = await this.taskUsecase.showNeighborTasks(neighborId)
+            successResponse(res, 200, "Fetched tasks scheduled to the neighbor", data)
+        } 
+        catch (error) {
+            next(error)
+        }
+    }
+    // **********************Accept Task *******************
+
+    acceptTask = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const { taskId } = req.body
+            await this.taskUsecase.acceptTask(taskId)
+            console.log("accpt task ",taskId)
+            successResponse(res,200,"Neighbor accepted the task")
+
+        } catch (error) {
+            next(error)
         }
     }
 }
