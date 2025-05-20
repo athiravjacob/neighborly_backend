@@ -109,6 +109,7 @@ export class PaymentController {
       if (event.type === "checkout.session.completed") {
         const session = event.data.object as Stripe.Checkout.Session;
         const taskCode = generateOTP()
+        console.log("task code",taskCode)
 
         // Retrieve session with payment intent
         const fullSession = await this.stripe.checkout.sessions.retrieve(session.id, {
@@ -179,7 +180,7 @@ export class PaymentController {
 
   getTransactionHistory = async (req: Request, res: Response, next: NextFunction): Promise<void> => { 
     try {
-      const { id } = req.params
+      const  id  = req.params.neighborId
       const transactions = await this.recordTransactionUsecase.neighborTransactions(id)
       console.log(transactions)
       successResponse(res, 200, "Neighbor earnings retrieved", transactions);
@@ -189,5 +190,7 @@ export class PaymentController {
       next(error)
     }
   }
+
+ 
 
 }

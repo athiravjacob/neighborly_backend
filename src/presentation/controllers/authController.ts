@@ -94,14 +94,13 @@ export class AuthController {
     }
   }
 
-  //****************************** Change Password of logged in user/neighbor ********************** */
+  //****************************** Change Password of logged in user ********************** */
 
-  changePassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  changePassword_user = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { currentPassword, newPassword } = req.body
-      const {id }= req.params
-      const type = req.userType
-      await this.resetPasswordUseCase.changeCurrentPassword(id,type!,currentPassword,newPassword)
+      const id = req.params.userId
+      await this.resetPasswordUseCase.changeCurrentPassword(id,'user',currentPassword,newPassword)
       successResponse(res,200,'password changed successfully')
 
     } catch (error) {
@@ -109,6 +108,20 @@ export class AuthController {
     }
   }
 
+  changePassword_neighbor = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      console.log(req.body)
+      const { currentPassword, newPassword } = req.body
+      const id = req.params.neighborId
+      await this.resetPasswordUseCase.changeCurrentPassword(id, 'neighbor', currentPassword, newPassword)
+      console.log("password updated")
+      successResponse(res,200,'password changed successfully')
+
+    } catch (error) {
+      console.log(error)
+      next(error)
+    }
+  }
   userlogin = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     console.log(req.body,"Hello user login")
 

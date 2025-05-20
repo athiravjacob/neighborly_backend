@@ -9,6 +9,19 @@ import { neighborModel } from "../model/neigborModel";
 import { UserModel } from "../model/userModel";
 
 export class neighborRepository implements INeighborRepository{
+
+  async fetchPassword(id: string): Promise<string> {
+    const user = await neighborModel.findById(id, { _id: 0, password: 1 })
+    console.log(id,"fetch neighbor password")
+    if (!user?.password) {
+      throw new AppError(400, "No password found for user");
+  }
+    return user.password;
+  }
+  async updatePassword(id: string, newPasswordHashed: string): Promise<void> {
+    await neighborModel.findByIdAndUpdate(id, { $set: { password: newPasswordHashed } },{ new: true } )
+    
+  }
   async ban_or_unban(id: string): Promise<Boolean> {
     const user = await neighborModel.findById(id);
   if (!user) {

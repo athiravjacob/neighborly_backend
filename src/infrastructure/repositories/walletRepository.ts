@@ -4,19 +4,29 @@ import { WalletDetails } from "../../shared/types/Wallet";
 import { walletModel } from "../model/walletModel";
 
 export class WalletRepository implements IWalletRepository{
-    async fetchWallet(neighborId: String): Promise<WalletDetails> {
+    async fetchWallet(neighborId: string): Promise<WalletDetails> {
         try {
             const wallet = await walletModel.findOne({ neighborId })
+            console.log(wallet)
             if (!wallet) {
-                throw new Error("Wallet details missing for this neighbor")
+                return {
+                    neighborId,
+                    balance: 0,
+                    withdrawableBalance: 0,
+                    createdAt: undefined,
+                    updatedAt: undefined,
+                };
             }
             return JSON.parse(JSON.stringify(wallet))           
 
         } catch (error) {
+            console.log(error)
             throw new Error("Error getting wallet details")
 
         }
     }
+
+
     async updateWalletBalance(neighborId: string, balance: number): Promise<void> {
         try {
             const wallet = await walletModel.findOne({ neighborId })

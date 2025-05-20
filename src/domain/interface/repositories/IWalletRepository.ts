@@ -3,5 +3,5 @@ import { Wallet } from "../../entities/Wallet"
 
 export interface IWalletRepository{
     updateWalletBalance(neighborId: string, balance: number): Promise<void>
-    fetchWallet(neighborId:String) :Promise<WalletDetails>
+    fetchWallet(neighborId:string) :Promise<WalletDetails>
 }

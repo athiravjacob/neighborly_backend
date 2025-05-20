@@ -9,7 +9,7 @@ export default function setupPaymentRoutes(paymentController: PaymentController)
       );
   router.post('/create-checkout-session', paymentController.stripePayment)
   router.get("/session-details/:sessionId", paymentController.getSessionDetails); 
-  router.get("/:id/transaction_history",paymentController.getTransactionHistory)
+  // router.get("/:id/transaction_history",paymentController.getTransactionHistory)
     
     return router
 }

@@ -52,7 +52,7 @@ export class Container {
     public static loginUseCase = new LoginUsecase(Container.userRepository,Container.neighborRepository,Container.tokenRepository,Container.authService)
     public static logoutUsecase = new LogoutUsecase(Container.tokenRepository)
     public static VerifyOtpUsecase = new verifyOtpUseCase(Container.OTPRepository)
-    public static resetPasswordUseCase = new ResetPasswordUseCase(Container.userRepository,Container.authService)
+    public static resetPasswordUseCase = new ResetPasswordUseCase(Container.userRepository,Container.authService,Container.neighborRepository)
     public static forgotPassword = new forgotPasswordUsecase(Container.userRepository,Container.emailService)
     public static sendotpUsecase = new SendOtpUsecase(Container.OTPRepository,Container.emailService)
     public static refreshTokenUsecase  = new refreshTokenUsecase(Container.tokenRepository,Container.authService)
@@ -79,7 +79,13 @@ export class Container {
   public static neighborListUsecae = new NeighborsListUsecase(Container.neighborRepository)
   public static neighborProfileUsecase = new NeighborProfileUsecase(Container.neighborRepository)
   public static walletUsecase = new WalletUsecase(Container.walletRepository)
+  public static escrowRepository = new EscrowRepository()
 
+  public static transactionRepository = new TransactionRepository()
+  public static saveTransactionUsecase = new saveTransaction(Container.transactionRepository,
+    Container.escrowRepository,
+    Container.walletRepository,
+  Container.taskRepository)
   public static neighborController = new NeighborController(
     Container.saveAvailbleTimeSlot,
     Container.skillsUsecase,
@@ -88,7 +94,8 @@ export class Container {
     Container.neighborListUsecae,
     Container.neighborProfileUsecase,
     Container.walletUsecase,
-    Container.taskUsecase
+    Container.taskUsecase,
+    Container.saveTransactionUsecase
 
   )
 
@@ -112,13 +119,8 @@ export class Container {
 
   public static  messageController = new MessageController(Container.sendMessageUseCase, Container.getMessagesUseCase);
 
-  public static escrowRepository = new EscrowRepository()
 
-  public static transactionRepository = new TransactionRepository()
-  public static saveTransactionUsecase = new saveTransaction(Container.transactionRepository,
-    Container.escrowRepository,
-    Container.walletRepository,
-  Container.taskRepository)
+  
   public static paymentController = new PaymentController(Container.saveTransactionUsecase,Container.taskUsecase)
 
   }

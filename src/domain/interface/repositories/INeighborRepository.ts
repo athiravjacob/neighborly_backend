@@ -22,5 +22,10 @@ export interface INeighborRepository{
     verifyNeighbor(id: string): Promise<void>
     
     ban_or_unban(id: string): Promise<Boolean>
-    isBanned(id:string):Promise<Boolean>
+    isBanned(id: string): Promise<Boolean>
+    
+    fetchPassword(id: string): Promise<string>
+    updatePassword(id: string, newPasswordHashed: string): Promise<void>
+
+
 }

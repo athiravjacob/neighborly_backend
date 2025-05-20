@@ -34,7 +34,7 @@ const PORT = process.env.PORT
 if (!PORT) throw new AppError(500, "port not available")
 app.use(cookieParser());
 
-app.use('/payment/webhook', express.raw({ type: 'application/json' }));
+app.use('/payments/webhook', express.raw({ type: 'application/json' }));
 app.use(express.json())
 
 

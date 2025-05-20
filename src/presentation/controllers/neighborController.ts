@@ -11,6 +11,7 @@ import { NeighborsListUsecase } from "../../application/usecases/neighbor/Neighb
 import { NeighborProfileUsecase } from "../../application/usecases/neighbor/NeighborProfileUsecase";
 import { WalletUsecase } from "../../application/usecases/payment/walletUsecase";
 import { TaskUsecase } from "../../application/usecases/task/TaskUsecase";
+import { saveTransaction } from "../../application/usecases/payment/saveTransactionUsecase";
 
 interface NeighborQuery {
     city?: string;
@@ -26,7 +27,9 @@ export class NeighborController {
         private neighborsList: NeighborsListUsecase,
         private neighborProfile: NeighborProfileUsecase,
         private walletUsecase: WalletUsecase,
-        private taskUsecase: TaskUsecase
+        private taskUsecase: TaskUsecase,
+        private recordTransactionUsecase: saveTransaction,
+
 
 
     ) { }
@@ -49,7 +52,8 @@ export class NeighborController {
     //**********************Add New Skill**************** */
     addSkills = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const { neighborId, skill } = req.body
+            const {neighborId} = req.params
+            const { skill } = req.body
             const skills = await this.skillsUseCase.saveSkills(neighborId, skill)
             successResponse(res, 200, "skills Updated", skills)
         } catch (error) {
@@ -61,7 +65,8 @@ export class NeighborController {
     //*************************Add Service Location***************************** */
     availableLocation = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const { neighborId, location } = req.body
+            const {neighborId}=req.params
+            const {  location } = req.body
             const serviceLocation = await this.serviceLocationUseCase.saveLocation(neighborId, location)
             successResponse(res, 200, "service location details saved", serviceLocation)
         } catch (error) {
@@ -73,7 +78,7 @@ export class NeighborController {
     uploadId = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { imageUrl } = req.body
-            const id = req.userId
+            const id = req.params.neighborId
         
             const status = await this.neighborProfile.uploadIdUrl(id!, imageUrl)
             successResponse(res, 200, "Id card uploaded for verification", status)
@@ -85,7 +90,7 @@ export class NeighborController {
     //*************************Fetch AVAILABLE date and time************************************** */
     getTimeslots = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const id = req.params.id
+            const id = req.params.neighborId
             const data = await this.getTimeslotUsecase.getTimeslots(id)
             successResponse(res, 200, "fetched neighbors available timeslots", data)
         } catch (error) {
@@ -96,7 +101,7 @@ export class NeighborController {
     //**************************** Fetch Skills ************************** */
     getSkills = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const id = req.params.id
+            const id = req.params.neighborId
             const data = await this.skillsUseCase.getSkills(id)
             successResponse(res, 200, "fetched neighbors skills", data)
         } catch (error) {
@@ -107,7 +112,7 @@ export class NeighborController {
     //**************************** Fetch sevice location ************************** */
     fetchLocation = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const id = req.params.id
+            const id = req.params.neighborId
             const data = await this.serviceLocationUseCase.getServiceLocation(id)
             successResponse(res, 200, "fetched neighbors skills", data)
         } catch (error) {
@@ -152,7 +157,7 @@ export class NeighborController {
 
     fetchVerificationStatus = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const id = req.userId
+            const id = req.params.neighborId
             const status = await this.neighborProfile.fetchStatus(id!)
             successResponse(res, 200, "verifiation status", status)
 
@@ -165,11 +170,14 @@ export class NeighborController {
 
     fetchWallet = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const id = req.params.id
+            
+            const id = req.params.neighborId
             if (!id) throw new Error("neigbor Id missing")
             const data = await this.walletUsecase.fetchNeighborWallet(id)
+            console.log(data)
             successResponse(res, 200, 'neighbor fetched', data)
         } catch (error) {
+            console.log(error)
             next(error)
 
         }
@@ -186,5 +194,20 @@ export class NeighborController {
             next(error)
         }
     }
+
+    // ***********************Transaction Details *********************
+
+    getTransactionHistory = async (req: Request, res: Response, next: NextFunction): Promise<void> => { 
+        try {
+          const  id  = req.params.neighborId
+          const transactions = await this.recordTransactionUsecase.neighborTransactions(id)
+          console.log(transactions)
+          successResponse(res, 200, "Neighbor earnings retrieved", transactions);
+    
+          
+        } catch (error) {
+          next(error)
+        }
+      }
     
 }

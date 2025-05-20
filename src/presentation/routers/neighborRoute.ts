@@ -28,8 +28,13 @@ export default function setupNeighborRoutes(neighborController: NeighborControll
     // Wallet
     router.get('/:neighborId/wallet', verifyToken(['neighbor']), neighborController.fetchWallet);
     
+  // Transaction History
+    router.get("/:neighborId/payments/history",neighborController.getTransactionHistory)
+
+  
    //  Tasks
-    router.get('/:neighborId/tasks',verifyToken(['neighbor','user']),neighborController.fetchAssignedTasks)
+  router.get('/:neighborId/tasks', verifyToken(['neighbor', 'user']), neighborController.fetchAssignedTasks)
+  
     return router;
   }
   

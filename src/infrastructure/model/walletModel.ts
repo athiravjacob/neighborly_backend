@@ -10,4 +10,4 @@ const walletSchema = new Schema({
     timestamps:true
 })
 
-export const walletModel = model('Wallet',walletSchema)
+export const  walletModel = model('Wallet',walletSchema)

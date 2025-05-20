@@ -22,7 +22,7 @@ export default function setupAuthRoutes(authController: AuthController): Router 
   // Password management (for current authenticated user)
   router.post('/users/password/forgot', authController.forgotPassword);
   router.post('/users/password/reset', authController.resetPassword);
-  router.patch('/users/:id/password/change', verifyToken(['user', 'neighbor', 'admin']), authController.changePassword);
+  router.patch('/users/:id/password/change', verifyToken(['user', 'neighbor', 'admin']), authController.changePassword_user);
 
   // Token refresh
   router.post('/tokens/refresh', authController.refreshToken);
@@ -30,6 +30,7 @@ export default function setupAuthRoutes(authController: AuthController): Router 
   // Neighbor user routes
   router.post('/neighbors', authController.sigupNeighbor); 
   router.post('/neighbors/login', authController.loginNeighbor); 
+  router.post('/neighbors/:neighborId/password/change',authController.changePassword_neighbor)
 
   // Admin routes
   router.post('/admins/login', authController.adminLogin); // Admin login
@@ -38,30 +39,3 @@ export default function setupAuthRoutes(authController: AuthController): Router 
 }
 
 
-// export default function setupAuthRoutes(authController: AuthController): Router {
-//   const router = Router();
-//     router.post('/users', validateRequest(signUpValidSchema), authController.signup);
-//     router.post('/send-otp', authController.sendOTP);
-//     router.post('/verify-otp', authController.verifyOTP);
-//     router.post('/forgot-password',authController.forgotPassword)
-//     router.post('/reset-password',authController.resetPassword)
-//     router.patch('/change-password',verifyToken(['user', 'neighbor','admin']),authController.changePassword)
-    
-//     router.post('/login',validateRequest(loginValidSchema),authController.userlogin)
-//     router.post('/google-login',authController.googleLogin)
-//     router.post('/logout',authController.logout)
-//     router.post('/refresh',authController.refreshToken)
-    
-    
-  
-//   // ****************************Neighbor**************************
-//     router.post('/neighbor/signup',authController.sigupNeighbor)
-//     router.post('/neighbor/login',authController.loginNeighbor)
-    
-  
-//   //***************************** Admin ***************** */
-
-//   router.post('/admin/login',authController.adminLogin)
-
-//     return router;
-//   }
