@@ -7,7 +7,9 @@ export default function setupTaskToutes(taskController: TaskController): Router{
     router.post('/',verifyToken(['user']), taskController.createTask)
     router.get('/:taskId/status', verifyToken(['neighbor', 'user', 'admin']), taskController.fetchStatus)
     router.patch('/:taskId/verify-code', verifyToken(['neighbor']), taskController.verifyTaskcode)
-    router.patch('/:taskId/complete',verifyToken(['user']),taskController.markTaskComplete)
+    router.patch('/:taskId/complete', verifyToken(['user']), taskController.markTaskComplete)
+    router.patch('/:taskId/accept',verifyToken(['neighbor']),taskController.markTaskAccepted)
+
     return router
     
 }

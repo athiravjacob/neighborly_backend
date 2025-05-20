@@ -110,6 +110,8 @@ export class AuthController {
   }
 
   userlogin = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    console.log(req.body,"Hello user login")
+
     try {
 
       const dto: LoginDTO = req.body;
@@ -130,8 +132,10 @@ export class AuthController {
       const authResponse = await this.loginUsecase.loginWithGoogle(decodedToken.uid,decodedToken.email||"",decodedToken.name,decodedToken.phone_number||"");
       setAuthCookies(res, authResponse.accessToken, authResponse.refreshToken);
       const user = { id: authResponse.id, name: authResponse.name, email: authResponse.email, type: authResponse.type };
+      console.log(user)
       successResponse(res, 200, "Google Login Successful", user);
     } catch (error) {
+      console.log(error)
       next(error);
     }
   };

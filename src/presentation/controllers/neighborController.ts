@@ -186,17 +186,5 @@ export class NeighborController {
             next(error)
         }
     }
-    // **********************Accept Task *******************
-
-    acceptTask = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        try {
-            const { taskId } = req.body
-            await this.taskUsecase.acceptTask(taskId)
-            console.log("accpt task ",taskId)
-            successResponse(res,200,"Neighbor accepted the task")
-
-        } catch (error) {
-            next(error)
-        }
-    }
+    
 }

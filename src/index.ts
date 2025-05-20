@@ -23,7 +23,6 @@ const server = http.createServer(app);
 app.use(cors({
   origin: process.env.ORGIN_URI,
   credentials: true,
-
   methods: ['GET', 'POST', 'PUT', 'PATCH','OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 
@@ -34,7 +33,6 @@ connectDB()
 const PORT = process.env.PORT 
 if (!PORT) throw new AppError(500, "port not available")
 app.use(cookieParser());
-
 
 app.use('/payment/webhook', express.raw({ type: 'application/json' }));
 app.use(express.json())

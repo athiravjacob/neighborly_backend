@@ -30,7 +30,6 @@ export default function setupNeighborRoutes(neighborController: NeighborControll
     
    //  Tasks
     router.get('/:neighborId/tasks',verifyToken(['neighbor','user']),neighborController.fetchAssignedTasks)
-    router.patch('/tasks/:taskId/accept',verifyToken(['neighbor']),neighborController.acceptTask)
     return router;
   }
   

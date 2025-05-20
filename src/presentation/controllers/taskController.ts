@@ -19,37 +19,9 @@ export class TaskController{
         }
     }
 
-    showTasks = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        try {
-            const role = req.userType
-            const id = req.params.id
-            if (role === 'user') {
-                const data = await this.taskUsecase.showUserTasks(id!)
-                successResponse(res,200,"Fetched tasks created by user",data)
-            }
-            if (role === 'neighbor') {
-                const data = await this.taskUsecase.showNeighborTasks(id!)
-                successResponse(res,200,"Fetched tasks scheduled to the neighbor",data)
+    
 
-            }
-           
-        } catch (error) {
-            next(error)
-        }
-    }
-
-    acceptTask = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        try {
-            const { taskId } = req.body
-            await this.taskUsecase.acceptTask(taskId)
-            console.log("accpt task ",taskId)
-            successResponse(res,200,"Neighbor accepted the task")
-
-        } catch (error) {
-            next(error)
-        }
-    }
-
+    
     fetchStatus =  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { taskID } = req.params
@@ -78,6 +50,19 @@ export class TaskController{
             const { taskId } = req.params
             await this.taskUsecase.taskCompleted(taskId )
             successResponse(res,200,"Task completed succesfully.",)
+
+        } catch (error) {
+            next(error)
+        }
+    }
+     // **********************Accept Task *******************
+
+     markTaskAccepted = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const { taskId } = req.params
+            await this.taskUsecase.acceptTask(taskId)
+            console.log("accpt task ",taskId)
+            successResponse(res,200,"Neighbor accepted the task")
 
         } catch (error) {
             next(error)

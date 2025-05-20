@@ -40,36 +40,42 @@ export class LoginUsecase{
         
   }
 
-  async loginWithGoogle(uid: string, email: string,name: string,phone:string): Promise<AuthResponseDTO> {
+  async loginWithGoogle(uid: string, email: string, name: string, phone: string): Promise<AuthResponseDTO> {
+    // Validate inputs
+    if (!uid || typeof uid !== 'string' || uid.trim() === '') {
+      throw new Error('Invalid Google UID provided');
+    }
+    if (!email || !name) {
+      throw new Error('Email and name are required');
+    }
+  
     let user = await this.userRepository.findUserByGoogleId(uid);
-    let id = user?.id
+    let id = user?.id;
+  
     if (!user) {
       user = new User(
-        undefined,  
+        undefined, // id
         name,
         email,
-        "",  
-        phone, 
-        undefined,
-        uid,
-        undefined,
-        undefined,
+        phone || undefined, // phone
+        undefined, // password
+        undefined, // dob
+        undefined, // profilePicture
+        uid, // googleId (correct position)
+        undefined, // resetToken
+        undefined, // resetTokenExpiresAt
+        false // isBanned
       );
-      
-      const newUser = await this.userRepository.createUser(user);
-      
-       id = newUser.id;
-    } 
-    
   
-    
+      const newUser = await this.userRepository.createUser(user);
+      id = newUser.id;
+    }
+  
     const accessToken = this.authService.generateAccessToken(id!, 'user');
     const refreshToken = this.authService.generateRefreshToken(id!, 'user');
   
-    // Store the refresh token in the token repository
     await this.tokenRepository.storeRefreshToken(id!, refreshToken, 'user');
   
-    // Return the response object
     return {
       id: id!,
       name: user.name,
@@ -79,9 +85,6 @@ export class LoginUsecase{
       type: 'user',
     };
   }
-  
-  
-
   async executeNeighbor(dto: LoginDTO): Promise<AuthResponseDTO> {
     const neighbor = await this.neighborRepository.findNeighborByEmail(dto.email);
     if (!neighbor || !(await this.authService.comparePassword(dto.password, neighbor.password))) {
