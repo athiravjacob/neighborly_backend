@@ -131,7 +131,7 @@ export class NeighborController {
             }
             const data = await this.neighborsList.getNeighborsList(city, subCategory)
             successResponse(res, 200, "fetched available neighbors ", data)
-
+ 
         } catch (error) {
             next(error)
         }
@@ -139,12 +139,12 @@ export class NeighborController {
 
     checkServiceAvailability = async (req: Request<{}, {}, {}, NeighborQuery>, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const { city } = req.query
-            if (!city) {
-                res.status(400).json({ success: false, message: "City is required" });
-                return
+            const { city ,subCategory} = req.query
+            if (!city || !subCategory) {
+                res.status(400).json({ success: false, message: "City and sub category is required" });
+                return;
             }
-            const data = await this.neighborsList.checkServiceLocation(city)
+            const data = await this.neighborsList.checkServiceLocation(city,subCategory)
             if (data === true) {
                 successResponse(res, 200, "Service available", data)
             } else

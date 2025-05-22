@@ -33,7 +33,7 @@ export default function setupAuthRoutes(authController: AuthController): Router 
   router.post('/neighbors/:neighborId/password/change',authController.changePassword_neighbor)
 
   // Admin routes
-  router.post('/admins/login', authController.adminLogin); // Admin login
+  router.post('/admins/login', authController.adminLogin); 
 
   return router;
 }

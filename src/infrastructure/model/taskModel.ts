@@ -39,6 +39,11 @@ const taskSchema = new Schema({
     type: Date,
     required: true
   },
+  prefferedTime: {
+    type: String,
+    enum: ["morning" , "afternoon" , "evening"]
+  },
+
   timeSlot: {
     startTime: {
       type: Number,
@@ -49,7 +54,7 @@ const taskSchema = new Schema({
       default: null
     }
   },
-  est_amount: Number, 
+  // est_amount: Number, 
   task_status: {
     type: String,
     enum: ["pending", "assigned", "in_progress", "completed", "cancelled"],
@@ -80,10 +85,19 @@ const taskSchema = new Schema({
     default: null,
     min: [0, 'Platform fee cannot be negative']
   },
+  extra_charges: {
+    type: Number,
+    default: null,
+    min: [0, 'extra charges cannot be negative']
+  },
   final_amount: {
     type: Number,
     default: null,
     min: [0, 'Final amount cannot be negative']
+  },
+  additional_notes: {
+    type: String,
+    
   },
   task_code: {
     type: String,

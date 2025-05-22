@@ -92,10 +92,12 @@ export class neighborRepository implements INeighborRepository{
   }
 
   //****************************** Check Service Availability *************************** */
-  async checkServiceAvailability(city: string): Promise<Boolean> {
+  async checkServiceAvailability(city: string,subCategory:string): Promise<Boolean> {
     try {
-      const exists = await neighborModel.exists({ "availableLocation.city": city })
-      return !!exists
+      const exists = await neighborModel.exists({
+        "availableLocation.city": { $regex: `^${city}$`, $options: "i" },
+        "skills.subcategories": { $regex: `^${subCategory}$`, $options: "i" }
+      });      return !!exists
             
     } catch (error) {
       if (error instanceof Error) {

@@ -19,7 +19,8 @@ export interface TaskDetails {
   description: string;
   est_hours: number;
   prefferedDate: Date | string; 
-  timeSlot: {
+  prefferedTime: "morning" | "afternoon" | "evening";
+  timeSlot?: {
     startTime: number; 
     endTime?: number; 
   };
