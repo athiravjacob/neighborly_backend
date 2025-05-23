@@ -1,15 +1,16 @@
 import { Router } from "express"
 import { AdminController } from "../controllers/adminController"
+import { Routes } from "../../shared/constants/routes"
 
 export default function setupAdminRoutes(adminController: AdminController): Router{
     const router = Router()
 
-    router.get('/users', adminController.fetchUsers)
-    router.get('/neighbors', adminController.fetchNeighbors)
-    router.get('/tasks', adminController.fetchTasks) 
-    router.patch('/neighbors/:id/verify', adminController.verifyNeighbor)
-    router.patch('/users/:id/ban', adminController.banUser)
-    router.patch('/neighbor/:id/ban',adminController.banNeighbor)
+    router.get(Routes.ADMIN.USERS, adminController.fetchUsers)
+    router.get(Routes.ADMIN.NEIGHBORS, adminController.fetchNeighbors)
+    router.get(Routes.ADMIN.TASKS, adminController.fetchTasks) 
+    router.patch(Routes.ADMIN.NEIGHBOR_VERIFY, adminController.verifyNeighbor)
+    router.patch(Routes.ADMIN.USER_BAN, adminController.banUser)
+    router.patch(Routes.ADMIN.NEIGHBOR_BAN,adminController.banNeighbor)
 
     
 

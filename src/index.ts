@@ -17,6 +17,7 @@ import setupAdminRoutes from "./presentation/routers/adminRoute";
 import { initSocketServer } from "./infrastructure/socket/socketServer";
 import setupMessageRoutes from "./presentation/routers/messageRoute";
 import setupPaymentRoutes from "./presentation/routers/paymentRoute";
+import { Routes } from "./shared/constants/routes";
 
 const app = express()
 const server = http.createServer(app);
@@ -34,17 +35,20 @@ const PORT = process.env.PORT
 if (!PORT) throw new AppError(500, "port not available")
 app.use(cookieParser());
 
-app.use('/payments/webhook', express.raw({ type: 'application/json' }));
+app.use(Routes.PAYMENTS.WEBHOOK, express.raw({ type: 'application/json' }));
 app.use(express.json())
 
+app.get(Routes.HEALTH, (req, res) => {
+  res.status(200).json({ status: 'OK', timestamp: new Date().toISOString() });
+});
 
-app.use('/auth', setupAuthRoutes(Container.authController));
-app.use('/neighbors', setupNeighborRoutes(Container.neighborController));
-app.use('/tasks', setupTaskToutes(Container.taskController));
-app.use('/users',verifyToken(['user']), setupUserRoutes(Container.userController));
-app.use('/admin', setupAdminRoutes(Container.adminController));
-app.use("/messages", setupMessageRoutes(Container.messageController));
-app.use("/payments", setupPaymentRoutes(Container.paymentController))
+app.use(Routes.AUTH.BASE, setupAuthRoutes(Container.authController));
+app.use(Routes.NEIGHBORS.BASE, setupNeighborRoutes(Container.neighborController));
+app.use(Routes.TASKS.BASE, setupTaskToutes(Container.taskController));
+app.use(Routes.USERS.BASE,verifyToken(['user']), setupUserRoutes(Container.userController));
+app.use(Routes.ADMIN.BASE, setupAdminRoutes(Container.adminController));
+app.use(Routes.MESSAGES.BASE, setupMessageRoutes(Container.messageController));
+app.use(Routes.PAYMENTS.BASE, setupPaymentRoutes(Container.paymentController))
 
 app.use(errorHandler)
 

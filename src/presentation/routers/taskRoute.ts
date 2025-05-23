@@ -1,14 +1,15 @@
 import { Router } from "express";
 import { TaskController } from "../controllers/taskController";
 import verifyToken from "../middleware/authMiddleware";
+import { Routes } from "../../shared/constants/routes";
 
 export default function setupTaskToutes(taskController: TaskController): Router{
     const router = Router()
-    router.post('/',verifyToken(['user']), taskController.createTask)
-    router.get('/:taskId/status', verifyToken(['neighbor', 'user', 'admin']), taskController.fetchStatus)
-    router.patch('/:taskId/verify-code', verifyToken(['neighbor']), taskController.verifyTaskcode)
-    router.patch('/:taskId/complete', verifyToken(['user']), taskController.markTaskComplete)
-    router.patch('/:taskId/accept',verifyToken(['neighbor']),taskController.markTaskAccepted)
+    router.post(Routes.TASKS.CREATE,verifyToken(['user']), taskController.createTask)
+    router.get(Routes.TASKS.STATUS, verifyToken(['neighbor', 'user', 'admin']), taskController.fetchStatus)
+    router.patch(Routes.TASKS.VERIFY_CODE, verifyToken(['neighbor']), taskController.verifyTaskcode)
+    router.patch(Routes.TASKS.COMPLETE, verifyToken(['user']), taskController.markTaskComplete)
+    router.patch(Routes.TASKS.ACCEPT,verifyToken(['neighbor']),taskController.markTaskAccepted)
 
     return router
     
