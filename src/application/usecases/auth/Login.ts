@@ -115,10 +115,10 @@ export class LoginUsecase{
       
   }
   let id = "Admin01"
-  const accessToken = this.authService.generateAccessToken(id ,'neighbor');
-  const refreshToken = this.authService.generateRefreshToken(id ,'neighbor');
+  const accessToken = this.authService.generateAccessToken(id ,'admin');
+  const refreshToken = this.authService.generateRefreshToken(id ,'admin');
 
-  await this.tokenRepository.storeRefreshToken(id, refreshToken,'neighbor');
+  await this.tokenRepository.storeRefreshToken(id, refreshToken,'admin');
 
   return {
     id:id,

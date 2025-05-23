@@ -56,7 +56,7 @@ export default function setupAuthRoutes(authController: AuthController): Router 
   // Neighbor Auth
   router
     .route(Routes.AUTH.NEIGHBORS)
-    .post(authController.sigupNeighbor);
+    .post(authController.signupNeighbor);
 
   router
     .route(Routes.AUTH.NEIGHBOR_LOGIN)

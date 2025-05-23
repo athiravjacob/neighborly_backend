@@ -1,5 +1,5 @@
 import {Request,Response, NextFunction } from "express";
-import {  successResponse } from "../../shared/utils/responseHandler";
+import {  errorResponse, successResponse } from "../../shared/utils/responseHandler";
 import { AppError } from "../../shared/utils/errors";
 import { SendOtpUsecase } from "../../application/usecases/auth/SendOTP-email";
 import { verifyOtpUseCase } from "../../application/usecases/auth/VerifyOTP";
@@ -14,6 +14,8 @@ import admin from "../../infrastructure/firebase/firebaseAdmin";
 import { ref } from "joi";
 import { refreshTokenUsecase } from "../../application/usecases/auth/RefreshToken";
 import { SignupUseCase } from "../../application/usecases/auth/signUp";
+import { HttpStatus } from "../../shared/constants/httpStatus";
+import { Messages } from "../../shared/constants/messages";
 
 export class AuthController {
   constructor(
@@ -25,113 +27,115 @@ export class AuthController {
     private loginUsecase: LoginUsecase,
     private logoutUsecase: LogoutUsecase,
     private refreshTokenUsecase: refreshTokenUsecase
-    
   ) {}
 
-  //******************************* Sign up ********************************* */
   signup = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { user } = req.body;
       if (!user) {
-        throw new AppError(400, 'Missing required fields');
+        errorResponse(res, HttpStatus.BAD_REQUEST, Messages.ERROR.MISSING_FIELDS);
+        return;
       }
       const newUser = await this.SignupUsecase.executeUser(user);
-      successResponse(res, 201, 'User signup successful', newUser);
+      successResponse(res, HttpStatus.CREATED, Messages.SUCCESS.USER_SIGNUP_SUCCESS, newUser);
     } catch (error) {
       next(error);
     }
   };
 
-  // ************************** Send OTP ***********************
   sendOTP = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { email } = req.body;
-      if (!email) throw new AppError(400, 'email required');
+      if (!email) {
+        errorResponse(res, HttpStatus.BAD_REQUEST, Messages.ERROR.MISSING_FIELDS);
+        return;
+      }
       await this.SendOTPUsecase.execute(email);
-      successResponse(res, 200, 'OTP sent to given email');
+      successResponse(res, HttpStatus.NO_CONTENT, Messages.SUCCESS.OTP_SENT_SUCCESS);
     } catch (error) {
       next(error);
     }
   };
-//************************************Verify OTP**************************************** */
+
   verifyOTP = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const { otp, email } = req.body
+      const { otp, email } = req.body;
       if (!otp || !email) {
-        throw new AppError(400,"email and otp required")
+        errorResponse(res, HttpStatus.BAD_REQUEST, Messages.ERROR.MISSING_FIELDS);
+        return;
       }
       await this.verifyOtpUseCase.execute(email, otp);
-      successResponse(res, 200, 'OTP verified successfully');
-
+      successResponse(res, HttpStatus.NO_CONTENT, Messages.SUCCESS.OTP_VERIFIED_SUCCESS);
     } catch (error) {
       next(error);
     }
   };
 
-  //*******************Forgot pasword send link to email ************* */
-  forgotPassword =async(req:Request,res:Response,next:NextFunction):Promise<void>=> {
+  forgotPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const { email } = req.body
-      if (!email) throw new AppError(400, "email required")
-      
-      await this.forgotpassword.execute(email)
-      successResponse(res,200,'password reset link send to the mail')
+      const { email } = req.body;
+      if (!email) {
+        errorResponse(res, HttpStatus.BAD_REQUEST, Messages.ERROR.MISSING_FIELDS);
+        return;
+      }
+      await this.forgotpassword.execute(email);
+      successResponse(res, HttpStatus.NO_CONTENT, Messages.SUCCESS.PASSWORD_RESET_LINK_SENT);
     } catch (error) {
-      next(error)
+      next(error);
     }
-  }
-//**********************************  Resetting Password based on link******************/
+  };
 
-    resetPassword=async (req:Request,res:Response,next:NextFunction):Promise<void>=> {
+  resetPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const { email, token, newPassword } = req.body
-      if (!email || !token || !newPassword) throw new AppError(400, "email,token and new password are required")
-      await this.resetPasswordUseCase.execute(email, token, newPassword)
-      successResponse(res,200,'password reset successful.Please Login')
-
+      const { email, token, newPassword } = req.body;
+      if (!email || !token || !newPassword) {
+        errorResponse(res, HttpStatus.BAD_REQUEST, Messages.ERROR.MISSING_FIELDS);
+        return;
+      }
+      await this.resetPasswordUseCase.execute(email, token, newPassword);
+      successResponse(res, HttpStatus.NO_CONTENT, Messages.SUCCESS.PASSWORD_RESET_SUCCESS);
     } catch (error) {
-      next(error)
+      next(error);
     }
-  }
-
-  //****************************** Change Password of logged in user ********************** */
+  };
 
   changePassword_user = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const { currentPassword, newPassword } = req.body
-      const id = req.params.userId
-      await this.resetPasswordUseCase.changeCurrentPassword(id,'user',currentPassword,newPassword)
-      successResponse(res,200,'password changed successfully')
-
+      const { currentPassword, newPassword } = req.body;
+      const id = req.params.userId;
+      if (!id || !currentPassword || !newPassword) {
+        errorResponse(res, HttpStatus.BAD_REQUEST, Messages.ERROR.MISSING_FIELDS);
+        return;
+      }
+      await this.resetPasswordUseCase.changeCurrentPassword(id, 'user', currentPassword, newPassword);
+      successResponse(res, HttpStatus.NO_CONTENT, Messages.SUCCESS.PASSWORD_CHANGED_SUCCESS);
     } catch (error) {
-      next(error)
+      next(error);
     }
-  }
+  };
 
   changePassword_neighbor = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      console.log(req.body)
-      const { currentPassword, newPassword } = req.body
-      const id = req.params.neighborId
-      await this.resetPasswordUseCase.changeCurrentPassword(id, 'neighbor', currentPassword, newPassword)
-      console.log("password updated")
-      successResponse(res,200,'password changed successfully')
-
+      const { currentPassword, newPassword } = req.body;
+      const id = req.params.neighborId;
+      if (!id || !currentPassword || !newPassword) {
+        errorResponse(res, HttpStatus.BAD_REQUEST, Messages.ERROR.MISSING_FIELDS);
+        return;
+      }
+      await this.resetPasswordUseCase.changeCurrentPassword(id, 'neighbor', currentPassword, newPassword);
+      successResponse(res, HttpStatus.NO_CONTENT, Messages.SUCCESS.PASSWORD_CHANGED_SUCCESS);
     } catch (error) {
-      console.log(error)
-      next(error)
+      next(error);
     }
-  }
+  };
+
   userlogin = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    console.log(req.body,"Hello user login")
-
     try {
-
       const dto: LoginDTO = req.body;
       const authResponse = await this.loginUsecase.executeUser(dto);
       setAuthCookies(res, authResponse.accessToken, authResponse.refreshToken);
       const user = { id: authResponse.id, name: authResponse.name, email: authResponse.email, type: authResponse.type };
-      successResponse(res, 200, "Login Successful", user);
+      successResponse(res, HttpStatus.OK, Messages.SUCCESS.LOGIN_SUCCESS, user);
     } catch (error) {
       next(error);
     }
@@ -140,15 +144,21 @@ export class AuthController {
   googleLogin = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { idToken } = req.body;
-      if (!idToken) throw new Error('Google idToken is required');
+      if (!idToken) {
+        errorResponse(res, HttpStatus.BAD_REQUEST, Messages.ERROR.MISSING_FIELDS);
+        return;
+      }
       const decodedToken = await admin.auth().verifyIdToken(idToken);
-      const authResponse = await this.loginUsecase.loginWithGoogle(decodedToken.uid,decodedToken.email||"",decodedToken.name,decodedToken.phone_number||"");
+      const authResponse = await this.loginUsecase.loginWithGoogle(
+        decodedToken.uid,
+        decodedToken.email || '',
+        decodedToken.name,
+        decodedToken.phone_number || ''
+      );
       setAuthCookies(res, authResponse.accessToken, authResponse.refreshToken);
       const user = { id: authResponse.id, name: authResponse.name, email: authResponse.email, type: authResponse.type };
-      console.log(user)
-      successResponse(res, 200, "Google Login Successful", user);
+      successResponse(res, HttpStatus.OK, Messages.SUCCESS.GOOGLE_LOGIN_SUCCESS, user);
     } catch (error) {
-      console.log(error)
       next(error);
     }
   };
@@ -159,85 +169,76 @@ export class AuthController {
       res.clearCookie('refresh_token');
       const refreshToken = req.cookies['refresh_token'];
       if (refreshToken) {
-        await this.logoutUsecase.execute(refreshToken)
+        await this.logoutUsecase.execute(refreshToken);
       }
-      
-      successResponse(res, 200, 'logged out');
+      successResponse(res, HttpStatus.NO_CONTENT, Messages.SUCCESS.LOGOUT_SUCCESS);
     } catch (error) {
-      next(error)
+      next(error);
     }
-  }
+  };
 
   refreshToken = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const refreshToken = req.cookies?.refresh_token
+      const refreshToken = req.cookies?.refresh_token;
       if (!refreshToken) {
-        res.status(400).json({ error: 'Refresh token is required' })
-        return
+        errorResponse(res, HttpStatus.BAD_REQUEST, Messages.ERROR.MISSING_FIELDS);
+        return;
       }
-      const { new_accessToken, new_refreshToken } = await this.refreshTokenUsecase.execute(refreshToken)
+      const { new_accessToken, new_refreshToken } = await this.refreshTokenUsecase.execute(refreshToken);
       setAuthCookies(res, new_accessToken, new_refreshToken);
-
-      successResponse(res,200,"refesh token ")
+      successResponse(res, HttpStatus.OK, Messages.SUCCESS.TOKEN_REFRESH_SUCCESS);
     } catch (error) {
-      next(error)
+      next(error);
     }
-  }
+  };
 
-  //****************************************  Neighbor ************************/
-
-
-  sigupNeighbor = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  signupNeighbor = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const { neighbor } = req.body
+      const { neighbor } = req.body;
+      if (!neighbor) {
+        errorResponse(res, HttpStatus.BAD_REQUEST, Messages.ERROR.MISSING_FIELDS);
+        return;
+      }
       const newNeighbor = await this.SignupUsecase.executeNeighbor(neighbor);
-      successResponse(res, 201, 'User signup successful', newNeighbor);
+      successResponse(res, HttpStatus.CREATED, Messages.SUCCESS.NEIGHBOR_SIGNUP_SUCCESS, newNeighbor);
     } catch (error) {
-      next(error)
+      next(error);
     }
-    
-  }
+  };
 
   loginNeighbor = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const dto:LoginDTO = req.body
-      const authResponse=await this.loginUsecase.executeNeighbor(dto)
+      const dto: LoginDTO = req.body;
+      const authResponse = await this.loginUsecase.executeNeighbor(dto);
       setAuthCookies(res, authResponse.accessToken, authResponse.refreshToken);
-
-      
-      const neighbor ={ id: authResponse.id,
+      const neighbor = {
+        id: authResponse.id,
         name: authResponse.name,
         email: authResponse.email,
-        type:authResponse.type}
-
-      successResponse(res,200,"Login Successful",neighbor)
-      
+        type: authResponse.type,
+      };
+      successResponse(res, HttpStatus.OK, Messages.SUCCESS.LOGIN_SUCCESS, neighbor);
     } catch (error) {
-      next(error)
+      next(error);
     }
-  }
+  };
 
-  //***************************Admin************************* */
   adminLogin = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const dto:LoginDTO = req.body
-      const authResponse=await this.loginUsecase.executeAdmin(dto)
+      const dto: LoginDTO = req.body;
+      const authResponse = await this.loginUsecase.executeAdmin(dto);
       setAuthCookies(res, authResponse.accessToken, authResponse.refreshToken);
-
-      
-      const admin ={ id: authResponse.id,
+      const admin = {
+        id: authResponse.id,
         name: authResponse.name,
         email: authResponse.email,
-        type:authResponse.type}
-
-      req.userId = "Admin01"
-      req.userType="admin"
-      successResponse(res,200,"Login Successful",admin)
-      
+        type: authResponse.type,
+      };
+      successResponse(res, HttpStatus.OK, Messages.SUCCESS.ADMIN_LOGIN_SUCCESS, admin);
     } catch (error) {
-      next(error)
+      next(error);
     }
-  }
+  };
 }
 
 
