@@ -42,7 +42,7 @@ app.use('/auth', setupAuthRoutes(Container.authController));
 app.use('/neighbors', setupNeighborRoutes(Container.neighborController));
 app.use('/tasks', setupTaskToutes(Container.taskController));
 app.use('/users',verifyToken(['user']), setupUserRoutes(Container.userController));
-app.use('/admins', setupAdminRoutes(Container.adminController));
+app.use('/admin', setupAdminRoutes(Container.adminController));
 app.use("/messages", setupMessageRoutes(Container.messageController));
 app.use("/payments", setupPaymentRoutes(Container.paymentController))
 

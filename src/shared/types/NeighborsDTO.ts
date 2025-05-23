@@ -22,10 +22,26 @@ export interface NeighborInfo {
     timeSlots: {
       startTime: number;
       endTime: number;
+      note:"available"|"booked"
     }[];
   }[];
   isBanned:boolean
 }
 
 
+export interface Availability {
+  date: Date;
+  timeSlots: {
+    startTime: number;
+    endTime: number;
+    note:"available"|"booked"
+  }[];
+}[];
 
+export interface TimeSlot{
+  
+    startTime: number;
+    endTime: number;
+    note:"available"|"booked"
+  
+}

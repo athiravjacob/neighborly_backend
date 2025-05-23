@@ -68,7 +68,7 @@ export class Container {
   );
   public static walletRepository = new WalletRepository()
   public static taskRepository = new taskRepository()
-  public static taskUsecase = new TaskUsecase(Container.taskRepository)
+  public static taskUsecase = new TaskUsecase(Container.taskRepository,Container.neighborRepository)
   public static taskController = new TaskController(Container.taskUsecase)
 
 

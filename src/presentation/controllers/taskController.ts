@@ -60,7 +60,8 @@ export class TaskController{
      markTaskAccepted = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { taskId } = req.params
-            await this.taskUsecase.acceptTask(taskId)
+            const {taskAcceptDetails,neighborId} = req.body
+            await this.taskUsecase.acceptTask(taskId,neighborId,taskAcceptDetails)
             console.log("accpt task ",taskId)
             successResponse(res,200,"Neighbor accepted the task")
 

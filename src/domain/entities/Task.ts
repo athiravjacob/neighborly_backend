@@ -35,7 +35,7 @@ export class Task {
         public ratePerHour: number,
         public timeSlot?: {
             startTime: number,  
-            endTime: number    
+            endTime: number,
         },
         public actualHours?: number,
         public baseAmount?: number, 

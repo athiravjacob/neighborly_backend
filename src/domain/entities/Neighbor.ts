@@ -26,7 +26,7 @@ export class Neighbor {
       }[] = [],
       public availability: {
         date: Date;
-        timeSlots: { startTime: number; endTime: number }[];
+        timeSlots: { startTime: number; endTime: number ,note:"available"|"booked"}[];
       }[] = [],
       public isVerified: boolean = false,
       public idCardImage: string = '',

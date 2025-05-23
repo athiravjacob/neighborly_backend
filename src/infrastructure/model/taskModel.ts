@@ -47,12 +47,12 @@ const taskSchema = new Schema({
   timeSlot: {
     startTime: {
       type: Number,
-      required: true
     },
     endTime: {
       type: Number,
       default: null
     }
+   
   },
   // est_amount: Number, 
   task_status: {
@@ -107,16 +107,8 @@ const taskSchema = new Schema({
   timestamps: true
 });
 
-taskSchema.pre('save', function (next) {
-  if (this.ratePerHour != null && this.est_hours != null) {
-    this.baseAmount = this.ratePerHour * this.est_hours;
 
-    this.platform_fee = this.baseAmount * 0.05;
 
-    this.final_amount = this.baseAmount + this.platform_fee;
-  }
 
-  next();
-});
 
 export const TaskModel = model('Task', taskSchema);

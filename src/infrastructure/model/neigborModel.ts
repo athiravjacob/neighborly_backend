@@ -30,7 +30,7 @@ const neighborSchema = new Schema({
   }],
   availability: [{
     date: { type: Date },
-    timeSlots: [{ startTime: { type: Number }, endTime: { type: Number } }]
+    timeSlots: [{ startTime: { type: Number }, endTime: { type: Number },note:{type:String,enum:["available","booked"],default:"available"} }]
   }],
   isVerified: { type: Boolean, default: false },
   idCardImage: { type: String, default: '' },

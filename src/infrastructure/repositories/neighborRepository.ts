@@ -1,7 +1,7 @@
 import { Neighbor } from "../../domain/entities/Neighbor";
 import { INeighborRepository } from "../../domain/interface/repositories/INeighborRepository";
 import { LocationDetailsDTO, locationDTO } from "../../shared/types/LocationDetailsDTO";
-import { NeighborInfo } from "../../shared/types/NeighborsDTO";
+import { Availability, NeighborInfo } from "../../shared/types/NeighborsDTO";
 import { SkillsDTO } from "../../shared/types/SkillsDTO";
 import { TimeslotDTO } from "../../shared/types/TimeslotDTO";
 import { AppError } from "../../shared/utils/errors";
@@ -158,8 +158,9 @@ export class neighborRepository implements INeighborRepository{
     return skills ?  JSON.parse(JSON.stringify(skills.skills)) : null
   }
    
+  // ********************fetch available timeslot 
 
-  async getavailableTimeslot(id: string): Promise<TimeslotDTO[] | null> {
+  async getavailableTimeslot(id: string): Promise<Availability[] | null> {
     const timeslot = await neighborModel.findOne(
       { _id: id },
       { availability: 1, _id: 0 }

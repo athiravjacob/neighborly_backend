@@ -1,4 +1,4 @@
-import { PaymentStatus, TaskDetails, TaskStatus } from "../../../shared/types/TaskDetailsDTO";
+import { ExtendedTaskAcceptDetails, PaymentStatus, TaskDetails, TaskStatus, taskAcceptDetails } from "../../../shared/types/TaskDetailsDTO";
 import { Task } from "../../entities/Task";
 
 export interface ITaskRepository{
@@ -6,7 +6,7 @@ export interface ITaskRepository{
     fetchUserTasks(id: string): Promise<TaskDetails[]>
     fetchNeighborTasks(id: string): Promise<TaskDetails[] | []>
     fetchAllTasks(): Promise<TaskDetails[] | []>
-    acceptTask(id: string): Promise<void>
+    acceptTask(id: string,taskAcceptDetails:ExtendedTaskAcceptDetails): Promise<void>
     fetchTaskStatus(id: string): Promise<TaskStatus>
     updatePaymentStatus(id: string, status: PaymentStatus): Promise<void>
     addTaskCode(taskID: string, code: string): Promise<void>
