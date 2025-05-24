@@ -1,8 +1,12 @@
+import { Message } from "../../../domain/entities/Message";
 import { User } from "../../../domain/entities/User";
+import { IAdminRepository } from "../../../domain/interface/repositories/IAdminRepository";
 import { INeighborRepository } from "../../../domain/interface/repositories/INeighborRepository";
 import { ITokenRepository } from "../../../domain/interface/repositories/ITokenRepository";
 import { IUserRepository } from "../../../domain/interface/repositories/IUserRepository";
 import { IAuthService } from "../../../domain/interface/services/IAuthService";
+import { HttpStatus } from "../../../shared/constants/httpStatus";
+import { Messages } from "../../../shared/constants/messages";
 import { AuthResponseDTO } from "../../../shared/types/AuthResponseDTO";
 import { LoginDTO } from "../../../shared/types/LoginDTO";
 import { AppError } from "../../../shared/utils/errors";
@@ -11,6 +15,7 @@ export class LoginUsecase{
     constructor(
         private userRepository: IUserRepository,
         private neighborRepository:INeighborRepository,
+        private adminRepository :IAdminRepository,
         private tokenRepository:ITokenRepository,
         private authService:IAuthService
     ) { }
@@ -85,6 +90,7 @@ export class LoginUsecase{
       type: 'user',
     };
   }
+  //***************Neighbor Login *****************/
   async executeNeighbor(dto: LoginDTO): Promise<AuthResponseDTO> {
     const neighbor = await this.neighborRepository.findNeighborByEmail(dto.email);
     if (!neighbor || !(await this.authService.comparePassword(dto.password, neighbor.password))) {
@@ -107,23 +113,20 @@ export class LoginUsecase{
   };
     
   }
-  
+  // ***************admin login
 
   async executeAdmin(dto: LoginDTO): Promise<AuthResponseDTO> {
-    if (!dto.email ||(dto.email !== "admin@neighborly.com") || (dto.password !== "Admin123")) {
-      throw new AppError(401, 'Invalid credentials');
-      
-  }
-  let id = "Admin01"
-  const accessToken = this.authService.generateAccessToken(id ,'admin');
-  const refreshToken = this.authService.generateRefreshToken(id ,'admin');
+  const admin = await this.adminRepository.fetchAdmin(dto.email,dto.password)
+  if(!admin) throw new AppError(HttpStatus.NOT_FOUND,Messages.ERROR.NOT_FOUND)
+  const accessToken = this.authService.generateAccessToken(admin.id ,'admin');
+  const refreshToken = this.authService.generateRefreshToken(admin.id ,'admin');
 
-  await this.tokenRepository.storeRefreshToken(id, refreshToken,'admin');
+  await this.tokenRepository.storeRefreshToken(admin.id, refreshToken,'admin');
 
   return {
-    id:id,
-    name: "Admin",
-    email: "admin@neighborly.com",
+    id:admin.id,
+    name: admin.name,
+    email: admin.email,
     accessToken,
     refreshToken,
     type:"admin"
