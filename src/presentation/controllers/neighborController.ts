@@ -12,6 +12,9 @@ import { NeighborProfileUsecase } from "../../application/usecases/neighbor/Neig
 import { WalletUsecase } from "../../application/usecases/payment/walletUsecase";
 import { TaskUsecase } from "../../application/usecases/task/TaskUsecase";
 import { saveTransaction } from "../../application/usecases/payment/saveTransactionUsecase";
+import { HttpStatus } from "../../shared/constants/httpStatus";
+import { Messages } from "../../shared/constants/messages";
+import { HttpStatusCode } from "axios";
 
 interface NeighborQuery {
     city?: string;
@@ -43,7 +46,7 @@ export class NeighborController {
             const { availability } = req.body
             console.groupCollapsed(req.body)
             const updatedNeighbor = await this.availabilityUseCase.execute(neighborId, availability)
-            successResponse(res, 200, 'Availability updated successfully', updatedNeighbor)
+            successResponse(res, HttpStatus.OK, Messages.SUCCESS.NEIGHBOR_TIMESLOT_UPDATED, updatedNeighbor)
         } catch (error) {
             next(error)
         }
@@ -55,7 +58,7 @@ export class NeighborController {
             const {neighborId} = req.params
             const { skill } = req.body
             const skills = await this.skillsUseCase.saveSkills(neighborId, skill)
-            successResponse(res, 200, "skills Updated", skills)
+            successResponse(res, HttpStatus.OK,Messages.SUCCESS.NEIGHBOR_SKILL_ADDED, skills)
         } catch (error) {
             next(error)
         }
@@ -68,7 +71,7 @@ export class NeighborController {
             const {neighborId}=req.params
             const {  location } = req.body
             const serviceLocation = await this.serviceLocationUseCase.saveLocation(neighborId, location)
-            successResponse(res, 200, "service location details saved", serviceLocation)
+            successResponse(res, HttpStatus.OK, Messages.SUCCESS.NEIGHBOR_LOCATION_ADDED, serviceLocation)
         } catch (error) {
             next(error)
         }
@@ -81,7 +84,7 @@ export class NeighborController {
             const id = req.params.neighborId
         
             const status = await this.neighborProfile.uploadIdUrl(id!, imageUrl)
-            successResponse(res, 200, "Id card uploaded for verification", status)
+            successResponse(res, HttpStatus.OK, Messages.SUCCESS.NEIGHBOR_ID_ADDED, status)
         } catch (error) {
             next(error)
         }
@@ -92,7 +95,7 @@ export class NeighborController {
         try {
             const id = req.params.neighborId
             const data = await this.getTimeslotUsecase.getTimeslots(id)
-            successResponse(res, 200, "fetched neighbors available timeslots", data)
+            successResponse(res, HttpStatus.OK, Messages.SUCCESS.NEIGHBOR_TIMESLOT_FETCHED, data)
         } catch (error) {
             next(error)
         }
@@ -103,7 +106,7 @@ export class NeighborController {
         try {
             const id = req.params.neighborId
             const data = await this.skillsUseCase.getSkills(id)
-            successResponse(res, 200, "fetched neighbors skills", data)
+            successResponse(res, HttpStatus.OK, Messages.SUCCESS.NEIGHBOR_SKILLS_FETCHED, data)
         } catch (error) {
             next(error)
         }
@@ -114,7 +117,7 @@ export class NeighborController {
         try {
             const id = req.params.neighborId
             const data = await this.serviceLocationUseCase.getServiceLocation(id)
-            successResponse(res, 200, "fetched neighbors skills", data)
+            successResponse(res, HttpStatus.OK, Messages.SUCCESS.NEIGHBOR_LOCATION_FETCHED, data)
         } catch (error) {
             next(error)
         }
@@ -126,31 +129,34 @@ export class NeighborController {
         try {
             const { city, subCategory } = req.query
             if (!city || !subCategory) {
-                res.status(400).json({ success: false, message: "City and sub category is required" });
+                errorResponse(res,HttpStatus.BAD_REQUEST,Messages.ERROR.MISSING_FIELDS)
                 return;
             }
             const data = await this.neighborsList.getNeighborsList(city, subCategory)
-            successResponse(res, 200, "fetched available neighbors ", data)
+            successResponse(res, HttpStatus.OK,  Messages.SUCCESS.AVAILABLE_NEIGHBORS, data)
  
         } catch (error) {
             next(error)
         }
     }
 
+    // ************************************ CHECK SERVICE AVAILABLITY ************************
     checkServiceAvailability = async (req: Request<{}, {}, {}, NeighborQuery>, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { city ,subCategory} = req.query
             if (!city || !subCategory) {
-                res.status(400).json({ success: false, message: "City and sub category is required" });
+                errorResponse(res,HttpStatus.BAD_REQUEST,Messages.ERROR.MISSING_FIELDS)
                 return;
             }
-            const data = await this.neighborsList.checkServiceLocation(city,subCategory)
+            const data = await this.neighborsList.checkServiceLocation(city, subCategory)
+            console.log(data)
             if (data === true) {
-                successResponse(res, 200, "Service available", data)
+                successResponse(res, HttpStatus.OK, Messages.SUCCESS.SERVICE_AVAILABLE,data)
             } else
-                errorResponse(res, 400, "No Service available in this area ")
+            successResponse(res, HttpStatus.OK, Messages.SUCCESS.SERVICE_NOT_AVAILABLE,data)
 
         } catch (error) {
+            console.log(error)
             next(error)
         }
     }
@@ -159,7 +165,7 @@ export class NeighborController {
         try {
             const id = req.params.neighborId
             const status = await this.neighborProfile.fetchStatus(id!)
-            successResponse(res, 200, "verifiation status", status)
+            successResponse(res, HttpStatus.OK, Messages.SUCCESS.NEIGHBOR_VERIFICATION_STATUS, status)
 
         } catch (error) {
             next(error)
@@ -175,7 +181,7 @@ export class NeighborController {
             if (!id) throw new Error("neigbor Id missing")
             const data = await this.walletUsecase.fetchNeighborWallet(id)
             console.log(data)
-            successResponse(res, 200, 'neighbor fetched', data)
+            successResponse(res, HttpStatus.OK,Messages.SUCCESS.NEIGHBOR_WALLET, data)
         } catch (error) {
             console.log(error)
             next(error)
@@ -188,7 +194,7 @@ export class NeighborController {
         try {
             const { neighborId } = req.params
             const data = await this.taskUsecase.showNeighborTasks(neighborId)
-            successResponse(res, 200, "Fetched tasks scheduled to the neighbor", data)
+            successResponse(res, HttpStatus.OK, Messages.SUCCESS.NEIGHBOR_TASKS_DETAILS, data)
         } 
         catch (error) {
             next(error)
@@ -202,7 +208,7 @@ export class NeighborController {
           const  id  = req.params.neighborId
           const transactions = await this.recordTransactionUsecase.neighborTransactions(id)
           console.log(transactions)
-          successResponse(res, 200, "Neighbor earnings retrieved", transactions);
+          successResponse(res, HttpStatus.OK, Messages.SUCCESS.NEIGHBOR_TRANSACTIONS, transactions);
     
           
         } catch (error) {

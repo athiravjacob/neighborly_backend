@@ -39,6 +39,7 @@ import { EscrowRepository } from "../infrastructure/repositories/escrowRepositor
 import { VerificationUsecase } from "../application/usecases/admin/verificationUsecase";
 import { WalletUsecase } from "../application/usecases/payment/walletUsecase";
 import { BanUsecase } from "../application/usecases/admin/banUsecase";
+import { AdminRepository } from "../infrastructure/repositories/adminRepository";
 
 export class Container {
   
@@ -48,8 +49,9 @@ export class Container {
     public static OTPRepository = new OtpRepository()
     public static tokenRepository = new tokenRepository()
     public static neighborRepository = new neighborRepository()
+    public static adminRepository = new AdminRepository()
     public static signupUseCase = new SignupUseCase(Container.userRepository,Container.neighborRepository, Container.authService);
-    public static loginUseCase = new LoginUsecase(Container.userRepository,Container.neighborRepository,Container.tokenRepository,Container.authService)
+    public static loginUseCase = new LoginUsecase(Container.userRepository,Container.neighborRepository,Container.adminRepository,Container.tokenRepository,Container.authService)
     public static logoutUsecase = new LogoutUsecase(Container.tokenRepository)
     public static VerifyOtpUsecase = new verifyOtpUseCase(Container.OTPRepository)
     public static resetPasswordUseCase = new ResetPasswordUseCase(Container.userRepository,Container.authService,Container.neighborRepository)

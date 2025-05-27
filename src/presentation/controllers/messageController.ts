@@ -5,6 +5,8 @@ import { SendMessageUseCase } from "../../application/usecases/message/sendMessa
 import { IMessageRepository } from "../../domain/interface/repositories/IMessageRepository";
 import { GetMessagesUseCase } from "../../application/usecases/message/getMessageUsecase";
 import { successResponse } from "../../shared/utils/responseHandler";
+import { HttpStatus } from "../../shared/constants/httpStatus";
+import { Messages } from "../../shared/constants/messages";
 
 
 export class MessageController {
@@ -17,7 +19,7 @@ export class MessageController {
     try {
       const { senderId, receiverId, content } = req.body;
       const message = await this.sendMessageUseCase.execute(senderId, receiverId, content);
-      successResponse(res,200,"message send",message)
+      successResponse(res,HttpStatus.OK,Messages.SUCCESS.TEXT_SENT,message)
 
     } catch (err) {
       next(err);
@@ -27,8 +29,8 @@ export class MessageController {
   getConversation = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { userId1, userId2 } = req.params;
-      const messages = await this.getMessagesUseCase.execute(userId1, userId2);
-      res.status(200).json(messages);
+      const message = await this.getMessagesUseCase.execute(userId1, userId2);
+      successResponse(res,HttpStatus.OK,Messages.SUCCESS.MESSAGES_SUCCESS,message)
     } catch (err) {
       next(err);
     }

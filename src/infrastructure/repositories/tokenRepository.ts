@@ -13,6 +13,7 @@ export class tokenRepository implements ITokenRepository{
       }
     
       async storeRefreshToken(userId: string, refreshToken: string,type:string): Promise<void> {
+       try {
         const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); 
         await refreshTokenModel.create({
           userId,
@@ -20,6 +21,9 @@ export class tokenRepository implements ITokenRepository{
           expiresAt,
           type
         });
+       } catch (error) {
+        console.log(error)
+       }
       }
     
 }

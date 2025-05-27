@@ -18,6 +18,7 @@ import { initSocketServer } from "./infrastructure/socket/socketServer";
 import setupMessageRoutes from "./presentation/routers/messageRoute";
 import setupPaymentRoutes from "./presentation/routers/paymentRoute";
 import { Routes } from "./shared/constants/routes";
+import morgan from "morgan";
 
 const app = express()
 const server = http.createServer(app);
@@ -28,7 +29,7 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization'],
 
 }));
-
+app.use(morgan('dev'));
 
 connectDB()
 const PORT = process.env.PORT 

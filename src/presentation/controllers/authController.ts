@@ -225,8 +225,9 @@ export class AuthController {
 
   adminLogin = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const dto: LoginDTO = req.body;
-      const authResponse = await this.loginUsecase.executeAdmin(dto);
+      const {email,password}= req.body;
+      if(!email || !password) errorResponse(res,HttpStatus.BAD_REQUEST,Messages.ERROR.MISSING_FIELDS)
+      const authResponse = await this.loginUsecase.executeAdmin({email,password});
       setAuthCookies(res, authResponse.accessToken, authResponse.refreshToken);
       const admin = {
         id: authResponse.id,

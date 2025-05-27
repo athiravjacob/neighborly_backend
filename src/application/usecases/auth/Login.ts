@@ -116,15 +116,15 @@ export class LoginUsecase{
   // ***************admin login
 
   async executeAdmin(dto: LoginDTO): Promise<AuthResponseDTO> {
-  const admin = await this.adminRepository.fetchAdmin(dto.email,dto.password)
-  if(!admin) throw new AppError(HttpStatus.NOT_FOUND,Messages.ERROR.NOT_FOUND)
-  const accessToken = this.authService.generateAccessToken(admin.id ,'admin');
-  const refreshToken = this.authService.generateRefreshToken(admin.id ,'admin');
+    const admin = await this.adminRepository.fetchAdmin(dto.email, dto.password)
+ 
+  const accessToken = this.authService.generateAccessToken(admin._id ,'admin');
+  const refreshToken = this.authService.generateRefreshToken(admin._id ,'admin');
 
-  await this.tokenRepository.storeRefreshToken(admin.id, refreshToken,'admin');
-
+  await this.tokenRepository.storeRefreshToken(admin._id!, refreshToken,'admin');
+    console.log("execute adminusecase")
   return {
-    id:admin.id,
+    id:admin._id,
     name: admin.name,
     email: admin.email,
     accessToken,
