@@ -44,4 +44,5 @@ const neighborSchema = new Schema({
 neighborSchema.index(
   { "availableLocation.city": 1, "skills.subcategories": 1 }
 );
+neighborSchema.index({ 'availableLocations.coordinates': '2dsphere' });
 export const neighborModel = model('Neighbor', neighborSchema);
