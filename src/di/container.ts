@@ -40,6 +40,8 @@ import { VerificationUsecase } from "../application/usecases/admin/verificationU
 import { WalletUsecase } from "../application/usecases/payment/walletUsecase";
 import { BanUsecase } from "../application/usecases/admin/banUsecase";
 import { AdminRepository } from "../infrastructure/repositories/adminRepository";
+import { scheduleRepository } from "../infrastructure/repositories/scheduleRepository";
+import { CheckUserBanStatusUsecase } from "../application/usecases/user/checkUserBanStatus";
 
 export class Container {
   
@@ -72,9 +74,9 @@ export class Container {
   public static taskRepository = new taskRepository()
   public static taskUsecase = new TaskUsecase(Container.taskRepository,Container.neighborRepository)
   public static taskController = new TaskController(Container.taskUsecase)
+  public static scheduleRepository= new scheduleRepository()
 
-
-  public static saveAvailbleTimeSlot = new SaveAvailability(Container.neighborRepository)
+  public static saveAvailbleTimeSlot = new SaveAvailability(Container.scheduleRepository)
   public static skillsUsecase = new SkillsUsecase(Container.neighborRepository)
   public static timeslotUsecase = new TimeslotUsecase(Container.neighborRepository)
   public static locationUsecase = new LocationUsecase(Container.neighborRepository)
@@ -83,6 +85,10 @@ export class Container {
   public static walletUsecase = new WalletUsecase(Container.walletRepository)
   public static escrowRepository = new EscrowRepository()
 
+  public static checkUserBanStatusUsecase = new CheckUserBanStatusUsecase(
+    Container.userRepository,
+    Container.neighborRepository
+  );
   public static transactionRepository = new TransactionRepository()
   public static saveTransactionUsecase = new saveTransaction(Container.transactionRepository,
     Container.escrowRepository,

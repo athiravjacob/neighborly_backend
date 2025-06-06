@@ -12,18 +12,17 @@ export class TransactionRepository implements ITransactionRepository {
     try {
       const transactions = await transactionModel
         .find({ neighborId })
-        .lean() // Convert to plain JavaScript objects
+        .lean() 
         .exec();
   
-      // Map Mongoose documents to TransactionHistory
       return transactions.map((transaction) => ({
-        id: transaction._id.toString(), // Convert ObjectId to string
+        id: transaction._id.toString(),
         userId: transaction.userId.toString(),
         neighborId: transaction.neighborId.toString(),
         taskId: transaction.taskId.toString(),
         stripeTransactionId: transaction.stripeTransactionId,
         amount: transaction.amount,
-        transactionDate: transaction.createdAt, // Map createdAt to transactionDate
+        transactionDate: transaction.createdAt, 
       }));
     } catch (error) {
       console.error(`Failed to fetch transaction history for neighborId ${neighborId}:`, error);

@@ -5,14 +5,6 @@ export class Neighbor {
       public email: string,
       public phone: string,
       public password: string,
-      // public address?: {
-      //   street: string;
-      //   city: string;
-      //   state: string;
-      //   pincode: string;
-      //   coordinates: { type: 'Point'; coordinates: [number, number] };
-      // },
-      // public aboutMe: string = '',
       public availableLocations: {
         city: string;
         radius: number;

@@ -54,6 +54,7 @@ export class AdminController{
     banUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { id } = req.params
+            
         await this.banUsecase.handleBan_user(id)
 
         successResponse(res,HttpStatus.NO_CONTENT,Messages.SUCCESS.USER_BAN_SUCCESS)

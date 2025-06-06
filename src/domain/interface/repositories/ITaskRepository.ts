@@ -3,12 +3,12 @@ import { Task } from "../../entities/Task";
 
 export interface ITaskRepository{
     createTask(taskDetails: TaskDetails): Promise<TaskDetails>;
-    fetchUserTasks(id: string): Promise<TaskDetails[]>
-    fetchNeighborTasks(id: string): Promise<TaskDetails[] | []>
+    fetchUserTasks(userId: string): Promise<TaskDetails[]>
+    fetchNeighborTasks(neighborId: string): Promise<TaskDetails[] | []>
     fetchAllTasks(): Promise<TaskDetails[] | []>
-    acceptTask(id: string,taskAcceptDetails:ExtendedTaskAcceptDetails): Promise<void>
-    fetchTaskStatus(id: string): Promise<TaskStatus>
-    updatePaymentStatus(id: string, status: PaymentStatus): Promise<void>
+    acceptTask(taskId: string,taskAcceptDetails:ExtendedTaskAcceptDetails): Promise<void>
+    fetchTaskStatus(taskId: string): Promise<TaskStatus>
+    updatePaymentStatus(taskId: string, status: PaymentStatus): Promise<void>
     addTaskCode(taskID: string, code: string): Promise<void>
     getTaskcode(taskId: string): Promise<string>
     getTaskById(taskId:string):Promise<TaskDetails>

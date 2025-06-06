@@ -5,16 +5,16 @@ import { User } from "../../entities/User";
 export interface IUserRepository {
   fetchAllUsers():Promise<User[]|[]>
 
-  fetchProfile(id: string): Promise<userGeneralInfo>;
+  fetchProfile(userId: string): Promise<userGeneralInfo>;
   findUserByEmail(email: string): Promise<User | null>;
   findUserByGoogleId(uid:string):Promise<User|null>
   createUser(user: User): Promise<User>;
   storeResetToken(email: string, token: string, expiresAt: number): Promise<void>
   resetPassword(email: string, token: string, newPassword: string): Promise<void>; 
-  updateProfile(id:string,profileDetails:userGeneralInfo):Promise<userGeneralInfo>
-  fetchPassword(id: string): Promise<string>
-  updatePassword(id: string, newPasswordHashed: string): Promise<void>
+  updateProfile(userId:string,profileDetails:userGeneralInfo):Promise<userGeneralInfo>
+  fetchPassword(userId: string): Promise<string>
+  updatePassword(userId: string, newPasswordHashed: string): Promise<void>
   
-  ban_or_unban(id: string): Promise<Boolean>
-  isBanned(id:string):Promise<Boolean>
+  ban_or_unban(userId: string): Promise<Boolean>
+  isBanned(userId:string):Promise<Boolean>
 }

@@ -2,6 +2,7 @@ import express, { Router } from 'express';
 import { NeighborController } from '../controllers/neighborController';
 import verifyToken from '../middleware/authMiddleware';
 import { Routes } from '../../shared/constants/routes';
+import { Container } from '../../di/container';
 
 export default function setupNeighborRoutes(neighborController: NeighborController): Router {
   const router = Router();
@@ -9,43 +10,43 @@ export default function setupNeighborRoutes(neighborController: NeighborControll
   // Availability
   router
     .route(Routes.NEIGHBORS.TIMESLOTS)
-    .post(verifyToken(['neighbor']), neighborController.availableTimeslots)
-    .get(verifyToken(['neighbor']), neighborController.getTimeslots);
+    .post(verifyToken(['neighbor'],Container.checkUserBanStatusUsecase), neighborController.availableTimeslots)
+    .get(verifyToken(['neighbor'],Container.checkUserBanStatusUsecase), neighborController.getTimeslots);
 
   // Skills
   router
     .route(Routes.NEIGHBORS.SKILLS)
-    .post(verifyToken(['neighbor']), neighborController.addSkills)
-    .get(verifyToken(['neighbor']), neighborController.getSkills);
+    .post(verifyToken(['neighbor'],Container.checkUserBanStatusUsecase), neighborController.addSkills)
+    .get(verifyToken(['neighbor'],Container.checkUserBanStatusUsecase), neighborController.getSkills);
 
   // Location
   router
     .route(Routes.NEIGHBORS.LOCATION)
-    .post(verifyToken(['neighbor']), neighborController.availableLocation)
-    .get(verifyToken(['neighbor']), neighborController.fetchLocation);
+    .post(verifyToken(['neighbor'],Container.checkUserBanStatusUsecase), neighborController.availableLocation)
+    .get(verifyToken(['neighbor'],Container.checkUserBanStatusUsecase), neighborController.fetchLocation);
 
   // Verification
   router
     .route(Routes.NEIGHBORS.VERIFICATION)
-    .patch(verifyToken(['neighbor']), neighborController.uploadId);
+    .patch(verifyToken(['neighbor'],Container.checkUserBanStatusUsecase), neighborController.uploadId);
   
   router
     .route(Routes.NEIGHBORS.VERIFICATION_STATUS)
-    .get(verifyToken(['neighbor']), neighborController.fetchVerificationStatus);
+    .get(verifyToken(['neighbor'],Container.checkUserBanStatusUsecase), neighborController.fetchVerificationStatus);
 
   // For users
   router
     .route(Routes.NEIGHBORS.AVAILABLE)
-    .get(verifyToken(['user']), neighborController.availableNeighbors);
+    .get(verifyToken(['user'],Container.checkUserBanStatusUsecase), neighborController.availableNeighbors);
 
   router
     .route(Routes.NEIGHBORS.SERVICE_AVAILABILITY)
-    .get(verifyToken(['user']), neighborController.checkServiceAvailability);
+    .get(verifyToken(['user'],Container.checkUserBanStatusUsecase), neighborController.checkServiceAvailability);
 
   // Wallet
   router
     .route(Routes.NEIGHBORS.WALLET)
-    .get(verifyToken(['neighbor']), neighborController.fetchWallet);
+    .get(verifyToken(['neighbor'],Container.checkUserBanStatusUsecase), neighborController.fetchWallet);
 
   // Transaction History
   router
@@ -55,7 +56,7 @@ export default function setupNeighborRoutes(neighborController: NeighborControll
   // Tasks 
   router
     .route(Routes.NEIGHBORS.TASKS)
-    .get(verifyToken(['neighbor', 'user']), neighborController.fetchAssignedTasks);
+    .get(verifyToken(['neighbor', 'user'],Container.checkUserBanStatusUsecase), neighborController.fetchAssignedTasks);
 
   return router;
 }

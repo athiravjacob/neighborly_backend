@@ -3,6 +3,8 @@ import jwt from 'jsonwebtoken';
 import { errorResponse } from '../../shared/utils/responseHandler';
 import { HttpStatus } from '../../shared/constants/httpStatus';
 import { Messages } from '../../shared/constants/messages';
+import { AppError } from '../../shared/utils/errors';
+import { CheckUserBanStatusUsecase } from '../../application/usecases/user/checkUserBanStatus';
 
 // Define the expected JWT payload structure
 interface JwtPayload {
@@ -19,7 +21,8 @@ interface AuthRequest extends Request {
 }
 
 // Middleware to verify access token and authorize based on role
-const verifyToken = (allowedTypes: Array<'user' | 'neighbor' | 'admin'> = []) => {
+const verifyToken = (allowedTypes: Array<'user' | 'neighbor' | 'admin'> = [],
+checkBanStatusUsecase: CheckUserBanStatusUsecase) => {
   return async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
     try {
       const accessToken = req.cookies?.access_token;
@@ -43,9 +46,12 @@ const verifyToken = (allowedTypes: Array<'user' | 'neighbor' | 'admin'> = []) =>
         return;
       }
 
-      // Set user info for downstream use
-      req.userId = decoded.id;
-      req.userType = decoded.type;
+      // Check ban status for user or neighbor
+      if (decoded.type === 'user' || decoded.type === 'neighbor') {
+        await checkBanStatusUsecase.execute(decoded.id, decoded.type);
+      }
+      
+      
       next();
     } catch (error) {
       console.log('Error in token verification:', error);
@@ -55,6 +61,10 @@ const verifyToken = (allowedTypes: Array<'user' | 'neighbor' | 'admin'> = []) =>
       }
       if (error instanceof jwt.JsonWebTokenError) {
         errorResponse(res, HttpStatus.UNAUTHORIZED, Messages.ERROR.INVALID_TOKEN);
+        return;
+      }
+      if (error instanceof AppError) {
+        errorResponse(res, error.statusCode, error.message);
         return;
       }
       errorResponse(res, HttpStatus.INTERNAL_SERVER_ERROR, Messages.ERROR.AUTHENTICATION_ERROR);

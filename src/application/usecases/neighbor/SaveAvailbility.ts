@@ -1,14 +1,21 @@
 import { Neighbor } from "../../../domain/entities/Neighbor";
 import { INeighborRepository } from "../../../domain/interface/repositories/INeighborRepository";
+import { IScheduleRepository } from "../../../domain/interface/repositories/IScheduleRepository";
+import { Schedule } from "../../../shared/types/Schedule";
 
 export class SaveAvailability{
     constructor(
-        private neighborRepository: INeighborRepository,
+        private scheduleRepository: IScheduleRepository,
     ) { }
     
-    async execute(id: string, availability: Neighbor['availability']): Promise<Neighbor> {
+    async saveAvailability( availability: Schedule): Promise<Schedule> {
       
-        const updatedNeighbor = await this.neighborRepository.saveAvailabilty(id, availability);
-        return updatedNeighbor;
-      }
+        const Schedule = await this.scheduleRepository.saveNeighborSchedules(availability);
+        return Schedule;
+    }
+    
+    async getAvailability(neighborId: string): Promise<Schedule>{
+        const Schedule = await this.scheduleRepository.getNeighborSchedule(neighborId)
+        return Schedule
+    } 
 }

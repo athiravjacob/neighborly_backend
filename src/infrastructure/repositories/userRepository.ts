@@ -3,6 +3,8 @@ import { UserModel } from "../model/userModel";
 import { User } from "../../domain/entities/User";
 import { AppError } from "../../shared/utils/errors";
 import { userGeneralInfo } from "../../shared/types/UserDTO";
+import { HttpStatus } from "../../shared/constants/httpStatus";
+import { Messages } from "../../shared/constants/messages";
 
 export class UserRepository implements IUserRepository {
   async ban_or_unban(id: string): Promise<Boolean> {
@@ -15,7 +17,7 @@ export class UserRepository implements IUserRepository {
   const updatedUser = await UserModel.findByIdAndUpdate(
     id,
     { $set: { isBanned: !user.isBanned } },
-    { new: true } // Return the updated document
+    { new: true } 
   );
 
   if (!updatedUser) {
@@ -27,9 +29,10 @@ export class UserRepository implements IUserRepository {
   
   async isBanned(id: string): Promise<Boolean> {
     const user = await UserModel.findById(id)
-    if(!user || !user.isBanned) throw new Error("invalid user id or user doent exist")
-    return user.isBanned
+    if( user?.isBanned) throw new AppError(HttpStatus.FORBIDDEN,Messages.ERROR.BANNED)
+    return false
   }
+
   async fetchAllUsers(): Promise<[] | User[]> {
     const userList = await UserModel.find().select('-password');
     return userList ? JSON.parse(JSON.stringify(userList )) : []
@@ -143,7 +146,7 @@ export class UserRepository implements IUserRepository {
       userDoc.email,
       userDoc.phone || "",
       userDoc.password || "",
-
+      userDoc.isBanned.toString()
 
     );
   }

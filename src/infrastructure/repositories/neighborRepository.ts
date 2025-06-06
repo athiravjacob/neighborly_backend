@@ -1,3 +1,4 @@
+import { HttpStatusCode } from "axios";
 import { Neighbor } from "../../domain/entities/Neighbor";
 import { INeighborRepository } from "../../domain/interface/repositories/INeighborRepository";
 import { LocationDetailsDTO, locationDTO } from "../../shared/types/LocationDetailsDTO";
@@ -7,36 +8,38 @@ import { TimeslotDTO } from "../../shared/types/TimeslotDTO";
 import { AppError } from "../../shared/utils/errors";
 import { neighborModel } from "../model/neigborModel";
 import { UserModel } from "../model/userModel";
+import { HttpStatus } from "../../shared/constants/httpStatus";
+import { Messages } from "../../shared/constants/messages";
 
 export class neighborRepository implements INeighborRepository{
 
-  async fetchPassword(id: string): Promise<string> {
-    const user = await neighborModel.findById(id, { _id: 0, password: 1 })
-    console.log(id,"fetch neighbor password")
+  async fetchPassword(neighborId: string): Promise<string> {
+    const user = await neighborModel.findById(neighborId, { _id: 0, password: 1 })
+    console.log(neighborId,"fetch neighbor password")
     if (!user?.password) {
-      throw new AppError(400, "No password found for user");
+      throw new AppError(HttpStatus.NOT_FOUND , Messages.ERROR.NOT_FOUND);
   }
     return user.password;
   }
-  async updatePassword(id: string, newPasswordHashed: string): Promise<void> {
-    await neighborModel.findByIdAndUpdate(id, { $set: { password: newPasswordHashed } },{ new: true } )
+  async updatePassword(neighborId: string, newPasswordHashed: string): Promise<void> {
+    await neighborModel.findByIdAndUpdate(neighborId, { $set: { password: newPasswordHashed } },{ new: true } )
     
   }
   async ban_or_unban(id: string): Promise<Boolean> {
     const user = await neighborModel.findById(id);
   if (!user) {
-    throw new Error("Invalid neighbor ID or neighbor does not exist");
+    throw new AppError(HttpStatus.NOT_FOUND , Messages.ERROR.NOT_FOUND);
   }
 
   // Toggle isBanned
   const updatedUser = await neighborModel.findByIdAndUpdate(
     id,
     { $set: { isBanned: !user.isBanned } },
-    { new: true } // Return the updated document
+    { new: true } 
   );
 
   if (!updatedUser) {
-    throw new Error("Failed to update neighbor");
+    throw new AppError(HttpStatus.CONFLICT , Messages.ERROR.FAILED);
   }
 
   return updatedUser.isBanned;
@@ -44,8 +47,8 @@ export class neighborRepository implements INeighborRepository{
 
   async isBanned(id: string): Promise<Boolean> {
     const neighbor = await neighborModel.findById(id)
-    if(!neighbor || !neighbor.isBanned) throw new Error("invalid neighbor id or neighbor doent exist")
-    return neighbor.isBanned
+    if(neighbor?.isBanned) throw new AppError(HttpStatus.FORBIDDEN,Messages.ERROR.BANNED)
+    return false
   }
   
 

@@ -53,6 +53,9 @@ export const Messages = {
       INVALID_TOKEN: 'Invalid or expired token',
       ACCESS_TOKEN_EXPIRED: 'Access token expired',
       AUTHENTICATION_ERROR: 'Authentication error',
+      BANNED: "Your account has been banned by Admin",
+      FAILED:"Couldn't complete the request "
+      
 
     },
   };

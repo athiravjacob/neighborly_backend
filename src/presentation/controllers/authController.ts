@@ -179,8 +179,10 @@ export class AuthController {
 
   refreshToken = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
+      console.log("refresh")
       const refreshToken = req.cookies?.refresh_token;
       if (!refreshToken) {
+        console.log("no token")
         errorResponse(res, HttpStatus.BAD_REQUEST, Messages.ERROR.MISSING_FIELDS);
         return;
       }

@@ -6,6 +6,7 @@ import { loginValidSchema } from "../../shared/validations/loginValidSchema";
 import { auth } from "firebase-admin";
 import verifyToken from "../middleware/authMiddleware";
 import { Routes } from "../../shared/constants/routes";
+import { Container } from "../../di/container";
 
 export default function setupAuthRoutes(authController: AuthController): Router {
   const router = Router();
@@ -51,7 +52,7 @@ export default function setupAuthRoutes(authController: AuthController): Router 
 
   router
     .route(Routes.AUTH.USER_PASSWORD_CHANGE)
-    .patch(verifyToken(['user', 'neighbor', 'admin']), authController.changePassword_user);
+    .patch(verifyToken(['user', 'neighbor', 'admin'],Container.checkUserBanStatusUsecase), authController.changePassword_user);
 
   // Neighbor Auth
   router

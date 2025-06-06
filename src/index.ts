@@ -46,8 +46,8 @@ app.get(Routes.HEALTH, (req, res) => {
 app.use(Routes.AUTH.BASE, setupAuthRoutes(Container.authController));
 app.use(Routes.NEIGHBORS.BASE, setupNeighborRoutes(Container.neighborController));
 app.use(Routes.TASKS.BASE, setupTaskToutes(Container.taskController));
-app.use(Routes.USERS.BASE,verifyToken(['user']), setupUserRoutes(Container.userController));
-app.use(Routes.ADMIN.BASE,verifyToken(['admin']) ,setupAdminRoutes(Container.adminController));
+app.use(Routes.USERS.BASE, setupUserRoutes(Container.userController));
+app.use(Routes.ADMIN.BASE,verifyToken(['admin'],Container.checkUserBanStatusUsecase) ,setupAdminRoutes(Container.adminController));
 app.use(Routes.MESSAGES.BASE, setupMessageRoutes(Container.messageController));
 app.use(Routes.PAYMENTS.BASE, setupPaymentRoutes(Container.paymentController))
 

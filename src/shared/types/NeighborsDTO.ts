@@ -25,6 +25,8 @@ export interface NeighborInfo {
       note:"available"|"booked"
     }[];
   }[];
+  isVerified: boolean
+  idCardImage:string
   isBanned:boolean
 }
 

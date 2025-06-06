@@ -32,9 +32,6 @@ export class NeighborController {
         private walletUsecase: WalletUsecase,
         private taskUsecase: TaskUsecase,
         private recordTransactionUsecase: saveTransaction,
-
-
-
     ) { }
 
     //*****************Post available data and time****************/
@@ -42,11 +39,13 @@ export class NeighborController {
     availableTimeslots = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { neighborId } = req.params
-
             const { availability } = req.body
-            console.groupCollapsed(req.body)
-            const updatedNeighbor = await this.availabilityUseCase.execute(neighborId, availability)
-            successResponse(res, HttpStatus.OK, Messages.SUCCESS.NEIGHBOR_TIMESLOT_UPDATED, updatedNeighbor)
+            const schedule = {
+                neighborId,
+                availability
+            }
+            const neighborSchedules = await this.availabilityUseCase.saveAvailability(schedule)
+            successResponse(res, HttpStatus.OK, Messages.SUCCESS.NEIGHBOR_TIMESLOT_UPDATED, neighborSchedules)
         } catch (error) {
             next(error)
         }
@@ -94,7 +93,7 @@ export class NeighborController {
     getTimeslots = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const id = req.params.neighborId
-            const data = await this.getTimeslotUsecase.getTimeslots(id)
+            const data = await this.availabilityUseCase.getAvailability(id)
             successResponse(res, HttpStatus.OK, Messages.SUCCESS.NEIGHBOR_TIMESLOT_FETCHED, data)
         } catch (error) {
             next(error)

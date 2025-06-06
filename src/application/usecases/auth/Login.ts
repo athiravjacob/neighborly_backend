@@ -23,9 +23,10 @@ export class LoginUsecase{
 
     async executeUser(dto: LoginDTO): Promise<AuthResponseDTO> {
       const user = await this.userRepository.findUserByEmail(dto.email);
-      console.log(user,"login")
+      console.log(user?.isBanned)
+      if(user?.isBanned) throw new AppError(HttpStatus.FORBIDDEN,Messages.ERROR.BANNED)
       if (!user || !user.password || !(await this.authService.comparePassword(dto.password, user.password))) {
-          throw new AppError(401, 'Invalid credentials');
+          throw new AppError(HttpStatus.UNAUTHORIZED, Messages.ERROR.INVALID_CREDENTIALS);
           
       }
       let id = user.id as string
@@ -51,10 +52,12 @@ export class LoginUsecase{
       throw new Error('Invalid Google UID provided');
     }
     if (!email || !name) {
-      throw new Error('Email and name are required');
+      throw new AppError(HttpStatus.UNAUTHORIZED, Messages.ERROR.INVALID_CREDENTIALS);
     }
   
     let user = await this.userRepository.findUserByGoogleId(uid);
+    if(user?.isBanned) throw new AppError(HttpStatus.FORBIDDEN,Messages.ERROR.BANNED)
+
     let id = user?.id;
   
     if (!user) {
@@ -93,10 +96,14 @@ export class LoginUsecase{
   //***************Neighbor Login *****************/
   async executeNeighbor(dto: LoginDTO): Promise<AuthResponseDTO> {
     const neighbor = await this.neighborRepository.findNeighborByEmail(dto.email);
+    if(neighbor?.isBanned) throw new AppError(HttpStatus.FORBIDDEN,Messages.ERROR.BANNED)
+
     if (!neighbor || !(await this.authService.comparePassword(dto.password, neighbor.password))) {
-      throw new AppError(401, 'Invalid credentials');
+      throw new AppError(HttpStatus.UNAUTHORIZED, Messages.ERROR.INVALID_CREDENTIALS);
       
-  }
+    }
+    // if(neighbor?.isBanned) throw new AppError(HttpStatus.FORBIDDEN,Messages.ERROR.BANNED)
+
   let id = neighbor.id as string
   const accessToken = this.authService.generateAccessToken(id ,'neighbor');
   const refreshToken = this.authService.generateRefreshToken(id ,'neighbor');

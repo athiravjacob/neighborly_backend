@@ -14,15 +14,25 @@ const scheduleSchema = new Schema({
             enum: ["mon", "tue", "wed", "thur", "fri", "sat", "sun"],
             required: true,
           },
-          timeSlots: [
+          timeslot: [
             {
               startTime: {
                 type: Number,
                 required: true,
+                min: 0,
+                max: 1440, // 24 hours * 60 minutes
               },
               endTime: {
                 type: Number,
                 required: true,
+                min: 0,
+                max: 1440,
+                validate: {
+                    validator: function (this: { startTime: number; endTime: number }, endTime: number) {
+                        return endTime > this.startTime;
+                  },
+                  message: "endTime must be greater than startTime",
+                },
               },
             },
           ],
