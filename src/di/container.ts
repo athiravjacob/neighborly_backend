@@ -11,7 +11,7 @@ import { LoginUsecase } from "../application/usecases/auth/Login";
 import { LogoutUsecase } from "../application/usecases/auth/Logout";
 import { tokenRepository } from "../infrastructure/repositories/tokenRepository";
 import { neighborRepository } from "../infrastructure/repositories/neighborRepository";
-import { SaveAvailability } from "../application/usecases/neighbor/SaveAvailbility";
+import { WeeklySchedule } from "../application/usecases/neighbor/WeeklySchedule";
 import { NeighborController } from "../presentation/controllers/neighborController";
 import { SkillsUsecase } from "../application/usecases/neighbor/SkillsUsecase";
 import { LocationUsecase } from "../application/usecases/neighbor/LocationUsecase";
@@ -76,7 +76,7 @@ export class Container {
   public static taskController = new TaskController(Container.taskUsecase)
   public static scheduleRepository= new scheduleRepository()
 
-  public static saveAvailbleTimeSlot = new SaveAvailability(Container.scheduleRepository)
+  public static saveAvailbleTimeSlot = new WeeklySchedule(Container.scheduleRepository)
   public static skillsUsecase = new SkillsUsecase(Container.neighborRepository)
   public static timeslotUsecase = new TimeslotUsecase(Container.neighborRepository)
   public static locationUsecase = new LocationUsecase(Container.neighborRepository)

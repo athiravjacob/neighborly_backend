@@ -7,8 +7,9 @@ export class NeighborsListUsecase{
         private neighborRepository:INeighborRepository
     ) { }
     
-    async getNeighborsList(city: string, subCategory: string):Promise<NeighborInfo[]|[]> {
-        const neighbors = await this.neighborRepository.getAvailableNeighborsList(city, subCategory)
+    async getNeighborsList(longitude: number,latitude:number, subCategory: string):Promise<NeighborInfo[]|[]> {
+        const neighbors = await this.neighborRepository.getAvailableNeighborsList(longitude, latitude, subCategory)
+        console.log(neighbors)
         if (!neighbors) return []
         return neighbors
     }

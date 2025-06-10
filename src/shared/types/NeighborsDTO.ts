@@ -3,7 +3,7 @@ export interface NeighborInfo {
   name: string;
   email: string;
   phone: string;
-  availableLocations: {
+  availableLocation: {
     city: string;
     radius: number;
     coordinates: {

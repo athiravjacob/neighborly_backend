@@ -1,6 +1,6 @@
 import {Request,Response, NextFunction } from "express";
 import { errorResponse, successResponse } from "../../shared/utils/responseHandler";
-import { SaveAvailability } from "../../application/usecases/neighbor/SaveAvailbility";
+import { WeeklySchedule } from "../../application/usecases/neighbor/WeeklySchedule";
 import { SkillsUsecase } from "../../application/usecases/neighbor/SkillsUsecase";
 import { LocationUsecase } from "../../application/usecases/neighbor/LocationUsecase";
 import { TimeslotDTO } from "../../shared/types/TimeslotDTO";
@@ -17,13 +17,14 @@ import { Messages } from "../../shared/constants/messages";
 import { HttpStatusCode } from "axios";
 
 interface NeighborQuery {
-    city?: string;
+    lat?: number;
+    lng?: number;
     subCategory?: string;
   }
 
 export class NeighborController {
     constructor(
-        private availabilityUseCase: SaveAvailability,
+        private availabilityUseCase: WeeklySchedule,
         private skillsUseCase: SkillsUsecase,
         private serviceLocationUseCase: LocationUsecase,
         private getTimeslotUsecase: TimeslotUsecase,
@@ -36,7 +37,7 @@ export class NeighborController {
 
     //*****************Post available data and time****************/
 
-    availableTimeslots = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    weeklySchedule = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { neighborId } = req.params
             const { availability } = req.body
@@ -47,6 +48,7 @@ export class NeighborController {
             const neighborSchedules = await this.availabilityUseCase.saveAvailability(schedule)
             successResponse(res, HttpStatus.OK, Messages.SUCCESS.NEIGHBOR_TIMESLOT_UPDATED, neighborSchedules)
         } catch (error) {
+            console.log(error)
             next(error)
         }
     }
@@ -90,10 +92,11 @@ export class NeighborController {
     }
 
     //*************************Fetch AVAILABLE date and time************************************** */
-    getTimeslots = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    getWeeklySchedule = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const id = req.params.neighborId
             const data = await this.availabilityUseCase.getAvailability(id)
+            console.log(data)
             successResponse(res, HttpStatus.OK, Messages.SUCCESS.NEIGHBOR_TIMESLOT_FETCHED, data)
         } catch (error) {
             next(error)
@@ -126,39 +129,65 @@ export class NeighborController {
 
     availableNeighbors = async (req: Request<{}, {}, {}, NeighborQuery>, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const { city, subCategory } = req.query
-            if (!city || !subCategory) {
-                errorResponse(res,HttpStatus.BAD_REQUEST,Messages.ERROR.MISSING_FIELDS)
-                return;
-            }
-            const data = await this.neighborsList.getNeighborsList(city, subCategory)
-            successResponse(res, HttpStatus.OK,  Messages.SUCCESS.AVAILABLE_NEIGHBORS, data)
- 
+            const { lng,lat, subCategory } = req.query
+           // Validate all required query parameters
+      if (!lng || !lat || !subCategory) {
+        errorResponse(res, HttpStatus.BAD_REQUEST, Messages.ERROR.MISSING_FIELDS);
+        return;
+      }
+
+    
+      if (isNaN(lat) || isNaN(lng)) {
+        errorResponse(res, HttpStatus.BAD_REQUEST, 'Invalid coordinates: lat and lng must be valid numbers');
+        return;
+      }
+
+      // Validate subCategory
+      if (typeof subCategory !== 'string' || subCategory.trim() === '') {
+        errorResponse(res, HttpStatus.BAD_REQUEST, 'Invalid subCategory: must be a non-empty string');
+        return;
+      }
+
+      // Call the service to get neighbors
+      const data = await this.neighborsList.getNeighborsList(lng, lat, subCategory);
+      successResponse(res, HttpStatus.OK, Messages.SUCCESS.AVAILABLE_NEIGHBORS, data);
         } catch (error) {
             next(error)
         }
     }
 
     // ************************************ CHECK SERVICE AVAILABLITY ************************
-    checkServiceAvailability = async (req: Request<{}, {}, {}, NeighborQuery>, res: Response, next: NextFunction): Promise<void> => {
-        try {
-            const { city ,subCategory} = req.query
-            if (!city || !subCategory) {
-                errorResponse(res,HttpStatus.BAD_REQUEST,Messages.ERROR.MISSING_FIELDS)
-                return;
-            }
-            const data = await this.neighborsList.checkServiceLocation(city, subCategory)
-            console.log(data)
-            if (data === true) {
-                successResponse(res, HttpStatus.OK, Messages.SUCCESS.SERVICE_AVAILABLE,data)
-            } else
-            successResponse(res, HttpStatus.OK, Messages.SUCCESS.SERVICE_NOT_AVAILABLE,data)
+    // checkServiceAvailability = async (req: Request<{}, {}, {}, NeighborQuery>, res: Response, next: NextFunction): Promise<void> => {
+    //     try {
+    //         const { lng,lat ,subCategory} = req.query
+    //         if (!lng ||!lat || !subCategory) {
+    //             errorResponse(res,HttpStatus.BAD_REQUEST,Messages.ERROR.MISSING_FIELDS)
+    //             return;
+    //         }
+    //         const latitude = parseFloat(lat);
+    //   const longitude = parseFloat(lng);
+    //   if (isNaN(latitude) || isNaN(longitude)) {
+    //     errorResponse(res, HttpStatus.BAD_REQUEST, 'Invalid coordinates: lat and lng must be valid numbers');
+    //     return;
+    //   }
 
-        } catch (error) {
-            console.log(error)
-            next(error)
-        }
-    }
+    //   // Validate subCategory
+    //   if (typeof subCategory !== 'string' || subCategory.trim() === '') {
+    //     errorResponse(res, HttpStatus.BAD_REQUEST, 'Invalid subCategory: must be a non-empty string');
+    //     return;
+    //   }
+    //         const data = await this.neighborsList.checkServiceLocation(longitude,latitude, subCategory)
+    //         console.log(data)
+    //         if (data === true) {
+    //             successResponse(res, HttpStatus.OK, Messages.SUCCESS.SERVICE_AVAILABLE,data)
+    //         } else
+    //         successResponse(res, HttpStatus.OK, Messages.SUCCESS.SERVICE_NOT_AVAILABLE,data)
+
+    //     } catch (error) {
+    //         console.log(error)
+    //         next(error)
+    //     }
+    // }
 
     fetchVerificationStatus = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {

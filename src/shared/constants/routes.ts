@@ -27,7 +27,7 @@ export const Routes = {
     },
     NEIGHBORS: {
       BASE: '/v1/neighbors',
-      TIMESLOTS: '/:neighborId/timeslots',
+      SCHEDULE: '/:neighborId/weekly-schedule',
       SKILLS: '/:neighborId/skills',
       LOCATION: '/:neighborId/location',
       VERIFICATION: '/:neighborId/verification',

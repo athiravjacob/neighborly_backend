@@ -3,7 +3,7 @@ import { INeighborRepository } from "../../../domain/interface/repositories/INei
 import { IScheduleRepository } from "../../../domain/interface/repositories/IScheduleRepository";
 import { Schedule } from "../../../shared/types/Schedule";
 
-export class SaveAvailability{
+export class WeeklySchedule{
     constructor(
         private scheduleRepository: IScheduleRepository,
     ) { }

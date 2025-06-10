@@ -10,7 +10,8 @@ export class LocationUsecase{
     ) { }
     async saveLocation(id: string, location:locationDTO): Promise<locationDTO>{
         const { city, radius, coordinates } = location;
-        const [ lat, lng ] = coordinates;
+        const [lng, lat] = coordinates;
+        console.log(lat ,"=lat",lng ,"=lng")
 
         const geoCoordinates = {
             type: 'Point' as const,

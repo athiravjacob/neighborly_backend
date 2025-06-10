@@ -112,44 +112,69 @@ export class neighborRepository implements INeighborRepository{
   }
 
   //****************** Get Available Neighbors List ************** */
-  async getAvailableNeighborsList(city: string, subCategory: string): Promise<NeighborInfo[]> {
+  async getAvailableNeighborsList(lng: number, lat: number, subCategory: string): Promise<NeighborInfo[]> {
     try {
+      
+      const longitude = Number(lng);
+      const latitude = Number(lat);
+      if (isNaN(longitude) || isNaN(latitude)) {
+        throw new Error('Invalid longitude or latitude');
+      }
+      if (!subCategory || typeof subCategory !== 'string') {
+        throw new Error('Invalid subcategory');
+      }
+  
       const neighbors = await neighborModel.aggregate([
         {
-          $match: {
-            "availableLocation.city": city,
-            "skills.subcategories": subCategory
+          $geoNear: {
+            near: {
+              type: 'Point',
+              coordinates: [longitude, latitude] // GeoJSON: [longitude, latitude]
+            },
+            distanceField: 'distance', // Distance in meters
+            // maxDistance: 100000, // 100 km (uncomment if needed)
+            spherical: true,
+            query: {
+              // isBanned: false,
+              // isVerified: true,
+              // verificationStatus: 'approved',
+              'skills.subcategories': { $in: [subCategory] }
+            }
           }
         },
         {
-          $addFields: {
-            skills: {
-              $filter: {
-                input: "$skills",
-                as: "skill",
-                cond: { $in: [subCategory, "$$skill.subcategories"] }
-              }
+          $match: {
+            $expr: {
+              $lte: [{ $divide: ['$distance', 1000] }, '$availableLocation.radius']
             }
           }
         },
         {
           $project: {
-            password: 0
+            id: 1,
+            name: 1,
+            email: 1,
+            phone: 1,
+            availableLocation: 1,
+            skills: 1,
+            availability: 1,
+            isVerified: 1,
+            verificationStatus: 1
           }
         }
       ]);
-      if(neighbors.length === 0) return []
-      
-        return neighbors;
+      console.log(neighbors)
+  
+      return neighbors as NeighborInfo[];
     } catch (error) {
+      console.error('Error in getAvailableNeighborsList:', error);
       if (error instanceof Error) {
-        throw { statusCode: 500, message: error.message || "Error fetching available neighbors" };
-    } else {
-        throw { statusCode: 500, message: "An unknown error occurred while fetching available neighbors" };
+        throw { statusCode: 500, message: `Error fetching available neighbors: ${error.message}` };
+      } else {
+        throw { statusCode: 500, message: 'An unknown error occurred while fetching available neighbors' };
+      }
     }
-    }
-}
-
+  }
   //****************** fetch service location*********************** */
   async getServiceLocation(id: string): Promise<locationDTO> {
     const location = await neighborModel.findById(id, { availableLocation: 1 })

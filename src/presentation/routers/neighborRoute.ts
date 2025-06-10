@@ -7,11 +7,11 @@ import { Container } from '../../di/container';
 export default function setupNeighborRoutes(neighborController: NeighborController): Router {
   const router = Router();
 
-  // Availability
+  // Schedule
   router
-    .route(Routes.NEIGHBORS.TIMESLOTS)
-    .post(verifyToken(['neighbor'],Container.checkUserBanStatusUsecase), neighborController.availableTimeslots)
-    .get(verifyToken(['neighbor'],Container.checkUserBanStatusUsecase), neighborController.getTimeslots);
+    .route(Routes.NEIGHBORS.SCHEDULE)
+    .post(verifyToken(['neighbor'],Container.checkUserBanStatusUsecase), neighborController.weeklySchedule)
+    .get(verifyToken(['neighbor'],Container.checkUserBanStatusUsecase), neighborController.getWeeklySchedule);
 
   // Skills
   router
@@ -41,7 +41,7 @@ export default function setupNeighborRoutes(neighborController: NeighborControll
 
   router
     .route(Routes.NEIGHBORS.SERVICE_AVAILABILITY)
-    .get(verifyToken(['user'],Container.checkUserBanStatusUsecase), neighborController.checkServiceAvailability);
+    // .get(verifyToken(['user'],Container.checkUserBanStatusUsecase), neighborController.checkServiceAvailability);
 
   // Wallet
   router

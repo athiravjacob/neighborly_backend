@@ -16,7 +16,7 @@ export interface INeighborRepository{
     getServiceLocation(neighborId: string): Promise<locationDTO>
     
 
-    getAvailableNeighborsList(city: string, subCategory: string): Promise<NeighborInfo[] | []>
+    getAvailableNeighborsList(lng:number,lat: number, subCategory: string): Promise<NeighborInfo[] | []>
     checkServiceAvailability(city: string, subCategory: string): Promise<Boolean>
     uploadId(neighborId: string, idCardImage: string): Promise<Boolean>
     fetchVerifyStatus(neighborId: string): Promise<Boolean>
