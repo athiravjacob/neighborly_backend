@@ -28,11 +28,12 @@ export const Routes = {
     NEIGHBORS: {
       BASE: '/v1/neighbors',
       SCHEDULE: '/:neighborId/weekly-schedule',
+      AVAILABLE_DAYS:'/:neighborId/available-days',
       SKILLS: '/:neighborId/skills',
       LOCATION: '/:neighborId/location',
       VERIFICATION: '/:neighborId/verification',
       VERIFICATION_STATUS: '/:neighborId/verification/status',
-      AVAILABLE: '/available',
+      AVAILABLE_NEIGHBORS: '/available',
       SERVICE_AVAILABILITY: '/service-availability',
       WALLET: '/:neighborId/wallet',
       PAYMENT_HISTORY: '/:neighborId/payments/history',
@@ -40,11 +41,15 @@ export const Routes = {
     },
     TASKS: {
       BASE: '/v1/tasks',
-      CREATE: '/',
+      CREATE: '/',      
       STATUS: '/:taskId/status',
       VERIFY_CODE: '/:taskId/verify-code',
       COMPLETE: '/:taskId/complete',
       ACCEPT: ':taskId/accept',
+  },
+  CATEGORY: {
+    BASE: '/v1/categories',
+    SUB_CATEGORY:'/:categoryId'
     },
     USERS: {
       BASE: '/v1/users',
