@@ -11,9 +11,9 @@ export default function setupNeighborRoutes(neighborController: NeighborControll
   router
     .route(Routes.NEIGHBORS.SCHEDULE)
     .post(verifyToken(['neighbor'],Container.checkUserBanStatusUsecase), neighborController.weeklySchedule)
-    .get(verifyToken(['neighbor'],Container.checkUserBanStatusUsecase), neighborController.getWeeklySchedule);
+    .get(verifyToken(['neighbor','user'],Container.checkUserBanStatusUsecase), neighborController.getWeeklySchedule);
 
-  // Skills
+  // Skills 
   router
     .route(Routes.NEIGHBORS.SKILLS)
     .post(verifyToken(['neighbor'],Container.checkUserBanStatusUsecase), neighborController.addSkills)
@@ -36,7 +36,7 @@ export default function setupNeighborRoutes(neighborController: NeighborControll
 
   // For users
   router
-    .route(Routes.NEIGHBORS.AVAILABLE)
+    .route(Routes.NEIGHBORS.AVAILABLE_NEIGHBORS)
     .get(verifyToken(['user'],Container.checkUserBanStatusUsecase), neighborController.availableNeighbors);
 
   router
@@ -56,7 +56,12 @@ export default function setupNeighborRoutes(neighborController: NeighborControll
   // Tasks 
   router
     .route(Routes.NEIGHBORS.TASKS)
-    .get(verifyToken(['neighbor', 'user'],Container.checkUserBanStatusUsecase), neighborController.fetchAssignedTasks);
+    .get(verifyToken(['neighbor', 'user'], Container.checkUserBanStatusUsecase), neighborController.fetchAssignedTasks);
+  
+  // Available Days after booking
+  router  
+    .route(Routes.NEIGHBORS.AVAILABLE_DAYS)
+    .get(neighborController.fetchAvailableDays)
 
   return router;
 }

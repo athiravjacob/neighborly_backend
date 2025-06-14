@@ -14,12 +14,6 @@ const bookingSchema = new Schema(
       required: true,
       index: true,
     },
-    userId: {
-      type: Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-      index: true,
-    },
     date: {
       type: Date,
       required: true,
@@ -56,4 +50,4 @@ const bookingSchema = new Schema(
 );
 
 bookingSchema.index({ neighborId: 1, date: 1 });
-export const Booking = mongoose.model("Booking", bookingSchema);
+export const bookingModel = mongoose.model("Booking", bookingSchema);

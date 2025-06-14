@@ -14,7 +14,7 @@ import { TaskUsecase } from "../../application/usecases/task/TaskUsecase";
 import { saveTransaction } from "../../application/usecases/payment/saveTransactionUsecase";
 import { HttpStatus } from "../../shared/constants/httpStatus";
 import { Messages } from "../../shared/constants/messages";
-import { HttpStatusCode } from "axios";
+import {  AvailableDaysUsecase } from "../../application/usecases/neighbor/AvailableDaysUsecase";
 
 interface NeighborQuery {
     lat?: number;
@@ -24,10 +24,10 @@ interface NeighborQuery {
 
 export class NeighborController {
     constructor(
-        private availabilityUseCase: WeeklySchedule,
+        private weeklyScheduleUseCase: WeeklySchedule,
         private skillsUseCase: SkillsUsecase,
         private serviceLocationUseCase: LocationUsecase,
-        private getTimeslotUsecase: TimeslotUsecase,
+        private availableDays: AvailableDaysUsecase,
         private neighborsList: NeighborsListUsecase,
         private neighborProfile: NeighborProfileUsecase,
         private walletUsecase: WalletUsecase,
@@ -45,7 +45,7 @@ export class NeighborController {
                 neighborId,
                 availability
             }
-            const neighborSchedules = await this.availabilityUseCase.saveAvailability(schedule)
+            const neighborSchedules = await this.weeklyScheduleUseCase.saveAvailability(schedule)
             successResponse(res, HttpStatus.OK, Messages.SUCCESS.NEIGHBOR_TIMESLOT_UPDATED, neighborSchedules)
         } catch (error) {
             console.log(error)
@@ -95,7 +95,7 @@ export class NeighborController {
     getWeeklySchedule = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const id = req.params.neighborId
-            const data = await this.availabilityUseCase.getAvailability(id)
+            const data = await this.weeklyScheduleUseCase.getAvailability(id)
             console.log(data)
             successResponse(res, HttpStatus.OK, Messages.SUCCESS.NEIGHBOR_TIMESLOT_FETCHED, data)
         } catch (error) {
@@ -242,6 +242,20 @@ export class NeighborController {
         } catch (error) {
           next(error)
         }
-      }
+    }
+    
+    //************************Fetch available days of neighbor ************** */
+    fetchAvailableDays = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const id = req.params.neighborId
+            const duration =Number( req.query.duration)
+            const availableDays = await this.availableDays.getAvailableDays(id, duration) 
+            console.log(availableDays)
+            successResponse(res, HttpStatus.OK, "fetched all available days", availableDays);
+
+        } catch (error) {
+            next(error)
+        }
+    }
     
 }

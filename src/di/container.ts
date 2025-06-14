@@ -42,6 +42,8 @@ import { BanUsecase } from "../application/usecases/admin/banUsecase";
 import { AdminRepository } from "../infrastructure/repositories/adminRepository";
 import { scheduleRepository } from "../infrastructure/repositories/scheduleRepository";
 import { CheckUserBanStatusUsecase } from "../application/usecases/user/checkUserBanStatus";
+import { bookingRepository } from "../infrastructure/repositories/bookingRepository";
+import { AvailableDaysUsecase } from "../application/usecases/neighbor/AvailableDaysUsecase";
 
 export class Container {
   
@@ -74,9 +76,11 @@ export class Container {
   public static taskRepository = new taskRepository()
   public static taskUsecase = new TaskUsecase(Container.taskRepository,Container.neighborRepository)
   public static taskController = new TaskController(Container.taskUsecase)
-  public static scheduleRepository= new scheduleRepository()
+  public static scheduleRepository = new scheduleRepository()
+  public static bookingRepository = new bookingRepository()
 
   public static saveAvailbleTimeSlot = new WeeklySchedule(Container.scheduleRepository)
+  public static availableDaysUsecase = new AvailableDaysUsecase(Container.scheduleRepository,Container.bookingRepository)
   public static skillsUsecase = new SkillsUsecase(Container.neighborRepository)
   public static timeslotUsecase = new TimeslotUsecase(Container.neighborRepository)
   public static locationUsecase = new LocationUsecase(Container.neighborRepository)
@@ -84,7 +88,7 @@ export class Container {
   public static neighborProfileUsecase = new NeighborProfileUsecase(Container.neighborRepository)
   public static walletUsecase = new WalletUsecase(Container.walletRepository)
   public static escrowRepository = new EscrowRepository()
-
+  
   public static checkUserBanStatusUsecase = new CheckUserBanStatusUsecase(
     Container.userRepository,
     Container.neighborRepository
@@ -98,7 +102,7 @@ export class Container {
     Container.saveAvailbleTimeSlot,
     Container.skillsUsecase,
     Container.locationUsecase,
-    Container.timeslotUsecase,
+    Container.availableDaysUsecase,
     Container.neighborListUsecae,
     Container.neighborProfileUsecase,
     Container.walletUsecase,
