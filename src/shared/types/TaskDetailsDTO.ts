@@ -1,5 +1,7 @@
 import { Neighbor } from '../../domain/entities/Neighbor';
 import { User } from '../../domain/entities/User';
+import { NeighborInfo } from './NeighborsDTO';
+import { userGeneralInfo } from './UserDTO';
 
 // Enums for task and payment status (for type safety)
 export type TaskStatus = "pending" | "assigned" | "in_progress" | "completed" | "cancelled";
@@ -18,6 +20,7 @@ export interface TaskDetails {
   subCategory: string;
   description: string;
   est_hours: number;
+  est_amount:string
   prefferedDate: Date | string; 
   prefferedTime: "morning" | "afternoon" | "evening";
   timeSlot?: {
@@ -47,4 +50,17 @@ export interface ExtendedTaskAcceptDetails extends taskAcceptDetails {
   endTime: string;
   platform_fee: number;
   final_amount: number;
+}
+
+export interface TaskRequestDetails{
+  createdBy: User | string; 
+  assignedNeighbor?: Neighbor | string; 
+  location: string;
+  category: string;
+  subCategory: string;
+  description: string;
+  est_hours: string;
+  prefferedDate: Date | string;
+  ratePerHour: number;
+  est_amount:string
 }

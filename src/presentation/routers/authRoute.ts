@@ -3,7 +3,6 @@ import {  AuthController} from '../controllers/authController'
 import { signUpValidSchema } from "../../shared/validations/signUpValidSchema";
 import { validateRequest } from "../../shared/utils/validateRequest";
 import { loginValidSchema } from "../../shared/validations/loginValidSchema";
-import { auth } from "firebase-admin";
 import verifyToken from "../middleware/authMiddleware";
 import { Routes } from "../../shared/constants/routes";
 import { Container } from "../../di/container";

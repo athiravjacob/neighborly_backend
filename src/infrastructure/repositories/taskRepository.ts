@@ -1,7 +1,7 @@
 import { JsonWebTokenError } from "jsonwebtoken";
 import { Task } from "../../domain/entities/Task";
 import { ITaskRepository } from "../../domain/interface/repositories/ITaskRepository";
-import { ExtendedTaskAcceptDetails, PaymentStatus, TaskDetails, TaskStatus, taskAcceptDetails } from "../../shared/types/TaskDetailsDTO";
+import { ExtendedTaskAcceptDetails, PaymentStatus, TaskDetails, TaskRequestDetails, TaskStatus, taskAcceptDetails } from "../../shared/types/TaskDetailsDTO";
 import { TaskModel } from "../model/taskModel";
 
 export class taskRepository implements ITaskRepository {

@@ -1,6 +1,7 @@
 import {Request,Response, NextFunction } from "express";
 import { successResponse } from "../../shared/utils/responseHandler";
 import { TaskUsecase } from "../../application/usecases/task/TaskUsecase";
+import { AppError } from "../../shared/utils/errors";
 
 export class TaskController{
     constructor(
@@ -58,12 +59,32 @@ export class TaskController{
      // **********************Accept Task *******************
 
      markTaskAccepted = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        try {
+         try {
             const { taskId } = req.params
-            const {taskAcceptDetails,neighborId} = req.body
+            const { taskAcceptDetails, neighborId } = req.body
+            console.log(taskAcceptDetails )
+
             await this.taskUsecase.acceptTask(taskId,neighborId,taskAcceptDetails)
-            console.log("accpt task ",taskId)
             successResponse(res,200,"Neighbor accepted the task")
+
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    //************ get neighbors arrival time ***************** */
+    getArraivalTime = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const { taskID, neighborId } = req.params
+            const { date, hours_needed } = req.query
+            let hours = Number(hours_needed)
+            console.log(hours_needed , typeof hours_needed)
+            if (!date || !hours_needed) throw new AppError(400, "date and hours_needed not given")
+            if (typeof date !== 'string' ) {
+                throw new AppError(400, "Specify date and hours needed correctly");
+            }
+            const time = await this.taskUsecase.neighborsArrivalTime(neighborId, date, hours)
+            successResponse(res,200,"Neighbor accepted the task",time)
 
         } catch (error) {
             next(error)

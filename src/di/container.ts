@@ -44,6 +44,10 @@ import { scheduleRepository } from "../infrastructure/repositories/scheduleRepos
 import { CheckUserBanStatusUsecase } from "../application/usecases/user/checkUserBanStatus";
 import { bookingRepository } from "../infrastructure/repositories/bookingRepository";
 import { AvailableDaysUsecase } from "../application/usecases/neighbor/AvailableDaysUsecase";
+import { CategoryController } from "../presentation/controllers/categoryController";
+import { GetCategoriesUsecase } from "../application/usecases/category/getCategoriesUsecase";
+import { categoryRepository } from "../infrastructure/repositories/categoryRepository";
+import { subCategoryRepository } from "../infrastructure/repositories/subCategoryRepository";
 
 export class Container {
   
@@ -72,12 +76,13 @@ export class Container {
       Container.logoutUsecase,
       Container.refreshTokenUsecase
   );
-  public static walletRepository = new WalletRepository()
-  public static taskRepository = new taskRepository()
-  public static taskUsecase = new TaskUsecase(Container.taskRepository,Container.neighborRepository)
-  public static taskController = new TaskController(Container.taskUsecase)
   public static scheduleRepository = new scheduleRepository()
   public static bookingRepository = new bookingRepository()
+  public static walletRepository = new WalletRepository()
+  public static taskRepository = new taskRepository()
+  public static taskUsecase = new TaskUsecase(Container.taskRepository,Container.neighborRepository,Container.scheduleRepository,Container.bookingRepository)
+  public static taskController = new TaskController(Container.taskUsecase)
+
 
   public static saveAvailbleTimeSlot = new WeeklySchedule(Container.scheduleRepository)
   public static availableDaysUsecase = new AvailableDaysUsecase(Container.scheduleRepository,Container.bookingRepository)
@@ -108,14 +113,7 @@ export class Container {
     Container.walletUsecase,
     Container.taskUsecase,
     Container.saveTransactionUsecase
-
   )
-
-
-
-  
-
-
   public static userProfileusecase = new ProfileUsecase(Container.userRepository)
   public static userController = new userController(Container.userProfileusecase,Container.taskUsecase)
   public static banUsecase = new BanUsecase(Container.neighborRepository,Container.userRepository)
@@ -130,9 +128,10 @@ export class Container {
   public static getMessagesUseCase = new GetMessagesUseCase(Container.messageRepo);
 
   public static  messageController = new MessageController(Container.sendMessageUseCase, Container.getMessagesUseCase);
-
-
+  public static paymentController = new PaymentController(Container.saveTransactionUsecase, Container.taskUsecase)
   
-  public static paymentController = new PaymentController(Container.saveTransactionUsecase,Container.taskUsecase)
-
+  public static categoryRepository = new categoryRepository()
+  public static subCategoryRepository = new subCategoryRepository()
+  public static categoryUsecase = new GetCategoriesUsecase(Container.categoryRepository,Container.subCategoryRepository)
+  public static categoryController = new CategoryController(Container.categoryUsecase)
   }

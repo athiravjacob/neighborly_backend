@@ -45,11 +45,12 @@ export const Routes = {
       STATUS: '/:taskId/status',
       VERIFY_CODE: '/:taskId/verify-code',
       COMPLETE: '/:taskId/complete',
-      ACCEPT: ':taskId/accept',
+      ACCEPT: '/:taskId/accept',
   },
   CATEGORY: {
     BASE: '/v1/categories',
-    SUB_CATEGORY:'/:categoryId'
+    CATEGORIES:'/',
+    SUB_CATEGORY:'/:categoryId/sub-category'
     },
     USERS: {
       BASE: '/v1/users',

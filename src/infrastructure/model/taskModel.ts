@@ -31,30 +31,29 @@ const taskSchema = new Schema({
     required: true
   },
   est_hours: {
-    type: Number,
+    type: String,
     required: true,
-    min: [0, 'Estimated hours cannot be negative']
   },
   prefferedDate: {
     type: Date,
     required: true
   },
-  prefferedTime: {
-    type: String,
-    enum: ["morning" , "afternoon" , "evening"]
-  },
+  // prefferedTime: {
+  //   type: String,
+  //   enum: ["morning" , "afternoon" , "evening"]
+  // },
 
-  timeSlot: {
-    startTime: {
-      type: Number,
-    },
-    endTime: {
-      type: Number,
-      default: null
-    }
+  // timeSlot: {
+  //   startTime: {
+  //     type: Number,
+  //   },
+  //   endTime: {
+  //     type: Number,
+  //     default: null
+  //   }
    
-  },
-  // est_amount: Number, 
+  // },
+  est_amount: String, 
   task_status: {
     type: String,
     enum: ["pending", "assigned", "in_progress", "completed", "cancelled"],

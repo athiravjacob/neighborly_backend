@@ -1,4 +1,4 @@
-import { ExtendedTaskAcceptDetails, PaymentStatus, TaskDetails, TaskStatus, taskAcceptDetails } from "../../../shared/types/TaskDetailsDTO";
+import { ExtendedTaskAcceptDetails, PaymentStatus, TaskDetails, TaskRequestDetails, TaskStatus, taskAcceptDetails } from "../../../shared/types/TaskDetailsDTO";
 import { Task } from "../../entities/Task";
 
 export interface ITaskRepository{
