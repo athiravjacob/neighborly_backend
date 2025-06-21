@@ -1,7 +1,7 @@
 import { JsonWebTokenError } from "jsonwebtoken";
 import { Task } from "../../domain/entities/Task";
 import { ITaskRepository } from "../../domain/interface/repositories/ITaskRepository";
-import { ExtendedTaskAcceptDetails, PaymentStatus, TaskDetails, TaskRequestDetails, TaskStatus, taskAcceptDetails } from "../../shared/types/TaskDetailsDTO";
+import {  PaymentStatus, TaskDetails, TaskRequestDetails, TaskStatus, taskAcceptDetails } from "../../shared/types/TaskDetailsDTO";
 import { TaskModel } from "../model/taskModel";
 
 export class taskRepository implements ITaskRepository {
@@ -55,12 +55,12 @@ export class taskRepository implements ITaskRepository {
   }
 
   //**********Accept Task ************************ */
-  async acceptTask(id: string,taskAcceptDetails:ExtendedTaskAcceptDetails): Promise<void> {
+  async acceptTask(id: string,taskAcceptDetails:taskAcceptDetails): Promise<void> {
     try {
       const task = await TaskModel.findById(id)
-      const {startTime,est_hours,extra_charges,additional_notes,baseAmount,endTime,platform_fee,final_amount}= taskAcceptDetails
+      const {actual_hours,base_amount,platform_fee,final_amount,task_status,startTime}= taskAcceptDetails
     if (task) {
-      const task =await TaskModel.findByIdAndUpdate(id, {"timeSlot.startTime":startTime,"timeSlot.endTime":endTime,platform_fee,final_amount,est_hours,extra_charges,additional_notes,baseAmount, task_status: "assigned" },{new:true});
+      const task =await TaskModel.findByIdAndUpdate(id, {"timeSlot.startTime":startTime,base_amount,platform_fee,final_amount,actual_hours, task_status },{new:true});
       console.log(task?.task_status,"taskStatus")
       return
       }

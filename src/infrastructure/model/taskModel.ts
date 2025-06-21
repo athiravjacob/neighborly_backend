@@ -1,4 +1,4 @@
-import { Schema, model, Types } from 'mongoose';
+import { Schema, model } from 'mongoose';
 
 type TaskStatus = "pending" | "assigned" | "in_progress" | "completed" | "cancelled";
 
@@ -38,21 +38,17 @@ const taskSchema = new Schema({
     type: Date,
     required: true
   },
-  // prefferedTime: {
-  //   type: String,
-  //   enum: ["morning" , "afternoon" , "evening"]
-  // },
-
-  // timeSlot: {
-  //   startTime: {
-  //     type: Number,
-  //   },
-  //   endTime: {
-  //     type: Number,
-  //     default: null
-  //   }
+  
+  timeSlot: {
+    startTime: {
+      type: Number,
+    },
+    endTime: {
+      type: Number,
+      default: null
+    }
    
-  // },
+  },
   est_amount: String, 
   task_status: {
     type: String,
@@ -69,12 +65,12 @@ const taskSchema = new Schema({
     required: true,
     min: [0, 'Rate per hour cannot be negative']
   },
-  actualHours: {
+  actual_hours: {
     type: Number,
     default: null,
     min: [0, 'Actual hours cannot be negative']
   },
-  baseAmount: {
+  base_amount: {
     type: Number,
     default: null,
     min: [0, 'Base amount cannot be negative']
@@ -93,11 +89,7 @@ const taskSchema = new Schema({
     type: Number,
     default: null,
     min: [0, 'Final amount cannot be negative']
-  },
-  additional_notes: {
-    type: String,
-    
-  },
+  }, 
   task_code: {
     type: String,
     default:null
