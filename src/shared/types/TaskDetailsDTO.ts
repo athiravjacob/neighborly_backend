@@ -19,10 +19,10 @@ export interface TaskDetails {
   category: string;
   subCategory: string;
   description: string;
-  est_hours: number;
-  est_amount:string
-  prefferedDate: Date | string; 
-  prefferedTime: "morning" | "afternoon" | "evening";
+  est_hours: string;
+  est_amount: string;
+  actual_hours: number;
+  prefferedDate: Date ; 
   timeSlot?: {
     startTime?: number; 
     endTime?: number; 
@@ -39,18 +39,7 @@ export interface TaskDetails {
   
 }
 
-export interface taskAcceptDetails{
-  startTime: string,
-  est_hours: number,
-  extra_charges: number,
-  additional_notes: string,
-  baseAmount:number
-}
-export interface ExtendedTaskAcceptDetails extends taskAcceptDetails {
-  endTime: string;
-  platform_fee: number;
-  final_amount: number;
-}
+
 
 export interface TaskRequestDetails{
   createdBy: User | string; 
@@ -63,4 +52,20 @@ export interface TaskRequestDetails{
   prefferedDate: Date | string;
   ratePerHour: number;
   est_amount:string
+}
+
+export interface taskAcceptDetails{
+  actual_hours: number;
+  base_amount: number;
+  platform_fee: number;
+  final_amount: number;
+  task_status: TaskStatus;
+    startTime:number
+  
+}
+
+export interface TaskAcceptForm {
+  estimatedHours: number;
+  paymentAmount: number;
+  arrivalTime: number|null;
 }

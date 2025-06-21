@@ -4,7 +4,7 @@ import { INeighborRepository } from "../../../domain/interface/repositories/INei
 import { IScheduleRepository } from "../../../domain/interface/repositories/IScheduleRepository";
 import { ITaskRepository } from "../../../domain/interface/repositories/ITaskRepository";
 import { Availability, TimeSlot } from "../../../shared/types/NeighborsDTO";
-import { TaskDetails, TaskStatus, taskAcceptDetails } from "../../../shared/types/TaskDetailsDTO";
+import { TaskAcceptForm, TaskDetails, TaskStatus, taskAcceptDetails } from "../../../shared/types/TaskDetailsDTO";
 import { AppError } from "../../../shared/utils/errors";
 
 export class TaskUsecase {
@@ -37,53 +37,33 @@ export class TaskUsecase {
   async acceptTask(
     taskId: string,
     neighborId: string,
-    taskAcceptDetails: taskAcceptDetails
+    acceptDetails: TaskAcceptForm
   ): Promise<void> {
-    // Validate inputs
-    // if (isNaN(Number(taskAcceptDetails.startTime)) || isNaN(taskAcceptDetails.est_hours) || taskAcceptDetails.est_hours <= 0) {
-    //     throw new Error('Invalid start time or estimated hours');
-    // }
-    // // Calculate task details
-    // const platformFeePercentage = 0.1; // 10%
-    // const endTime = taskAcceptDetails.startTime + (taskAcceptDetails.est_hours * 3600);
-    // const platform_fee = taskAcceptDetails.baseAmount * platformFeePercentage;
-    // const final_amount = Number(taskAcceptDetails.baseAmount) + Number(platform_fee || 0) + Number(taskAcceptDetails.extra_charges || 0);
-    // const new_details = { ...taskAcceptDetails, endTime, platform_fee, final_amount };
-    // Update task
-    // await this.taskRepository.acceptTask(taskId, new_details);
-    // Fetch neighbor availability
-    // const neighborAvailability = await this.neighborRepository.getavailableTimeslot(neighborId);
-    // if (!neighborAvailability) {
-    //     throw new Error('Neighbor not found');
-    // }
-    // if (!Array.isArray(neighborAvailability)) {
-    //     throw new Error('Invalid availability data');
-    // }
-    // // Get task date (midnight UTC, adjust to IST if needed)
-    // const taskDate = new Date(Number(taskAcceptDetails.startTime) * 1000);
-    // taskDate.setUTCHours(0, 0, 0, 0); // Midnight UTC
-    // // For IST: Uncomment the following
-    // /*
-    // const istOffsetMs = 5.5 * 60 * 60 * 1000;
-    // const istDate = new Date(taskDate.getTime() + istOffsetMs);
-    // istDate.setUTCHours(0, 0, 0, 0);
-    // const finalIstDate = new Date(istDate.getTime() - istOffsetMs);
-    // */
-    // // Update availability
-    // const updatedAvailability = this.updateNeighborAvailability(
-    //     neighborAvailability, // Pass array directly
-    //     taskDate, // Use finalIstDate for IST
-    //     Number(taskAcceptDetails.startTime),
-    //     Number(endTime)
-    // );
-    // console.log('Updated Availability:', JSON.stringify(updatedAvailability, null, 2));
-    // // Save updated availability
-    // try {
-    //     await this.neighborRepository.saveAvailabilty(neighborId, updatedAvailability);
-    // } catch (error) {
-    //     console.log(error)
-    //     throw new Error(`Failed to save availability: ${error}`);
-    // }
+    
+    try {
+      const ADMIN_FEE_PERCENTAGE = 0.10
+      let platform_fee = acceptDetails.paymentAmount * ADMIN_FEE_PERCENTAGE
+      let final_amount = acceptDetails.paymentAmount + platform_fee
+
+      const taskAcceptDetails:taskAcceptDetails  = {
+        actual_hours: acceptDetails.estimatedHours,
+        base_amount: acceptDetails.paymentAmount,
+        platform_fee,
+        final_amount,
+        task_status:"assigned" ,
+        startTime:acceptDetails.arrivalTime!
+
+      }
+
+      await this.taskRepository.acceptTask(taskId,taskAcceptDetails)
+
+      
+
+
+
+    } catch (error) {
+      
+    }
   }
 
   private updateNeighborAvailability(

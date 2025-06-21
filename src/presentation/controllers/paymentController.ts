@@ -173,6 +173,7 @@ export class PaymentController {
   
       successResponse(res, 200, "Session details retrieved", transactionDetails);
     } catch (error) {
+      console.log(error)
       console.error("Error retrieving session details:", error);
       next(error);
     }
