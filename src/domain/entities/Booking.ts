@@ -6,6 +6,7 @@ export class Booking{
         public date: Date,
         public startTime: number,
         public endTime: number,
+        public bufferTime:number,
         public status:"pending"| "confirmed"| "completed"| "cancelled"
     ){}
 }     

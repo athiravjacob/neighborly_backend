@@ -37,7 +37,7 @@ const PORT = process.env.PORT
 if (!PORT) throw new AppError(500, "port not available")
 app.use(cookieParser());
 
-app.use(Routes.PAYMENTS.WEBHOOK, express.raw({ type: 'application/json' }));
+app.use(`${Routes.PAYMENTS.BASE}${Routes.PAYMENTS.WEBHOOK}`, express.raw({ type: 'application/json' }));
 app.use(express.json())
 
 app.get(Routes.HEALTH, (req, res) => {

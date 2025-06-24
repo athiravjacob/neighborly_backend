@@ -2,6 +2,7 @@ import {Request,Response, NextFunction } from "express";
 import { successResponse } from "../../shared/utils/responseHandler";
 import { TaskUsecase } from "../../application/usecases/task/TaskUsecase";
 import { AppError } from "../../shared/utils/errors";
+import { TaskDetails } from "../../shared/types/TaskDetailsDTO";
 
 export class TaskController{
     constructor(
@@ -20,6 +21,15 @@ export class TaskController{
         }
     }
 
+    getTaskById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const { taskId } = req.params
+            const task = await this.taskUsecase.getTaskById(taskId)
+            successResponse(res,200,"task details fetched",task)
+        } catch (error) {
+            next(error)
+        }
+    }
     
 
     
@@ -37,7 +47,8 @@ export class TaskController{
     verifyTaskcode =  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const {taskId} = req.params
-            const { neighborId,code } = req.body
+            const { neighborId, code } = req.body
+            console.log(neighborId,code,": code")
             await this.taskUsecase.verifyTaskcode(taskId,neighborId, code )
             successResponse(res,200,"task code verified and task mark as in progress",)
 
@@ -75,15 +86,14 @@ export class TaskController{
     //************ get neighbors arrival time ***************** */
     getArraivalTime = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const { taskID, neighborId } = req.params
+            const { taskId, neighborId } = req.params
             const { date, hours_needed } = req.query
+            const newDate = new Date(date as string)
             let hours = Number(hours_needed)
             console.log(hours_needed , typeof hours_needed)
             if (!date || !hours_needed) throw new AppError(400, "date and hours_needed not given")
-            if (typeof date !== 'string' ) {
-                throw new AppError(400, "Specify date and hours needed correctly");
-            }
-            const time = await this.taskUsecase.neighborsArrivalTime(neighborId, date, hours)
+            
+            const time = await this.taskUsecase.neighborsArrivalTime(taskId,neighborId, newDate, hours)
             successResponse(res,200,"Neighbor accepted the task",time)
 
         } catch (error) {

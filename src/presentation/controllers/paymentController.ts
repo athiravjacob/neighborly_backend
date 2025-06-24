@@ -91,7 +91,6 @@ export class PaymentController {
   webhook = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const sig = req.headers["stripe-signature"];
     const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
-
     if (!webhookSecret) {
       throw new Error("STRIPE_WEBHOOK_SECRET is not defined in environment variables");
     }
@@ -104,6 +103,7 @@ export class PaymentController {
     try {
       // Verify webhook signature
       const event = this.stripe.webhooks.constructEvent(req.body, sig, webhookSecret);
+      console.log(event,"event")
 
       // Handle checkout.session.completed event
       if (event.type === "checkout.session.completed") {

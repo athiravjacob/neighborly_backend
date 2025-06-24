@@ -1,10 +1,16 @@
 import { IBookingRepository } from "../../domain/interface/repositories/IBookingRepository";
-import { Booking } from "../../shared/types/Booking";
+import { BookingDetails } from "../../shared/types/Booking";
 import { AppError } from "../../shared/utils/errors";
 import {bookingModel} from '../model/bookingModel'
 
 export class bookingRepository implements IBookingRepository {
-    async getBookingDetails(neighborId: string, startDate: Date, endDate?: Date): Promise<Booking[] | []> {
+    async addBookingDetails(booking:BookingDetails): Promise<void> {
+        await bookingModel.create(booking)
+    }
+    async updateBookingStatus(taskId: string, neighborId: string, status: string): Promise<void> {
+        await bookingModel.updateOne({ taskId, neighborId }, { $set: { status } })
+    }
+    async getBookingDetails(neighborId: string, startDate: Date, endDate?: Date): Promise<BookingDetails[] | []> {
         try {
           
             const endOfDay = endDate ? endDate : startDate

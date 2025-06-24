@@ -37,6 +37,10 @@ const bookingSchema = new Schema(
         message: "endTime must be greater than startTime",
       },
     },
+    bufferTime: {
+      type: Number,
+      default:30
+    },
     status: {
       type: String,
       enum: ["pending", "confirmed", "completed", "cancelled"],

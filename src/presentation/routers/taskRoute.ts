@@ -12,7 +12,7 @@ export default function setupTaskToutes(taskController: TaskController): Router{
     router.patch(Routes.TASKS.COMPLETE, verifyToken(['user'],Container.checkUserBanStatusUsecase), taskController.markTaskComplete)
     router.patch(Routes.TASKS.ACCEPT, taskController.markTaskAccepted)
     router.get('/:taskId/neighbors/:neighborId/arrival-time',taskController.getArraivalTime)
-    
+    router.get(`/tasks/:taskId`,taskController.getTaskById)
     return router
     
 }
