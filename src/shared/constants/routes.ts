@@ -47,6 +47,12 @@ export const Routes = {
       COMPLETE: '/:taskId/complete',
       ACCEPT: '/:taskId/accept',
   },
+  DISPUTES: {
+    BASE: '/v1/disputes',
+    CREATE: '/',
+    DISPUTE: '/:disputeId',
+    STATUS:'/:disuteID/status'
+  },
   CATEGORY: {
     BASE: '/v1/categories',
     CATEGORIES:'/',

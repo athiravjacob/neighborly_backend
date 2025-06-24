@@ -48,6 +48,9 @@ import { CategoryController } from "../presentation/controllers/categoryControll
 import { GetCategoriesUsecase } from "../application/usecases/category/getCategoriesUsecase";
 import { categoryRepository } from "../infrastructure/repositories/categoryRepository";
 import { subCategoryRepository } from "../infrastructure/repositories/subCategoryRepository";
+import { disputeRepository } from "../infrastructure/repositories/DisputeRepository";
+import { DisputeUsecase } from "../application/usecases/disputes/disputeUsecase";
+import { DisputeController } from "../presentation/controllers/disputeController";
 
 export class Container {
   
@@ -102,7 +105,8 @@ export class Container {
   public static saveTransactionUsecase = new saveTransaction(Container.transactionRepository,
     Container.escrowRepository,
     Container.walletRepository,
-  Container.taskRepository)
+    Container.taskRepository,
+  Container.bookingRepository)
   public static neighborController = new NeighborController(
     Container.saveAvailbleTimeSlot,
     Container.skillsUsecase,
@@ -134,4 +138,8 @@ export class Container {
   public static subCategoryRepository = new subCategoryRepository()
   public static categoryUsecase = new GetCategoriesUsecase(Container.categoryRepository,Container.subCategoryRepository)
   public static categoryController = new CategoryController(Container.categoryUsecase)
-  }
+ 
+  public static disputeRepo = new disputeRepository()
+  public static disputeUsecase = new DisputeUsecase(Container.disputeRepo)
+  public static disputeController = new DisputeController(Container.disputeUsecase)
+}

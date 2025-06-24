@@ -20,6 +20,7 @@ import setupPaymentRoutes from "./presentation/routers/paymentRoute";
 import { Routes } from "./shared/constants/routes";
 import morgan from "morgan";
 import setupCategoryRoutes from "./presentation/routers/categoryRoute";
+import setupDisputeRoutes from "./presentation/routers/disputeRoute";
 
 const app = express()
 const server = http.createServer(app);
@@ -51,7 +52,9 @@ app.use(Routes.USERS.BASE, setupUserRoutes(Container.userController));
 app.use(Routes.ADMIN.BASE,verifyToken(['admin'],Container.checkUserBanStatusUsecase) ,setupAdminRoutes(Container.adminController));
 app.use(Routes.MESSAGES.BASE, setupMessageRoutes(Container.messageController));
 app.use(Routes.PAYMENTS.BASE, setupPaymentRoutes(Container.paymentController));
-app.use(Routes.CATEGORY.BASE,setupCategoryRoutes(Container.categoryController))
+app.use(Routes.CATEGORY.BASE, setupCategoryRoutes(Container.categoryController))
+app.use(Routes.DISPUTES.BASE,setupDisputeRoutes(Container.disputeController))
+
 
 app.use(errorHandler)
 
