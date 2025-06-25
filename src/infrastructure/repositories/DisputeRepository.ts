@@ -10,7 +10,7 @@ export class disputeRepository implements IDisputeRepository{
         throw new Error("Method not implemented.");
     }
     async fetch_dispute(taskId: string): Promise<DisputeDetails> {
-        const disputeDetails = await ComplaintModel.find({taskId})
+        const disputeDetails = await ComplaintModel.findOne({taskId}).populate({ path: "reportedBy", select: "name" })
         return JSON.parse(JSON.stringify(disputeDetails))
     }
     fetch_all_disputes(): Promise<DisputeDetails[]> {

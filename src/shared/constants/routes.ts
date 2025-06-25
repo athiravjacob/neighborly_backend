@@ -50,7 +50,7 @@ export const Routes = {
   DISPUTES: {
     BASE: '/v1/disputes',
     CREATE: '/',
-    DISPUTE: '/:disputeId',
+    DISPUTE: '/',
     STATUS:'/:disuteID/status'
   },
   CATEGORY: {
@@ -76,5 +76,4 @@ export const Routes = {
       CHECKOUT_SESSION: '/create-checkout-session',
       SESSION_DETAILS: '/session-details/:sessionId',
     },
-    HEALTH: '/v1/health',
   };

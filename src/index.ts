@@ -41,9 +41,7 @@ app.use(cookieParser());
 app.use(`${Routes.PAYMENTS.BASE}${Routes.PAYMENTS.WEBHOOK}`, express.raw({ type: 'application/json' }));
 app.use(express.json())
 
-app.get(Routes.HEALTH, (req, res) => {
-  res.status(200).json({ status: 'OK', timestamp: new Date().toISOString() });
-});
+
 
 app.use(Routes.AUTH.BASE, setupAuthRoutes(Container.authController));
 app.use(Routes.NEIGHBORS.BASE, setupNeighborRoutes(Container.neighborController));
