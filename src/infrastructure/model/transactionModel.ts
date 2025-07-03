@@ -5,7 +5,9 @@ const transactionSchema = new Schema({
     neighborId: { type: Schema.Types.ObjectId, ref: 'Neighbor', required: true },
     taskId: { type: Schema.Types.ObjectId, ref: 'Task', 'required': true },
     stripeTransactionId: { type: String, required: true },
-    amount: { type: Number, required: true },
+    base_amount: { type: Number, required: true },
+    platform_fee: { type: Number, required: true },
+    total_amount: { type: Number, required: true },
 }, {
     timestamps:true
 }

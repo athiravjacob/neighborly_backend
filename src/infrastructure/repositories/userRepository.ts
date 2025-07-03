@@ -88,6 +88,7 @@ export class UserRepository implements IUserRepository {
 //**************** Find User By Google ID ************************** */
   async findUserByGoogleId(uid: string): Promise<User | null> {
     const userDoc = await UserModel.findOne({ googleId: uid })
+    if(userDoc?.isBanned) throw new AppError(HttpStatus.FORBIDDEN,Messages.ERROR.FORBIDDEN)
     if (!userDoc) return null;
     return new User(
       userDoc._id.toString(),
@@ -140,6 +141,8 @@ export class UserRepository implements IUserRepository {
   async findUserByEmail(email: string): Promise<User | null> {
     const userDoc = await UserModel.findOne({ email }).exec();
     if (!userDoc) return null;
+    if(userDoc?.isBanned) throw new AppError(HttpStatus.FORBIDDEN,"Your account has been banned by the admin")
+
     return new User(
       userDoc._id.toString(),
       userDoc.name,

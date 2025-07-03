@@ -27,6 +27,7 @@ checkBanStatusUsecase: CheckUserBanStatusUsecase) => {
     try {
       const accessToken = req.cookies?.access_token;
       if (!accessToken) {
+        console.log("access token expired")
         errorResponse(res, HttpStatus.UNAUTHORIZED, Messages.ERROR.ACCESS_TOKEN_EXPIRED);
         return;
       }

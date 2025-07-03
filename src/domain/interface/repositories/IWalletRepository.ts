@@ -2,6 +2,6 @@ import { WalletDetails } from "../../../shared/types/Wallet"
 import { Wallet } from "../../entities/Wallet"
 
 export interface IWalletRepository{
-    updateWalletBalance(neighborId: string, balance: number): Promise<void>
-    fetchWallet(neighborId:string) :Promise<WalletDetails>
+    updateWalletBalance(role:"Neighbor"|"User"|"Admin",holder_id: string, balance: number): Promise<void>
+    fetchWallet(role:"Neighbor"|"User"|"Admin",holder_id: string) :Promise<WalletDetails>
 }

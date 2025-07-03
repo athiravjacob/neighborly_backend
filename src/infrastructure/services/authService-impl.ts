@@ -18,7 +18,7 @@ export class AuthService implements IAuthService {
   }
   generateAccessToken(id: string, type: "user" | "neighbor" | "admin"): string {
     const JWT_SECRET = process.env.JWT_SECRET ||"JWTSECRETKEY"
-    return jwt.sign({id,type},JWT_SECRET,{expiresIn:'15m'})
+    return jwt.sign({id,type},JWT_SECRET,{expiresIn:'20m'})
   }
   generateRefreshToken(id: string, type: "user" | "neighbor" | "admin"): string {
     const RefreshSecret = process.env.REFRESH_SECRET ||"REFRESHSECRETKEY"

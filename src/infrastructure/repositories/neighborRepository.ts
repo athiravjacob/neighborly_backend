@@ -54,13 +54,13 @@ export class neighborRepository implements INeighborRepository{
 
   async verifyNeighbor(id: string): Promise<void> {
     try {
+      console.log("no problem till repo")
       const neighbor = await neighborModel.findByIdAndUpdate(id, { isVerified: true, verificationStatus: 'approved' },{new:true})
       if(!neighbor) throw new AppError(400,"No neighbor found or neighbor Id invalid")
     } catch (error) {
       console.log(error)
       if (error instanceof Error) {
         throw { statusCode: 500, message: error.message || "Error updatin verification status" }
-        throw { statusCode: 500, message: "An unknown error occurred while checking service availablity" };
     }
     }
   }
@@ -275,6 +275,8 @@ export class neighborRepository implements INeighborRepository{
     async findNeighborByEmail(email: string): Promise<Neighbor | null> {
         const neighbor = await neighborModel.findOne({ email })
         if (!neighbor) return null
+        if(neighbor?.isBanned) throw new AppError(HttpStatus.FORBIDDEN,"Your account has been banned by the admin")
+
         return new Neighbor(
             neighbor._id.toString(),
             neighbor.name,

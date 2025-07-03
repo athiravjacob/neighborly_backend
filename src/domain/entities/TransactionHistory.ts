@@ -7,6 +7,8 @@ export class TransactionHistory{
         public taskId: string,
         public transactionId: string,
         public transactionDate: string,
-        public amount: string,
+        public base_amount: number,
+        public platform_fee:number,
+        public total_amount: number,
     ){}
 }

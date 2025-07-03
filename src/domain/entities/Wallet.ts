@@ -2,11 +2,10 @@
 export class Wallet{
     constructor(
         public id: string,
-        public neighborId: string,
-        // public escrowId:string,
+        public role:"Admin"|"User"|"Neighbor",
+        public holder_id: string,
         public balance: number,
         public withdrawableBalance: number,  
-        
         
     ){
         this.validate();
@@ -16,6 +15,6 @@ export class Wallet{
         if (this.balance < 0) throw new Error("Balance cannot be negative");
         if (this.withdrawableBalance < 0) throw new Error("Withdrawable balance cannot be negative");
         if (this.withdrawableBalance > this.balance) throw new Error("Withdrawable balance cannot exceed balance");
-        if (!this.neighborId) throw new Error("Neighbor ID required");
+        if (!this.holder_id) throw new Error("Neighbor ID required");
       }
 }

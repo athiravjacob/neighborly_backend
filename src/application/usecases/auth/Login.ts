@@ -23,7 +23,7 @@ export class LoginUsecase{
 
     async executeUser(dto: LoginDTO): Promise<AuthResponseDTO> {
       const user = await this.userRepository.findUserByEmail(dto.email);
-      console.log(user?.isBanned)
+      console.log(user,"login details ")
       if(user?.isBanned) throw new AppError(HttpStatus.FORBIDDEN,Messages.ERROR.BANNED)
       if (!user || !user.password || !(await this.authService.comparePassword(dto.password, user.password))) {
           throw new AppError(HttpStatus.UNAUTHORIZED, Messages.ERROR.INVALID_CREDENTIALS);

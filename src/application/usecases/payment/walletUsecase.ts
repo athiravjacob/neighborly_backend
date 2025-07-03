@@ -6,9 +6,12 @@ export class WalletUsecase{
     constructor(
         private walletRepository:IWalletRepository
     ) { }
-    
-    async fetchNeighborWallet(neighborId: string): Promise<WalletDetails>{
-        const wallet = await this.walletRepository.fetchWallet(neighborId)
+    async add_wallet_balance(role:"Admin"|"Neighbor"|"User",holder_id:string,amount:number):Promise<void>
+    {
+        await this.walletRepository.updateWalletBalance(role,holder_id,amount)
+}    
+    async fetch_wallet(role:"Admin"|"Neighbor"|"User",holder_id:string): Promise<WalletDetails>{
+        const wallet = await this.walletRepository.fetchWallet(role,holder_id)
         console.log(wallet)
         return wallet
         

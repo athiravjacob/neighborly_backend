@@ -5,12 +5,17 @@ import { VerificationUsecase } from "../../application/usecases/admin/verificati
 import { BanUsecase } from "../../application/usecases/admin/banUsecase";
 import { HttpStatus } from "../../shared/constants/httpStatus";
 import { Messages } from "../../shared/constants/messages";
+import { AppError } from "../../shared/utils/errors";
+import { DisputeUsecase } from "../../application/usecases/disputes/disputeUsecase";
+import { saveTransaction } from "../../application/usecases/payment/saveTransactionUsecase";
 
 export class AdminController{
     constructor(
         private adminUsecase:AdminFetchUsecase ,
         private verifyUsecase: VerificationUsecase,
-        private banUsecase:BanUsecase
+        private banUsecase: BanUsecase,
+        private disputeUsecase: DisputeUsecase,
+        private transactionUsecase:saveTransaction,
     ) { }
     fetchUsers = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
@@ -40,9 +45,11 @@ export class AdminController{
 
     verifyNeighbor = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const { neighborId } = req.body
-            console.log("hello verifyneighbor",neighborId)
+            console.log("hello verify controller")
+            const { neighborId } = req.params
+            if(!neighborId) throw new AppError(HttpStatus.BAD_REQUEST,"Neighbor Id is missing")
             await this.verifyUsecase.verifyId(neighborId) 
+            console.log("hey")
             successResponse(res,HttpStatus.NO_CONTENT,Messages.SUCCESS.NEIGHBOR_VERIFY_SUCCESS)
 
         } catch (error) {
@@ -75,6 +82,46 @@ export class AdminController{
         }
     }
 
-    // fetch_transactions = async(req:)
+    fetch_disputes = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+        const disputes =await this.disputeUsecase.fetch_all_disputes()
 
+        successResponse(res,HttpStatus.OK,"Dispute details fetched",disputes)
+
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    change_dispute = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const { disputeId } = req.params
+            const { status } = req.body
+            console.log(disputeId,status)
+        const disputes =await this.disputeUsecase.change_dispute_status(disputeId,status)
+
+        successResponse(res,HttpStatus.OK,"Dispute status changed",disputes)
+
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    fetch_transactions = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+        const transactions =await this.transactionUsecase.transactionHistory()
+        successResponse(res,HttpStatus.OK,"transaction history fetched",transactions)
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    total_revenue = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+        const revenue =await this.transactionUsecase.get_total_revenue()
+        successResponse(res,HttpStatus.OK,"total revenue details for admin",revenue)
+        } catch (error) {
+            next(error)
+        }
+    }
 }

@@ -18,15 +18,23 @@ export class saveTransaction{
     
     async execute(paymentDetails:TransactionDetails): Promise<void>{
         const transactionId = await this.TransactionRepository.saveTransaction(paymentDetails)
-        const escrowId = await this.EscrowRepository.pendingPayment(transactionId,paymentDetails.neighborId,paymentDetails.amount)
-        const updateWallet = await this.WalletRepository.updateWalletBalance(paymentDetails.neighborId,paymentDetails.amount)
         const updatePaymentStatus = await this.TaskRepository.updatePaymentStatus(paymentDetails.taskId, "paid")
         await this.BookingRepository.updateBookingStatus(paymentDetails.taskId,paymentDetails.neighborId,"confirmed")
            
     }
 
-    async neighborTransactions(id: string): Promise<TransactionDetails[]|[]>{
-        const transactions = await this.TransactionRepository.getHistory(id)
+    async transactionHistory(): Promise<TransactionDetails[] | []>{
+        const transactions = await this.TransactionRepository.get_all_transactions()
         return transactions
+    }
+
+    async neighborTransactions(id: string): Promise<TransactionDetails[]|[]>{
+        const transactions = await this.TransactionRepository.get_neighbor_transactions(id)
+        return transactions
+    }
+
+    async get_total_revenue(): Promise<>{
+        const total_revenue = await this.TransactionRepository.get_revenue_report()
+        return total_revenue
     }
 }

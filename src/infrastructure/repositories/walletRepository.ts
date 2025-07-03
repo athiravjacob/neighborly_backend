@@ -4,17 +4,17 @@ import { WalletDetails } from "../../shared/types/Wallet";
 import { walletModel } from "../model/walletModel";
 
 export class WalletRepository implements IWalletRepository{
-    async fetchWallet(neighborId: string): Promise<WalletDetails> {
+    async fetchWallet(role:"Neighbor"|"User"|"Admin",holder_id: string): Promise<WalletDetails> {
         try {
-            const wallet = await walletModel.findOne({ neighborId })
+            const wallet = await walletModel.findOne({ role,holder_id })
             console.log(wallet)
             if (!wallet) {
                 return {
-                    neighborId,
+                    role,
+                    holder_id,
                     balance: 0,
                     withdrawableBalance: 0,
-                    createdAt: undefined,
-                    updatedAt: undefined,
+                   
                 };
             }
             return JSON.parse(JSON.stringify(wallet))           
@@ -27,14 +27,14 @@ export class WalletRepository implements IWalletRepository{
     }
 
 
-    async updateWalletBalance(neighborId: string, balance: number): Promise<void> {
+    async updateWalletBalance(role:"Neighbor"|"User"|"Admin",holder_id: string, balance: number): Promise<void> {
         try {
-            const wallet = await walletModel.findOne({ neighborId })
+            const wallet = await walletModel.findOne({ role,holder_id })
             if (wallet) {
-                await walletModel.updateOne({ neighborId }, { $inc: { balance: balance } })
+                await walletModel.updateOne({ holder_id }, { $inc: { balance: balance } })
                 return
             }
-            await walletModel.create({neighborId,balance})
+            await walletModel.create({role,holder_id,balance})
 
         } catch (error) {
             throw new Error("Error updating escrow account")

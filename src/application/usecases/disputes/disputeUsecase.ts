@@ -9,8 +9,14 @@ export class DisputeUsecase{
              await this.disputeRepository.raise_dispute(disputeDetails)
         
     }
+    async fetch_all_disputes(): Promise<DisputeDetails[]>{
+        return this.disputeRepository.fetch_all_disputes()
+    }
     async fetchDispute(taskId: string): Promise<DisputeDetails>{
-        return this.disputeRepository.fetch_dispute(taskId)
-        
+        return this.disputeRepository.fetch_dispute(taskId) 
+    }
+
+    async change_dispute_status(disputeId: string, status: string): Promise<DisputeDetails>{
+        return this.disputeRepository.change_dispute_status(disputeId,status)
     }
 } 

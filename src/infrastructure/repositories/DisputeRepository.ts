@@ -6,15 +6,18 @@ export class disputeRepository implements IDisputeRepository{
     async raise_dispute(disputeDetails: DisputeDetails): Promise<void> {
         await ComplaintModel.create(disputeDetails)
     }
-    change_dispute_status(disputeId: string): Promise<DisputeDetails> {
-        throw new Error("Method not implemented.");
+    async change_dispute_status(disputeId: string,dispute_status:string): Promise<DisputeDetails> {
+        const dispute = await ComplaintModel.findByIdAndUpdate({ _id: disputeId }, { dispute_status })
+        return JSON.parse(JSON.stringify(dispute))
     }
     async fetch_dispute(taskId: string): Promise<DisputeDetails> {
-        const disputeDetails = await ComplaintModel.findOne({taskId}).populate({ path: "reportedBy", select: "name" })
+        const disputeDetails = await ComplaintModel.findOne({ taskId }).populate([{ path: "reportedBy", select: "name" }, { path: "taskId" }])
         return JSON.parse(JSON.stringify(disputeDetails))
     }
-    fetch_all_disputes(): Promise<DisputeDetails[]> {
-        throw new Error("Method not implemented.");
+    async fetch_all_disputes(): Promise<DisputeDetails[]> {
+        const disputes = await ComplaintModel.find().populate([{ path: "reportedBy", select: "name" }, { path: "taskId" }])
+
+        return JSON.parse(JSON.stringify(disputes))
     }
 
 }

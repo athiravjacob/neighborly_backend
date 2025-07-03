@@ -1,7 +1,7 @@
 export interface WalletDetails {
-    neighborId: string;
+    role: "Admin" | "User" | "Neighbor",
+    holder_id: string;
     balance: number;
     withdrawableBalance?: number;
-    createdAt?: Date;
-    updatedAt?: Date;
+    
 }

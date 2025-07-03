@@ -124,7 +124,6 @@ export class Container {
 
   public static verificationUsecase = new VerificationUsecase(Container.neighborRepository)
   public static adminFetchusecase = new AdminFetchUsecase(Container.userRepository,Container.neighborRepository,Container.taskRepository)
-  public static adminController = new AdminController(Container.adminFetchusecase,Container.verificationUsecase,Container.banUsecase)
 
   public static messageRepo = new MessageRepository();
 
@@ -132,7 +131,7 @@ export class Container {
   public static getMessagesUseCase = new GetMessagesUseCase(Container.messageRepo);
 
   public static  messageController = new MessageController(Container.sendMessageUseCase, Container.getMessagesUseCase);
-  public static paymentController = new PaymentController(Container.saveTransactionUsecase, Container.taskUsecase)
+  public static paymentController = new PaymentController(Container.saveTransactionUsecase, Container.taskUsecase,Container.walletUsecase)
   
   public static categoryRepository = new categoryRepository()
   public static subCategoryRepository = new subCategoryRepository()
@@ -142,4 +141,6 @@ export class Container {
   public static disputeRepo = new disputeRepository()
   public static disputeUsecase = new DisputeUsecase(Container.disputeRepo)
   public static disputeController = new DisputeController(Container.disputeUsecase)
+  public static adminController = new AdminController(Container.adminFetchusecase,Container.verificationUsecase,Container.banUsecase,Container.disputeUsecase,Container.saveTransactionUsecase)
+
 }

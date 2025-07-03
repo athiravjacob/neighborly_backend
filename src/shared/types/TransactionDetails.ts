@@ -4,7 +4,9 @@ export interface TransactionDetails{
     neighborId: string,
     taskId: string,
     stripeTransactionId: string,
-    amount: number;
+    base_amount: number,
+    platform_fee:number,
+    total_amount: number;
     transactionDate:Date
 
 }

@@ -7,6 +7,8 @@ import dotenv from "dotenv";
 import { generateOTP } from "../../shared/utils/generateOTP";
 import { TaskUsecase } from "../../application/usecases/task/TaskUsecase";
 import { getIO } from "../../infrastructure/socket/socketServer";
+import { number } from "joi";
+import { WalletUsecase } from "../../application/usecases/payment/walletUsecase";
 
 dotenv.config();
 
@@ -15,7 +17,10 @@ export class PaymentController {
 
   constructor(
     private recordTransactionUsecase: saveTransaction,
-    private taskUsecase:TaskUsecase
+    private taskUsecase: TaskUsecase,
+    private walletUsecase: WalletUsecase,
+
+    
   ) {
     const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
     console.log(stripeSecretKey, "stripe key");
@@ -33,13 +38,17 @@ export class PaymentController {
     next: NextFunction
   ): Promise<void> => {
     try {
-      const { userId, neighborId, taskId, amount, stripeTransactionId, transactionDate } = req.body;
+      const { userId, neighborId, taskId,  base_amount,
+        platform_fee,
+        total_amount, stripeTransactionId, transactionDate } = req.body;
       const paymentDetails: TransactionDetails = {
         userId,
         neighborId,
         taskId,
         stripeTransactionId,
-        amount,
+        base_amount,
+        platform_fee,
+        total_amount,
         transactionDate,
       };
       const recordTransactionHistory = await this.recordTransactionUsecase.execute(paymentDetails);
@@ -115,20 +124,25 @@ export class PaymentController {
         const fullSession = await this.stripe.checkout.sessions.retrieve(session.id, {
           expand: ["payment_intent"],
         });
-
+        console.log(fullSession)
         // Extract transaction details
         const paymentDetails: TransactionDetails = {
           userId: fullSession.metadata?.userId! ,
           neighborId: fullSession.metadata?.neighborId || "unknown",
           taskId: fullSession.metadata?.taskId || "",
           stripeTransactionId: (fullSession.payment_intent as Stripe.PaymentIntent)?.id || "",
-          amount: fullSession.amount_total ? fullSession.amount_total / 100 : 0,
+          base_amount: Number(fullSession.metadata?.base_amount),
+          platform_fee:Number(fullSession.metadata?.platform_fee),
+          total_amount: fullSession.amount_total ? fullSession.amount_total / 100 : 0,
           transactionDate: new Date(fullSession.created * 1000),
         };
         console.log(paymentDetails, "paymnt details")
         await this.taskUsecase.updateTaskCode(fullSession.metadata?.taskId!,taskCode)
         // Record transaction
+        const adminId = "6831539c71b6c6e0e8a706ae"
         const recordTransactionHistory = await this.recordTransactionUsecase.execute(paymentDetails);
+        const updateNeighborWallet = await this.walletUsecase.add_wallet_balance("Neighbor",paymentDetails.neighborId,paymentDetails.base_amount)
+        const updateAdminWallet = await this.walletUsecase.add_wallet_balance("Admin",adminId,paymentDetails.platform_fee)
         console.log("Transaction recorded:", recordTransactionHistory);
 
       

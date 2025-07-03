@@ -4,7 +4,11 @@ import { TransactionDetails } from "../../shared/types/TransactionDetails";
 import { transactionModel } from "../model/transactionModel";
 
 export class TransactionRepository implements ITransactionRepository {
-  async getHistory(neighborId: string): Promise<TransactionDetails[]|[]> {
+  async get_all_transactions(): Promise<TransactionDetails[] | []> {
+    const transactions = await transactionModel.find()
+    return JSON.parse(JSON.stringify(transactions))
+  }
+  async get_neighbor_transactions(neighborId: string): Promise<TransactionDetails[]|[]> {
     if (!neighborId || typeof neighborId !== 'string') {
       throw new Error('Invalid neighborId');
     }
@@ -21,7 +25,9 @@ export class TransactionRepository implements ITransactionRepository {
         neighborId: transaction.neighborId.toString(),
         taskId: transaction.taskId.toString(),
         stripeTransactionId: transaction.stripeTransactionId,
-        amount: transaction.amount,
+        base_amount: transaction.base_amount,
+        platform_fee:transaction.platform_fee,
+        total_amount: transaction.total_amount,
         transactionDate: transaction.createdAt, 
       }));
     } catch (error) {

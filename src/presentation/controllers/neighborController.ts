@@ -207,7 +207,7 @@ export class NeighborController {
             
             const id = req.params.neighborId
             if (!id) throw new Error("neigbor Id missing")
-            const data = await this.walletUsecase.fetchNeighborWallet(id)
+            const data = await this.walletUsecase.fetch_wallet("Neighbor",id)
             console.log(data)
             successResponse(res, HttpStatus.OK,Messages.SUCCESS.NEIGHBOR_WALLET, data)
         } catch (error) {

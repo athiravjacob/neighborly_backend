@@ -2,8 +2,8 @@ import { number } from "joi";
 import { Schema, model } from "mongoose";
 
 const walletSchema = new Schema({
-    neighborId: { type: Schema.Types.ObjectId, ref: 'Neighbor', required: true },
-    // escrowId: { type: Schema.Types.ObjectId, ref: 'Escrow', required: true },
+    role:{type:String, enum:["Admin","Neighbor","User"]},
+    holder_id: { type: Schema.Types.ObjectId, refPath:"role", required: true },
     balance: { type: Number, default: 0 },
     withdrawableBalance:{type :Number,default :0}
 }, {
